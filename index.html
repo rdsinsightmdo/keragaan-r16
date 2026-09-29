@@ -1,0 +1,1141 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Keragaan Region Manado</title>
+<style>
+:root{
+  --bg:#f5f6f8; --surface:#ffffff; --surface-2:#f0f2f5; --border:#e2e5ea;
+  --text:#1b2330; --muted:#5d6878; --faint:#8a94a3;
+  --accent:#1d4f91; --accent-soft:#e3ecf8;
+  --good:#1e7a46; --good-bg:#dcf1e4; --warn:#9a6300; --warn-bg:#fcefd2; --bad:#b3261e; --bad-bg:#fbe0dd;
+  --area-bg:#eef2f8; --total-bg:#e3eaf5;
+  --c1:#1d4f91; --c2:#d9822b; --c3:#2a9d8f; --grid:#e6e9ee;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#11151b; --surface:#1a2029; --surface-2:#222a35; --border:#2e3845;
+    --text:#e6ebf2; --muted:#a3adbb; --faint:#768293;
+    --accent:#7fb0f0; --accent-soft:#1f3350;
+    --good:#6fd39a; --good-bg:#173a27; --warn:#f0c064; --warn-bg:#3d3017; --bad:#ff8f86; --bad-bg:#44201d;
+    --area-bg:#1f2836; --total-bg:#243148;
+    --c1:#7fb0f0; --c2:#f0a860; --c3:#5cc9bb; --grid:#2a333f;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#11151b; --surface:#1a2029; --surface-2:#222a35; --border:#2e3845;
+  --text:#e6ebf2; --muted:#a3adbb; --faint:#768293;
+  --accent:#7fb0f0; --accent-soft:#1f3350;
+  --good:#6fd39a; --good-bg:#173a27; --warn:#f0c064; --warn-bg:#3d3017; --bad:#ff8f86; --bad-bg:#44201d;
+  --area-bg:#1f2836; --total-bg:#243148;
+  --c1:#7fb0f0; --c2:#f0a860; --c3:#5cc9bb; --grid:#2a333f;
+}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:var(--bg);color:var(--text);font:14px/1.45 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;-webkit-font-smoothing:antialiased}
+.num{font-variant-numeric:tabular-nums}
+header{background:var(--surface);border-bottom:1px solid var(--border);position:sticky;top:0;z-index:20}
+.hwrap{max-width:1320px;margin:0 auto;padding:14px 20px 0}
+.htop{display:flex;align-items:flex-end;justify-content:space-between;gap:12px;flex-wrap:wrap}
+h1{font-size:20px;margin:0;letter-spacing:-.01em}
+.sub{color:var(--muted);font-size:13px;margin-top:2px}
+.theme-btn{border:1px solid var(--border);background:var(--surface-2);color:var(--text);border-radius:8px;padding:6px 10px;cursor:pointer;font:inherit;font-size:12px}
+nav.tabs{display:flex;gap:4px;margin-top:12px;overflow-x:auto}
+nav.tabs button{border:0;background:none;color:var(--muted);font:inherit;font-weight:600;padding:10px 14px;border-bottom:2px solid transparent;cursor:pointer;white-space:nowrap}
+nav.tabs button.on{color:var(--accent);border-bottom-color:var(--accent)}
+main{max-width:1320px;margin:0 auto;padding:20px}
+section.page{display:none}
+section.page.on{display:block}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:16px}
+.card h2{font-size:15px;margin:0 0 4px}
+.card .hint{color:var(--muted);font-size:12px;margin:0 0 12px}
+.grid{display:grid;gap:14px}
+.grid>*{min-width:0}
+.kpis{grid-template-columns:repeat(auto-fill,minmax(210px,1fr))}
+.kpi{cursor:pointer;transition:border-color .15s}
+.kpi:hover{border-color:var(--accent)}
+.kpi .lbl{font-size:12px;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:.04em}
+.kpi .val{font-size:22px;font-weight:700;margin:4px 0 2px}
+.kpi .row{display:flex;justify-content:space-between;font-size:12px;color:var(--muted);margin-top:4px}
+.kpi .low{font-size:12px;color:var(--muted);margin-top:8px;border-top:1px dashed var(--border);padding-top:6px}
+.pill{display:inline-block;padding:1px 8px;border-radius:999px;font-weight:700;font-size:12px}
+.p-good{background:var(--good-bg);color:var(--good)} .p-warn{background:var(--warn-bg);color:var(--warn)} .p-bad{background:var(--bad-bg);color:var(--bad)} .p-na{background:var(--surface-2);color:var(--faint)}
+.up{color:var(--good)} .down{color:var(--bad)}
+.two{grid-template-columns:1.1fr .9fr}
+@media (max-width:980px){.two{grid-template-columns:1fr}}
+.tblwrap{overflow:auto;border:1px solid var(--border);border-radius:10px;max-height:72vh}
+table{border-collapse:collapse;width:100%;font-size:12.5px}
+th,td{padding:7px 10px;border-bottom:1px solid var(--border);white-space:nowrap;text-align:right}
+th{background:var(--surface-2);color:var(--muted);font-weight:600;position:sticky;top:0;z-index:2;cursor:pointer;user-select:none}
+th:first-child,td:first-child{text-align:left;position:sticky;left:0;background:var(--surface);z-index:1}
+th:first-child{background:var(--surface-2);z-index:3}
+tbody tr:hover td{background:var(--accent-soft)}
+tr.area td{background:var(--area-bg);font-weight:700}
+tr.total td{background:var(--total-bg);font-weight:700}
+tr.sel td{outline:2px solid var(--accent);outline-offset:-2px}
+tbody tr{cursor:pointer}
+th.sorted::after{content:" ▾"} th.sorted.asc::after{content:" ▴"}
+.heat td{text-align:center;font-weight:600}
+.heat td:first-child{text-align:left}
+.heat td.h-good{background:var(--good-bg);color:var(--good)} .heat td.h-warn{background:var(--warn-bg);color:var(--warn)} .heat td.h-bad{background:var(--bad-bg);color:var(--bad)}
+.controls{display:flex;flex-wrap:wrap;gap:10px;align-items:flex-end;margin-bottom:14px}
+.ctl{display:flex;flex-direction:column;gap:4px}
+.ctl label{font-size:11px;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:.04em}
+select,input[type=search]{font:inherit;padding:7px 10px;border-radius:8px;border:1px solid var(--border);background:var(--surface);color:var(--text);min-width:160px;max-width:100%}
+.seg{display:inline-flex;border:1px solid var(--border);border-radius:8px;overflow:hidden;background:var(--surface)}
+.seg button{border:0;background:none;padding:7px 12px;font:inherit;color:var(--muted);cursor:pointer;border-right:1px solid var(--border)}
+.seg button:last-child{border-right:0}
+.seg button.on{background:var(--accent);color:#fff}
+.seg button:disabled{opacity:.4;cursor:not-allowed}
+.chartbox{position:relative;height:420px}
+.chartbox.sm{height:280px}
+.legend{display:flex;gap:14px;flex-wrap:wrap;font-size:12px;color:var(--muted);margin-top:8px}
+.legend i{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:5px;vertical-align:-1px}
+.strip{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px;margin-bottom:14px}
+.strip .s{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:10px 12px}
+.strip .s b{display:block;font-size:17px;margin-top:2px}
+.strip .s span{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.04em;font-weight:600}
+.note{font-size:12px;color:var(--muted);margin-top:10px}
+.muted{color:var(--muted)}
+.mt{margin-top:14px}
+.catttl td{background:var(--surface-2)!important;color:var(--accent);font-weight:700;text-align:left}
+@media (max-width:640px){main{padding:14px 16px}.hwrap{padding:12px 16px 0}.chartbox{height:520px}.kpi .val{font-size:19px}}
+/* --- tambahan untuk versi dinamis --- */
+.filters{display:flex;flex-wrap:wrap;gap:10px;align-items:flex-end;margin-top:12px}
+.filters select{min-width:150px}
+.filters .ctl.wide select{min-width:220px}
+.btn{border:1px solid var(--border);background:var(--surface-2);color:var(--text);border-radius:8px;padding:7px 12px;cursor:pointer;font:inherit;font-size:13px}
+.btn:hover{border-color:var(--accent)}
+.chip{display:none;align-items:center;gap:6px;font-size:12px;color:var(--accent);background:var(--accent-soft);border-radius:999px;padding:4px 10px;font-weight:600}
+.chip.on{display:inline-flex}
+.crumb{font-size:12px;color:var(--muted);margin-top:4px}
+.crumb a{color:var(--accent);cursor:pointer;text-decoration:none;font-weight:600}
+.crumb a:hover{text-decoration:underline}
+.drill{color:var(--accent);font-weight:700;margin-left:6px;cursor:pointer;padding:0 4px;border-radius:4px}
+.drill:hover{background:var(--accent-soft)}
+.kpi .val small{font-size:12px;color:var(--muted);font-weight:600}
+.empty{padding:28px;text-align:center;color:var(--muted)}
+.seg.sm button{padding:5px 10px;font-size:12px}
+.cardhead{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;flex-wrap:wrap}
+td.muted{color:var(--faint)}
+</style>
+</head>
+<body>
+<header>
+ <div class="hwrap">
+  <div class="htop">
+   <div>
+    <h1>Keragaan Region 16 Manado</h1>
+    <div class="sub" id="sub">Memuat data…</div>
+    <div class="crumb" id="crumb"></div>
+   </div>
+   <div style="display:flex;gap:8px;align-items:center">
+    <span class="chip" id="loading">⏳ Memuat data…</span>
+    <button class="theme-btn" id="themeBtn" type="button">Tema: Otomatis</button>
+    <button class="theme-btn" id="logoutBtn" type="button" title="Keluar dan kunci dashboard">🔒 Keluar</button>
+   </div>
+  </div>
+  <div class="filters">
+   <div class="ctl"><label>Tanggal Posisi</label><select id="fDate"></select></div>
+   <div class="ctl"><label>Target RKA</label><select id="fRka"></select></div>
+   <div class="ctl"><label>Area</label><select id="fArea"></select></div>
+   <div class="ctl"><label>Cabang (Kanca)</label><select id="fCab"></select></div>
+   <div class="ctl wide"><label>Unit Kerja</label><select id="fUk"></select></div>
+   <div class="ctl"><label>Jenis Uker</label><select id="fType"></select></div>
+   <div class="ctl"><label>&nbsp;</label><button class="btn" id="fReset" type="button">Reset</button></div>
+  </div>
+  <nav class="tabs" id="tabs">
+   <button data-p="ringkasan" class="on">Ringkasan</button>
+   <button data-p="pinjaman">Pinjaman</button>
+   <button data-p="simpanan">Simpanan</button>
+   <button data-p="eksplor">Eksplorasi Kinerja</button>
+   <button data-p="profil">Profil Uker</button>
+  </nav>
+ </div>
+</header>
+<main>
+ <!-- RINGKASAN -->
+ <section class="page on" id="p-ringkasan">
+  <div class="grid kpis" id="kpis"></div>
+  <div class="grid mt">
+   <div class="card">
+    <div class="cardhead">
+     <div>
+      <h2 id="heatTitle">Peta Pencapaian RKA</h2>
+      <p class="hint" id="heatHint"></p>
+     </div>
+     <div class="seg sm" id="segHeat"><button data-h="p0" class="on">Penc. RKA</button><button data-h="p1">Penc. RKA Des</button><button data-h="mtd">MtD</button><button data-h="yoy">YoY</button></div>
+    </div>
+    <div class="tblwrap" style="max-height:none"><table class="heat" id="heat"></table></div>
+   </div>
+   <div class="grid" style="grid-template-columns:repeat(auto-fit,minmax(320px,1fr))">
+    <div class="card">
+     <h2>Tren Simpanan &amp; Pinjaman</h2>
+     <p class="hint" id="trendHint"></p>
+     <div class="chartbox sm"><canvas id="trendRegion"></canvas></div>
+    </div>
+    <div class="card">
+     <h2>Rasio Kualitas &amp; LDR</h2>
+     <p class="hint">SML %, NPL % dan LDR % per posisi akhir bulan</p>
+     <div class="chartbox sm"><canvas id="ratioRegion"></canvas></div>
+    </div>
+   </div>
+  </div>
+ </section>
+
+ <!-- PINJAMAN -->
+ <section class="page" id="p-pinjaman">
+  <div class="grid kpis" id="pjKpis"></div>
+  <div class="grid mt" style="grid-template-columns:repeat(auto-fit,minmax(320px,1fr))">
+   <div class="card">
+    <h2>Komposisi Pinjaman per Segmen</h2>
+    <p class="hint" id="pjMixHint"></p>
+    <div class="chartbox sm"><canvas id="pjMix"></canvas></div>
+   </div>
+   <div class="card">
+    <h2>Kualitas Pinjaman</h2>
+    <p class="hint">SML % dan NPL % total (garis penuh) dan Mikro (putus-putus), posisi akhir bulan</p>
+    <div class="chartbox sm"><canvas id="pjQual"></canvas></div>
+   </div>
+  </div>
+  <div class="card mt">
+   <h2 id="pjProdTitle">Pinjaman per Segmen &amp; Produk</h2>
+   <p class="hint" id="pjProdHint"></p>
+   <div class="tblwrap"><table id="pjProd"></table></div>
+  </div>
+  <div class="card mt">
+   <h2 id="pjUkTitle">Pinjaman per Uker</h2>
+   <p class="hint">Nominal Rp Juta. Klik judul kolom untuk mengurutkan, klik › untuk masuk ke rinciannya.</p>
+   <div class="tblwrap"><table id="pjUk"></table></div>
+  </div>
+ </section>
+
+ <!-- SIMPANAN -->
+ <section class="page" id="p-simpanan">
+  <div class="grid kpis" id="spKpis"></div>
+  <div class="grid mt" style="grid-template-columns:repeat(auto-fit,minmax(320px,1fr))">
+   <div class="card">
+    <h2>Komposisi Simpanan per Produk</h2>
+    <p class="hint" id="spMixHint"></p>
+    <div class="chartbox sm"><canvas id="spMix"></canvas></div>
+   </div>
+   <div class="card">
+    <h2>Rasio CASA</h2>
+    <p class="hint">(Giro + Tabungan) ÷ total simpanan per segmen, posisi akhir bulan</p>
+    <div class="chartbox sm"><canvas id="spCasa"></canvas></div>
+   </div>
+  </div>
+  <div class="card mt">
+   <h2 id="spProdTitle">Simpanan per Segmen &amp; Produk</h2>
+   <p class="hint" id="spProdHint"></p>
+   <div class="tblwrap"><table id="spProd"></table></div>
+  </div>
+  <div class="card mt">
+   <h2 id="spUkTitle">Simpanan per Uker</h2>
+   <p class="hint">Nominal Rp Juta. Klik judul kolom untuk mengurutkan, klik › untuk masuk ke rinciannya.</p>
+   <div class="tblwrap"><table id="spUk"></table></div>
+  </div>
+ </section>
+
+ <!-- EKSPLORASI -->
+ <section class="page" id="p-eksplor">
+  <div class="controls">
+   <div class="ctl"><label>Kategori</label><div class="seg" id="segCat"></div></div>
+   <div class="ctl" style="flex:1;min-width:220px"><label>Produk / Segmen</label><select id="selBlock" style="width:100%"></select></div>
+   <div class="ctl"><label>Tampilan</label><div class="seg" id="segView"><button data-v="rp" class="on">Nominal</button><button data-v="pct">Rasio %</button><button data-v="cnt">Debitur</button></div></div>
+   <div class="ctl"><label>Grafik</label><select id="selMetric"></select></div>
+  </div>
+  <div class="strip" id="strip"></div>
+  <div class="grid two">
+   <div class="card">
+    <h2 id="barTitle">Per Uker</h2>
+    <p class="hint" id="barHint"></p>
+    <div class="chartbox" id="barBox"><canvas id="barChart"></canvas></div>
+   </div>
+   <div class="card">
+    <div class="cardhead">
+     <h2 id="lineTitle">Tren</h2>
+     <div class="seg sm" id="segTrend"><button data-t="m13" class="on">13 Bulan</button><button data-t="mall">Semua Bulan</button><button data-t="day">Harian</button></div>
+    </div>
+    <p class="hint">Klik baris tabel atau batang grafik untuk mengganti uker</p>
+    <div class="chartbox sm"><canvas id="lineChart"></canvas></div>
+    <div id="lineInfo" class="note"></div>
+   </div>
+  </div>
+  <div class="card mt">
+   <h2>Tabel Detail</h2>
+   <p class="hint" id="tblHint">Klik judul kolom untuk mengurutkan. Klik › untuk masuk ke rincian di bawahnya.</p>
+   <div class="tblwrap"><table id="detail"></table></div>
+   <div class="note" id="tblNote"></div>
+  </div>
+ </section>
+
+ <!-- PROFIL -->
+ <section class="page" id="p-profil">
+  <div class="grid kpis" id="profKpis"></div>
+  <div class="card mt">
+   <h2 id="profTitle">Seluruh Produk</h2>
+   <p class="hint" id="profHint"></p>
+   <div class="tblwrap"><table id="profTbl"></table></div>
+  </div>
+ </section>
+ <p class="note" id="foot"></p>
+</main>
+
+<script src="lib/chart.umd.min.js"></script>
+<script src="lib/crypto-fallback.js"></script>
+<script src="lib/auth.js"></script>
+<script>
+/* ================= AKSES (PIN) ================= */
+const KR_KEY = KRA.guard();          // tanpa PIN -> diarahkan ke login.html
+window.KR_ENC = (id, iv, ct) => {
+  KRA.decryptText(KR_KEY, iv, ct).then(t => KR_LOAD(JSON.parse(t)))
+     .catch(() => { alert('Data tidak dapat dibuka dengan PIN ini (data mungkin sudah diperbarui). Silakan masuk lagi.'); KRA.logout(); });
+};
+/* ================= DATA STORE ================= */
+const DB = {meta:null, p:new Map(), s:new Map(), files:new Set(), waiters:{}};
+function KR_LOAD(o){
+  if(o.id==='core') DB.meta=o;
+  ['p','s'].forEach(ds=>{
+    const a=o[ds]; if(!a) return; const M=DB[ds];
+    for(let i=0;i<a.length;i+=6){
+      let r=M.get(a[i]); if(!r){r=[];M.set(a[i],r);}
+      r.push(a[i+1],a[i+2],a[i+3],a[i+4],a[i+5]);
+    }
+  });
+  DB.files.add(o.id);
+  if(DB.waiters[o.id]){ DB.waiters[o.id].forEach(f=>f()); delete DB.waiters[o.id]; }
+}
+function loadFile(id){
+  if(DB.files.has(id)) return Promise.resolve();
+  return new Promise((res,rej)=>{
+    const first=!DB.waiters[id]; (DB.waiters[id]=DB.waiters[id]||[]).push(res);
+    if(!first) return;
+    const s=document.createElement('script'); s.src='data/'+(id==='core'?'core':'m_'+id)+'.js?v='+(DB.meta?encodeURIComponent(DB.meta.generated):Date.now());
+    s.onerror=()=>{alert('Gagal memuat data/'+id+'.js');rej()}; document.head.appendChild(s);
+  });
+}
+</script>
+<script>
+if(KR_KEY) loadFile('core').then(()=>{
+/* ================= META ================= */
+const M = DB.meta;
+const BLN = ['Jan','Feb','Mar','Apr','Mei','Jun','Jul','Agu','Sep','Okt','Nov','Des'];
+const BLNL = ['Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember'];
+const DT = M.dates.map(([iso,f],i)=>({i,iso,f,y:+iso.slice(0,4),m:+iso.slice(5,7),d:+iso.slice(8,10),mk:iso.slice(0,7)}));
+const CABS = M.cabs, UKS = M.ukers, PC = M.pcells, SC = M.scells, RK = M.rka;
+const AREAS = [...new Set(CABS.slice(1).map(c=>c.a))];
+const has = (ds,i) => i!=null && i>=0 && !!(DT[i].f & (ds==='p'?1:2));
+const isME = (ds,i) => !!(DT[i].f & (ds==='p'?4:8));
+const fD  = i => i==null?'–':`${DT[i].d} ${BLN[DT[i].m-1]} ${String(DT[i].y).slice(2)}`;
+const fDL = i => i==null?'–':`${DT[i].d} ${BLNL[DT[i].m-1]} ${DT[i].y}`;
+function atOrBefore(ds, iso, sameMonthAs){
+  for(let j=DT.length-1;j>=0;j--){
+    if(DT[j].iso>iso) continue;
+    if(sameMonthAs && DT[j].mk!==sameMonthAs) break;
+    if(has(ds,j)) return j;
+  }
+  if(sameMonthAs){ for(let j=0;j<DT.length;j++) if(DT[j].mk===sameMonthAs && has(ds,j)) return j; }
+  return null;
+}
+const pad = n => String(n).padStart(2,'0');
+function prevMonthEnd(i){ const {y,m}=DT[i]; const py=m===1?y-1:y, pm=m===1?12:m-1; return {iso:`${py}-${pad(pm)}-31`, mk:`${py}-${pad(pm)}`}; }
+const ME = {p:new Map(), s:new Map()};
+DT.forEach(d=>{ if(isME('p',d.i)) ME.p.set(d.mk,d.i); if(isME('s',d.i)) ME.s.set(d.mk,d.i); });
+const MONTHS = [...new Set(DT.map(d=>d.mk))];
+
+/* ================= STATE ================= */
+const S = {date:null, rkaM:'auto', area:'', cab:0, uk:0, type:'',
+           cat:'Pinjaman', bi:0, kind:'rp', metric:'p0', sort:null, asc:false, sel:null, heat:'p0', trend:'m13'};
+
+/* ================= HIRARKI (sheet Pola) ================= */
+const EXCL = new Set(['Commercial']);          // segmen di luar Total Pinjaman
+const EXCL_PROD = new Set(['Consumer|Lainnya']); // produk (Segmen|Produk) di luar total segmen & Total Pinjaman
+const isExP = i => EXCL.has(PC[i][2]) || EXCL_PROD.has(PC[i][2]+'|'+PC[i][1]);
+const RKIDX = RK ? Object.fromEntries(RK.keys.map((k,i)=>[k,i])) : {};
+function rkKeys(cells, all, bis){
+  if(!RK) return null;
+  const set=new Set(); cells.forEach(i=>(all[i][4][bis]||[]).forEach(k=>set.add(k)));
+  if(!set.size) return null;
+  const inEx = cells.length && all===PC && cells.every(isExP);
+  for(const k of set) for(let j=0;j<all.length;j++)
+    if(all[j][5] && (all[j][4][bis]||[]).includes(k) && !cells.includes(j)
+       && !(all===PC && !inEx && isExP(j))) return null;  // target tidak bisa dipisah (produk di luar total diabaikan)
+  return [...set].map(k=>RKIDX[k]).filter(x=>x!=null);
+}
+const order = arr => [...new Set(arr)];
+function mkP(title,cells,lvl,extra){ return {title,name:title.replace(/ \(\d+\)$/,''),cells,lvl,...extra,
+  rk:{Pinjaman:rkKeys(cells,PC,'Pinjaman'),SML:rkKeys(cells,PC,'SML'),NPL:rkKeys(cells,PC,'NPL')}}; }
+function mkS(title,cells,lvl,extra){ return {title,name:title,cells,lvl,...extra, rk:{D:rkKeys(cells,SC,'D')}}; }
+const PBLK = (()=>{
+  const B=[mkP('Total',PC.map((_,i)=>i).filter(i=>!isExP(i)),0,{tot:1})];
+  const seen={}, uniq=t=>{ seen[t]=(seen[t]||0)+1; return seen[t]>1? t+' ('+seen[t]+')':t; };
+  const multiSeg={}; PC.forEach(c=>{(multiSeg[c[1]]=multiSeg[c[1]]||new Set()).add(c[2])});
+  order(PC.map(c=>c[2])).forEach(sg=>{
+    const ci=PC.map((_,i)=>i).filter(i=>PC[i][2]===sg), ex=EXCL.has(sg);
+    const inc = ex? ci : ci.filter(i=>!isExP(i));           // isi total segmen
+    B.push(mkP(uniq(sg),inc,0,{seg:sg,excl:ex,exclTop:ex}));
+    const p1s=order(ci.map(i=>PC[i][3]));
+    p1s.forEach(p1=>{
+      const pi=ci.filter(i=>PC[i][3]===p1);
+      const pn=i=>PC[i][1]+(multiSeg[PC[i][1]].size>1?' ('+sg+')':'');
+      const px=i=>({excl:ex||isExP(i), exclTop:!ex&&isExP(i)});
+      if(p1s.length===1 && p1===sg){ pi.forEach(i=>B.push(mkP(uniq(pn(i)),[i],1,px(i)))); return; }
+      const allEx=pi.every(isExP), pin=pi.filter(i=>ex||!isExP(i));
+      B.push(mkP(uniq(p1),allEx?pi:pin,1,{excl:ex||allEx, exclTop:!ex&&allEx}));
+      if(pi.length>1) pi.forEach(i=>B.push(mkP(uniq(pn(i)),[i],2,{excl:ex||isExP(i), exclTop:!ex&&!allEx&&isExP(i)})));
+    });
+  });
+  return B;
+})();
+const SBLK = (()=>{
+  const all=SC.map((_,i)=>i);
+  const B=[mkS('Simpanan Total',all,0,{tot:1}), mkS('CASA Total (Giro + Tabungan)',all.filter(i=>SC[i][1]!=='Deposito'),0,{casa:1})];
+  order(SC.map(c=>c[2])).forEach(sg=>{
+    const ci=all.filter(i=>SC[i][2]===sg); B.push(mkS('Simpanan '+sg,ci,0,{seg:sg}));
+    const p1s=order(ci.map(i=>SC[i][3]));
+    if(p1s.length>1){
+      order(ci.map(i=>SC[i][1])).forEach(p=>B.push(mkS(p+' '+sg,ci.filter(i=>SC[i][1]===p),1,{prod:p})));
+      B.push(mkS('CASA '+sg,ci.filter(i=>SC[i][1]!=='Deposito'),1,{casa:1}));
+      p1s.forEach(p1=>{ const pi=ci.filter(i=>SC[i][3]===p1);
+        B.push(mkS('Simpanan '+p1,pi,1,{}));
+        pi.forEach(i=>B.push(mkS(SC[i][1]+' '+p1,[i],2,{}))); });
+    } else ci.forEach(i=>B.push(mkS(SC[i][1]+' '+sg,[i],1,{prod:SC[i][1]})));
+  });
+  return B;
+})();
+const PMIK = PC.map((_,i)=>i).filter(i=>/^mikro$/i.test(PC[i][2])), SMIK = SC.map((_,i)=>i).filter(i=>/^micro$/i.test(SC[i][0]));
+const LBLK = [
+  {title:'LDR Total',pc:PBLK[0].cells,sc:SBLK[0].cells,lvl:0},
+  {title:'LDR Mikro',pc:PMIK,sc:SMIK,lvl:0},
+  {title:'LDR Non Mikro',pc:PBLK[0].cells.filter(i=>!PMIK.includes(i)),sc:SC.map((_,i)=>i).filter(i=>!SMIK.includes(i)),lvl:0},
+].map(b=>({...b,rk:{Pinjaman:rkKeys(b.pc,PC,'Pinjaman'),D:rkKeys(b.sc,SC,'D')}}));
+const CATS = ['Pinjaman','Simpanan','SML','NPL','LDR'];
+const BLOCKS = {Pinjaman:PBLK, SML:PBLK, NPL:PBLK, Simpanan:SBLK, LDR:LBLK};
+const INVERSE = {SML:1,NPL:1,LDR:1};
+const LOWGOOD = {SML:1,NPL:1};
+const blkTitle = (cat,b) => {
+  if(cat==='Simpanan'||cat==='LDR') return b.name||b.title;
+  const t = b.tot? cat+' Total' : (b.lvl===0? cat+' '+b.name : b.name);
+  return t+(b.exclTop?' (di luar total)':'');
+};
+const findBlk = (cat,title) => BLOCKS[cat].findIndex(b=>b.title===title);
+
+/* ================= AGGREGATION ================= */
+const AGG = new Map();
+function agg(ds,i){
+  if(i==null || !has(ds,i)) return null;
+  const key=ds+i+'|'+S.type; if(AGG.has(key)) return AGG.get(key);
+  const rows=DB[ds].get(i); if(!rows) return null;
+  const nc=(ds==='p'?PC.length*3:SC.length)*2, E=new Map(), t=S.type;
+  const add=(k,c,v,n)=>{let a=E.get(k); if(!a){a=new Float64Array(nc);E.set(k,a);} a[c]+=v; a[c+1]+=n;};
+  for(let r=0;r<rows.length;r+=5){
+    const ci=rows[r], ui=rows[r+1], c=rows[r+2]*2, v=rows[r+3]/100, n=rows[r+4];
+    if(t && UKS[ui].t!==t) continue;
+    add('T',c,v,n); const a=CABS[ci].a; if(a) add('A|'+a,c,v,n);
+    add('C|'+ci,c,v,n); if(ui>0) add('U|'+ui,c,v,n);
+  }
+  if(AGG.size>400) AGG.delete(AGG.keys().next().value);
+  AGG.set(key,E); return E;
+}
+const RAGG = new Map();
+function ragg(m){
+  if(!RK || m==null) return null;
+  const key=m+'|'+S.type; if(RAGG.has(key)) return RAGG.get(key);
+  const E=new Map(), nk=RK.keys.length, t=S.type, R=RK.rows, W=15;
+  const add=(k,ki,v)=>{let a=E.get(k); if(!a){a=new Float64Array(nk);E.set(k,a);} a[ki]+=v;};
+  for(let r=0;r<R.length;r+=W){
+    const ci=R[r], ui=R[r+1], ki=R[r+2], v=R[r+3+m]/100; if(!v) continue;
+    if(t && UKS[ui].t!==t) continue;
+    add('T',ki,v); const a=CABS[ci].a; if(a) add('A|'+a,ki,v); add('C|'+ci,ki,v); if(ui>0) add('U|'+ui,ki,v);
+  }
+  RAGG.set(key,E); return E;
+}
+function sumP(arr,cells,kgs,w){ let s=0; for(const c of cells) for(const k of kgs) s+=arr[(c*3+k)*2+w]; return s; }
+function sumS(arr,cells,w){ let s=0; for(const c of cells) s+=arr[c*2+w]; return s; }
+const KG = {Pinjaman:[0,1,2], SML:[1], NPL:[2]};
+function val(cat,b,kind,key,pt){
+  if(cat==='LDR'){
+    const A=agg('p',pt.p), B=agg('s',pt.s); if(!A||!B) return null;
+    const a=A.get(key), c=B.get(key); if(!a||!c) return null;
+    const d=sumS(c,b.sc,0); return d? sumP(a,b.pc,[0,1,2],0)/d : null;
+  }
+  if(cat==='Simpanan'){
+    const A=agg('s',pt.s); if(!A) return null; const a=A.get(key); if(!a) return null;
+    if(kind==='cnt') return sumS(a,b.cells,1);
+    const v=sumS(a,b.cells,0);
+    if(kind==='pct'){ const t=sumS(a,SBLK[0].cells,0); return t? v/t : null; }
+    return v;
+  }
+  const A=agg('p',pt.p); if(!A) return null; const a=A.get(key); if(!a) return null;
+  if(kind==='cnt') return sumP(a,b.cells,KG[cat],1);
+  const v=sumP(a,b.cells,KG[cat],0);
+  if(kind==='pct'){
+    const base = cat==='Pinjaman' ? sumP(a,PBLK[0].cells,[0,1,2],0) : sumP(a,b.cells,[0,1,2],0);
+    return base? v/base : null;
+  }
+  return v;
+}
+/* target RKA: m = bulan 0..11 */
+function tgt(cat,b,kind,key,m){
+  const E=ragg(m); if(!E) return null; const e=E.get(key); if(!e) return null;
+  const sk=ks=>{ if(!ks) return null; let s=0; for(const k of ks) s+=e[k]; return s||null; };
+  if(cat==='LDR'){ const p=sk(b.rk.Pinjaman), d=sk(b.rk.D); return p&&d? p/d : null; }
+  if(kind==='cnt') return null;
+  if(cat==='Simpanan') return kind==='rp'? sk(b.rk.D) : null;
+  if(cat==='Pinjaman') return kind==='rp'? sk(b.rk.Pinjaman) : null;
+  const x=sk(b.rk[cat]); if(kind==='rp') return x;
+  const p=sk(b.rk.Pinjaman); return x!=null&&p? x/p : null;
+}
+function pencOf(cat,act,t){
+  if(act==null||t==null) return null;
+  if(INVERSE[cat]) return act>0? Math.min(t/act,1.1) : 1.1;
+  return t? act/t : null;
+}
+
+/* ================= DATE RESOLUTION ================= */
+function resolveDs(ds){
+  const i=S.date, R={cur:has(ds,i)?i:null};
+  let j=null; for(let k=i-1;k>=0;k--) if(has(ds,k)){j=k;break;} R.dtd=j;
+  const pm=prevMonthEnd(i); R.mtd=atOrBefore(ds,pm.iso,pm.mk);
+  R.ytd=atOrBefore(ds,`${DT[i].y-1}-12-31`,`${DT[i].y-1}-12`);
+  R.yoy=atOrBefore(ds,`${DT[i].y-1}-${pad(DT[i].m)}-${pad(DT[i].d)}`,`${DT[i].y-1}-${pad(DT[i].m)}`);
+  return R;
+}
+let RES = null;
+function resolveAll(){ RES={p:resolveDs('p'), s:resolveDs('s')}; }
+const PT = w => ({p:RES.p[w], s:RES.s[w]});
+const PTS = ['yoy','ytd','mtd','dtd','cur'];
+const GR = ['dtd','mtd','ytd','yoy'];
+function ptDate(cat,w){ return cat==='Simpanan'?RES.s[w]:RES.p[w]; }
+function rkaMonths(){   // [bulan target terpilih, Desember] atau null bila tahun posisi ≠ tahun RKA
+  if(!RK || DT[S.date].y!==RK.year) return [null,null];
+  return [S.rkaM==='auto'? DT[S.date].m-1 : +S.rkaM, 11];
+}
+const mLbl = m => m==null?'–':BLN[m];
+function neededFiles(extra){
+  const need=new Set(), chk=i=>{ if(i==null) return; const f=DT[i].f; if(((f&1)&&!(f&4))||((f&2)&&!(f&8))) need.add(DT[i].mk); };
+  ['p','s'].forEach(ds=>PTS.forEach(w=>chk(RES[ds][w])));
+  (extra||[]).forEach(chk);
+  return [...need].filter(m=>M.months.includes(m) && !DB.files.has(m));
+}
+async function ensure(extra){
+  const need=neededFiles(extra); if(!need.length) return;
+  document.getElementById('loading').classList.add('on');
+  await Promise.all(need.map(loadFile));
+  document.getElementById('loading').classList.remove('on');
+}
+
+/* ================= HELPERS ================= */
+const nf0 = new Intl.NumberFormat('id-ID',{maximumFractionDigits:0});
+const nf1 = new Intl.NumberFormat('id-ID',{maximumFractionDigits:1});
+const nf2 = new Intl.NumberFormat('id-ID',{minimumFractionDigits:2,maximumFractionDigits:2});
+const fRp = v => v==null? '–' : nf0.format(v);
+const fPct = v => v==null||!isFinite(v)? '–' : nf2.format(v*100)+'%';
+const fPP = v => v==null? '–' : (v>0?'+':'')+nf2.format(v*100)+' pp';
+const fSigned = v => v==null? '–' : (v>0?'+':'')+nf0.format(v);
+const fSPct = v => v==null||!isFinite(v)? '–' : (v>0?'+':'')+nf2.format(v*100)+'%';
+const cls = p => p==null? 'na' : p>=1? 'good' : p>=.95? 'warn':'bad';
+const pill = p => `<span class="pill p-${cls(p)}">${fPct(p)}</span>`;
+const css = n => getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+const growthCls = (v,inv) => v==null||v===0? '' : ((v>0)!==!!inv ? 'up':'down');
+const esc = s => String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+function view(cat,b,kind,key){
+  const k = cat==='LDR' ? 'pct' : kind;
+  const o={kind:k, v:{}};
+  PTS.forEach(w=>o.v[w]=val(cat,b,k,key,PT(w)));
+  const cur=o.v.cur, d=x=> (cur==null||x==null)?null:cur-x, r=x=> (cur==null||!x)?null:cur/x-1;
+  o.g={}; GR.forEach(w=>{ o.g[w]=[d(o.v[w]), k==='pct'?null:r(o.v[w])]; });
+  const [m0,m1]=rkaMonths();
+  o.tgt=[tgt(cat,b,k,key,m0), tgt(cat,b,k,key,m1)];
+  o.penc=o.tgt.map(t=>pencOf(cat,cur,t));
+  o.gap=o.tgt.map(t=> t==null||cur==null? null : cur-t);
+  return o;
+}
+const fmtV = (k,v) => k==='pct'? fPct(v) : fRp(v);
+const fmtG = (k,v) => k==='pct'? fPP(v) : fSigned(v);
+const gMain = (o,w) => o.kind==='pct'? o.g[w][0] : o.g[w][1];
+const fGMain = (o,w) => o.kind==='pct'? fPP(o.g[w][0]) : fSPct(o.g[w][1]);
+const gSpan = (o,w,inv) => `<span class="num ${growthCls(gMain(o,w),inv)}">${fGMain(o,w)}</span>`;
+
+/* ================= ENTITY / ROWS ================= */
+function entityKey(){ return S.uk? 'U|'+S.uk : S.cab? 'C|'+S.cab : S.area? 'A|'+S.area : 'T'; }
+function entityName(key){
+  key=key||entityKey(); const [t,v]=key.split('|');
+  if(t==='T') return 'Region 16 Manado'; if(t==='A') return v; if(t==='C') return 'Kanca '+CABS[+v].n; return UKS[+v].n;
+}
+const cabsIn = a => CABS.map((c,i)=>i).filter(i=>i>0 && CABS[i].a===a);
+const uksIn = ci => UKS.map((u,i)=>i).filter(i=>i>0 && UKS[i].c.includes(ci) && (!S.type||UKS[i].t===S.type));
+const typeSfx = () => S.type? ` (${S.type})` : '';
+function tableRows(){
+  const R=[];
+  if(S.cab){
+    uksIn(S.cab).forEach(u=>R.push({key:'U|'+u,label:UKS[u].n,t:'leaf',drill:()=>setUk(u)}));
+    R.push({key:'C|'+S.cab,label:'Total Kanca '+CABS[S.cab].n+typeSfx(),t:'total'});
+  } else if(S.area){
+    cabsIn(S.area).forEach(c=>R.push({key:'C|'+c,label:CABS[c].n,t:'leaf',drill:()=>setCab(c)}));
+    R.push({key:'A|'+S.area,label:'Total '+S.area+typeSfx(),t:'total'});
+  } else {
+    AREAS.forEach(a=>{
+      cabsIn(a).forEach(c=>R.push({key:'C|'+c,label:CABS[c].n,t:'leaf',a,drill:()=>setCab(c)}));
+      if(a.startsWith('Area')) R.push({key:'A|'+a,label:a.toUpperCase(),t:'area',drill:()=>setArea(a)});
+    });
+    R.push({key:'C|0',label:'Region (tanpa rincian uker)',t:'leaf',opt:1});
+    R.push({key:'T',label:'Total Region'+typeSfx(),t:'total'});
+  }
+  return R;
+}
+function liveRows(cat,b,kind){
+  return tableRows().map(r=>({...r,o:view(cat,b,kind,r.key)}))
+    .filter(x=>x.t!=='leaf' || PTS.some(w=>x.o.v[w]!=null && x.o.v[w]!==0) || x.o.tgt[0]!=null);
+}
+function siblings(){
+  if(S.uk) return uksIn(S.cab).map(u=>'U|'+u);
+  if(S.cab) return (S.area? cabsIn(S.area) : CABS.map((_,i)=>i).filter(i=>i>0)).map(c=>'C|'+c);
+  if(S.area) return AREAS.filter(a=>a.startsWith('Area')).map(a=>'A|'+a);
+  return [];
+}
+function rankIn(cat,b,kind,ek){
+  const sib=siblings(); if(!sib.length) return null;
+  const arr=sib.map(s=>({s,p:view(cat,b,kind,s).penc[0]})).filter(x=>x.p!=null).sort((a,c)=>c.p-a.p);
+  const i=arr.findIndex(x=>x.s===ek); return i<0?null:[i+1,arr.length];
+}
+
+/* ================= FILTER UI ================= */
+const $ = id => document.getElementById(id);
+const dateLabel = i => fDL(i);
+function fillDate(){   // hanya tanggal yang ada di sheet Pinjaman DAN Simpanan
+  const byM={}; DT.filter(d=>(d.f&3)===3).forEach(d=>{(byM[d.mk]=byM[d.mk]||[]).push(d.i)});
+  let h=''; Object.keys(byM).sort().reverse().forEach(mk=>{
+    const [y,m]=mk.split('-'); h+=`<optgroup label="${BLNL[+m-1]} ${y}">`+byM[mk].slice().reverse().map(i=>`<option value="${i}">${dateLabel(i)}</option>`).join('')+'</optgroup>';
+  });
+  $('fDate').innerHTML=h; $('fDate').value=S.date;
+}
+function fillRka(){
+  if(!RK){ $('fRka').innerHTML='<option value="auto">Tidak ada data RKA</option>'; $('fRka').disabled=true; return; }
+  $('fRka').innerHTML='<option value="auto">Otomatis (bulan posisi)</option>'+BLNL.map((b,i)=>`<option value="${i}">RKA ${b} ${RK.year}</option>`).join('');
+  $('fRka').value=S.rkaM;
+}
+function fillGeo(){
+  $('fArea').innerHTML='<option value="">Semua Area</option>'+AREAS.map(a=>`<option>${a}</option>`).join('');
+  $('fArea').value=S.area;
+  const cs = S.area? cabsIn(S.area) : CABS.map((_,i)=>i).filter(i=>i>0);
+  $('fCab').innerHTML='<option value="0">Semua Cabang</option>'+cs.map(c=>`<option value="${c}">${esc(CABS[c].n)}</option>`).join('');
+  $('fCab').value=S.cab;
+  let h='<option value="0">Semua Unit Kerja</option>';
+  (S.cab? [S.cab] : cs).forEach(c=>{ const us=uksIn(c); if(!us.length) return;
+    h+=`<optgroup label="${esc(CABS[c].n)}">`+us.map(u=>`<option value="${u}">${esc(UKS[u].n)}</option>`).join('')+'</optgroup>'; });
+  $('fUk').innerHTML=h; $('fUk').value=S.uk;
+  const types=[...new Set(UKS.slice(1).map(u=>u.t))];
+  $('fType').innerHTML='<option value="">Semua Jenis</option>'+types.map(t=>`<option>${t}</option>`).join('');
+  $('fType').value=S.type;
+}
+function setArea(a){ S.area=a; S.cab=0; S.uk=0; S.sel=null; S.sort=null; refresh(); }
+function setCab(c){ S.cab=c; S.uk=0; if(c) S.area=CABS[c].a; S.sel=null; S.sort=null; refresh(); }
+function setUk(u){ S.uk=u; if(u){ const cs=UKS[u].c; if(!cs.includes(S.cab)) S.cab=cs[cs.length-1]; S.area=CABS[S.cab].a; } S.sel=u?'U|'+u:null; S.sort=null; refresh(); }
+$('fDate').onchange=e=>{S.date=+e.target.value; refresh();};
+$('fRka').onchange=e=>{S.rkaM=e.target.value; refresh();};
+$('fArea').onchange=e=>setArea(e.target.value);
+$('fCab').onchange=e=>setCab(+e.target.value);
+$('fUk').onchange=e=>setUk(+e.target.value);
+$('fType').onchange=e=>{S.type=e.target.value; if(S.uk && S.type && UKS[S.uk].t!==S.type) S.uk=0; S.sel=null; refresh();};
+$('fReset').onclick=()=>{S.date=defaultDate(); S.rkaM='auto'; S.area='';S.cab=0;S.uk=0;S.type='';S.sel=null;S.sort=null; fillDate(); fillRka(); refresh();};
+function crumb(){
+  const parts=[`<a data-go="T">Region</a>`];
+  if(S.area) parts.push(`<a data-go="A">${esc(S.area)}</a>`);
+  if(S.cab) parts.push(`<a data-go="C">Kanca ${esc(CABS[S.cab].n)}</a>`);
+  if(S.uk) parts.push(`<b>${esc(UKS[S.uk].n)}</b>`);
+  $('crumb').innerHTML=parts.join(' › ')+(S.type?` · jenis uker: <b>${S.type}</b>`:'');
+  $('crumb').querySelectorAll('a').forEach(a=>a.onclick=()=>{const g=a.dataset.go; if(g==='T') setArea(''); else if(g==='A') setArea(S.area); else setCab(S.cab);});
+}
+function defaultDate(){ for(let i=DT.length-1;i>=0;i--) if((DT[i].f&3)===3) return i; return DT.length-1; }
+
+/* ================= THEME / TABS / CHART ================= */
+const themeBtn=$('themeBtn');
+let themeMode='auto';
+try{themeMode=localStorage.getItem('kr-theme')||'auto'}catch(e){}
+function applyTheme(){
+  if(themeMode==='auto') document.documentElement.removeAttribute('data-theme');
+  else document.documentElement.setAttribute('data-theme',themeMode);
+  themeBtn.textContent='Tema: '+({auto:'Otomatis',light:'Terang',dark:'Gelap'})[themeMode];
+}
+themeBtn.onclick=()=>{themeMode={auto:'light',light:'dark',dark:'auto'}[themeMode];try{localStorage.setItem('kr-theme',themeMode)}catch(e){};applyTheme();redrawAll();};
+applyTheme();
+window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change',()=>{if(themeMode==='auto')redrawAll()});
+document.querySelectorAll('#tabs button').forEach(b=>b.onclick=()=>goTab(b.dataset.p));
+function goTab(p){
+  document.querySelectorAll('#tabs button').forEach(x=>x.classList.toggle('on',x.dataset.p===p));
+  document.querySelectorAll('section.page').forEach(s=>s.classList.toggle('on',s.id==='p-'+p));
+  window.scrollTo({top:0}); redrawAll();
+}
+function chartBase(){
+  Chart.defaults.color=css('--muted'); Chart.defaults.borderColor=css('--grid');
+  Chart.defaults.font.family='system-ui,-apple-system,"Segoe UI",Roboto,sans-serif'; Chart.defaults.font.size=11; Chart.defaults.animation=false;
+}
+const charts={};
+function mk(id,cfg){ if(charts[id]) charts[id].destroy(); charts[id]=new Chart($(id),cfg); return charts[id]; }
+const PAL = () => [css('--c1'),css('--c2'),css('--c3'),css('--good'),css('--warn'),css('--bad'),css('--faint')];
+function scaleFmt(max){ const [d,sfx]= max>=1e6?[1e6,' T']:max>=1e3?[1e3,' M']:[1,' Jt']; return v=>nf1.format(v/d)+sfx; }
+
+/* trend points (month = bulan titik, utk target RKA bulanan) */
+function monthPoints(n){
+  const lim=DT[S.date].mk, pts=[];
+  MONTHS.filter(m=>m<=lim).forEach(m=>{
+    let p=ME.p.get(m)??null, s=ME.s.get(m)??null;
+    if(m===lim){ p=has('p',S.date)?S.date:(p!=null&&p<=S.date?p:null); s=has('s',S.date)?S.date:(s!=null&&s<=S.date?s:null); }
+    if(p==null&&s==null) return;
+    const lab = m===lim && !(isME('p',S.date)||isME('s',S.date)) ? fD(S.date) : `${BLN[+m.slice(5)-1]} ${m.slice(2,4)}`;
+    pts.push({p,s,label:lab,y:+m.slice(0,4),m:+m.slice(5)-1});
+  });
+  return n? pts.slice(-n) : pts;
+}
+function dayPoints(){
+  const mk=DT[S.date].mk, pm=prevMonthEnd(S.date), pts=[];
+  const p0=atOrBefore('p',pm.iso,pm.mk), s0=atOrBefore('s',pm.iso,pm.mk);
+  if(p0!=null||s0!=null){ const i=p0??s0; pts.push({p:p0,s:s0,label:fD(i),y:DT[i].y,m:DT[i].m-1}); }
+  DT.filter(d=>d.mk===mk && d.i<=S.date).forEach(d=>pts.push({p:has('p',d.i)?d.i:null,s:has('s',d.i)?d.i:null,label:`${d.d} ${BLN[d.m-1]}`,y:d.y,m:d.m-1}));
+  return pts;
+}
+const tgtAt = (cat,b,kind,key,p) => RK && p.y===RK.year ? tgt(cat,b,kind,key,p.m) : null;
+
+/* ================= KPI generik ================= */
+function kpiCard(o){
+  return `<div class="card kpi" ${o.cat?`data-cat="${o.cat}" data-title="${esc(o.title)}" data-kind="${o.kind||'rp'}"`:'style="cursor:default"'}>
+    <div class="lbl">${o.lbl}</div><div class="val num">${o.main}</div>${o.rows.filter(Boolean).map(r=>`<div class="row"><span>${r[0]}</span>${r[1]}</div>`).join('')}
+    ${o.low?`<div class="low">${o.low}</div>`:''}</div>`;
+}
+function bindKpi(el){ el.querySelectorAll('.kpi[data-cat]').forEach(c=>c.onclick=()=>openExplore(c.dataset.cat,c.dataset.title,c.dataset.kind)); }
+/* kartu standar: nilai, pencapaian RKA, target, MtD, YoY, terendah/peringkat */
+function stdCard(k, ek, mode){
+  const cat=k.cat, b=BLOCKS[cat][findBlk(cat,k.title)]; if(!b) return '';
+  const kind=k.kind||'rp', o=view(cat,b,kind,ek), inv=LOWGOOD[cat], [m0]=rkaMonths();
+  const rows=[];
+  if(o.tgt[0]!=null){ rows.push([`Penc. RKA ${mLbl(m0)}`,pill(o.penc[0])]); rows.push([`Target ${mLbl(m0)}`,`<span class="num">${fmtV(o.kind,o.tgt[0])}</span>`]); }
+  else if(k.rkaNote!==false && kind!=='cnt' && !(cat==='Simpanan'&&kind==='pct')) rows.push(['Penc. RKA',pill(null)]);
+  if(k.nominal){ const r=view(cat,b,'rp',ek); rows.push(['Nominal',`<span class="num">${fRp(r.v.cur)}</span>`]); }
+  if(k.porsi){ rows.push(['Porsi',`<span class="num">${b.excl?'–':fPct(val(cat,b,'pct',ek,PT('cur')))}</span>`]); }
+  rows.push(['MtD',gSpan(o,'mtd',inv)]); rows.push(['YoY',gSpan(o,'yoy',inv)]);
+  let low=k.low||'';
+  if(!low && mode==='rank'){ const rk=rankIn(cat,b,kind,ek); if(rk) low=`Peringkat pencapaian: <b>${rk[0]}</b> dari ${rk[1]}`; }
+  else if(!low && mode!=='none'){
+    const leaves=tableRows().filter(r=>r.t==='leaf'&&!r.opt).map(r=>({r,o:view(cat,b,kind,r.key)}));
+    const lp=leaves.filter(x=>x.o.penc[0]!=null);
+    if(lp.length){ const w=lp.reduce((m,x)=>x.o.penc[0]<m.o.penc[0]?x:m); low=`Penc. terendah: <b>${esc(w.r.label)}</b> ${fPct(w.o.penc[0])}`; }
+    else { const lg=leaves.filter(x=>gMain(x.o,'mtd')!=null);
+      if(lg.length){ const w=lg.reduce((m,x)=> (inv? gMain(x.o,'mtd')>gMain(m.o,'mtd') : gMain(x.o,'mtd')<gMain(m.o,'mtd'))?x:m);
+        low=`${inv?'Kenaikan tertinggi':'MtD terendah'}: <b>${esc(w.r.label)}</b> ${fGMain(w.o,'mtd')}`; } }
+  }
+  return kpiCard({lbl:k.lbl+(b.exclTop?' <small>(di luar total)</small>':''),main:fmtV(o.kind,o.v.cur),cat,title:b.title,kind,rows,low});
+}
+
+/* ================= RINGKASAN ================= */
+const segTitles = () => PBLK.filter(b=>b.seg&&!b.excl).map(b=>b.title);
+const KEY = () => [
+  {cat:'Simpanan',title:'Simpanan Total',lbl:'Total Simpanan',short:'Simp'},
+  {cat:'Simpanan',title:'CASA Total (Giro + Tabungan)',lbl:'Rasio CASA',short:'CASA %',kind:'pct',nominal:1,rkaNote:false},
+  ...SBLK.filter(b=>b.prod && b.lvl===1 && b.rk.D && /non wholesale$/i.test(b.title)).map(b=>({cat:'Simpanan',title:b.title,lbl:b.title,short:({Giro:'Giro',Tabungan:'Tab',Deposito:'Depo'})[b.prod]||b.prod,hide:1})),
+  {cat:'Pinjaman',title:'Total',lbl:'Total Pinjaman',short:'Pinj'},
+  ...segTitles().map(t=>({cat:'Pinjaman',title:t,lbl:t,short:({Consumer:'Kons',Medium:'Med',Mikro:'Mikro',Small:'Small'})[t]||t.slice(0,5)})),
+  {cat:'SML',title:'Total',lbl:'SML',short:'SML %',kind:'pct',nominal:1},
+  {cat:'NPL',title:'Total',lbl:'NPL',short:'NPL %',kind:'pct',nominal:1},
+  {cat:'LDR',title:'LDR Total',lbl:'LDR',short:'LDR %',kind:'pct'},
+].filter(k=>findBlk(k.cat,k.title)>=0);
+function renderKpis(elId, ek, mode){
+  const el=$(elId); el.innerHTML=KEY().filter(k=>!k.hide).map(k=>stdCard(k,ek||entityKey(),mode)).join(''); bindKpi(el);
+}
+function renderHeat(){
+  const w=S.heat, [m0,m1]=rkaMonths();
+  const lab={p0:`Pencapaian RKA ${BLNL[m0]??''}`,p1:'Pencapaian RKA Desember',mtd:'Pertumbuhan MtD',yoy:'Pertumbuhan YoY'}[w];
+  $('heatTitle').textContent=`Peta ${lab} · ${entityName()}`;
+  $('heatHint').textContent = w[0]==='p'
+    ? 'Hijau ≥ 100%, kuning 95–99,99%, merah < 95%. SML/NPL/LDR: pencapaian dihitung terbalik (target ÷ aktual), maks. 110%. Klik nama untuk masuk ke rinciannya.'
+    : 'Nominal: pertumbuhan % (hijau ≥ 0, kuning 0 s/d −2%, merah < −2%); rasio: perubahan pp (SML/NPL turun = hijau). Klik nama untuk masuk ke rinciannya.';
+  const K=KEY().filter(k=> w[0]!=='p' || k.rkaNote!==false);
+  let h='<thead><tr><th>Uker</th>'+K.map(k=>`<th title="${esc(k.title)}">${k.short}</th>`).join('')+'</tr></thead><tbody>';
+  const rows=tableRows();
+  const V=rows.map(r=>K.map(k=>view(k.cat,BLOCKS[k.cat][findBlk(k.cat,k.title)],k.kind||'rp',r.key)));
+  rows.forEach((r,ri)=>{
+    if(r.t==='leaf' && V[ri].every(o=>o.v.cur==null && o.tgt[0]==null)) return;
+    const trc = r.t==='area'?'area':r.t==='total'?'total':'';
+    h+=`<tr class="${trc}" data-i="${ri}"><td>${esc(r.label)}${r.drill?'<span class="drill">›</span>':''}</td>`;
+    V[ri].forEach((o,ki)=>{ const k=K[ki]; let txt,c;
+      if(w[0]==='p'){ const p=o.penc[w==='p0'?0:1]; txt=p==null?'–':nf2.format(p*100); c=cls(p); }
+      else { const g=gMain(o,w); txt=g==null?'–':nf2.format(g*100); const inv=LOWGOOD[k.cat];
+        c = g==null?'na': o.kind==='pct' ? ((inv? g<=0 : g>=0)?'good':Math.abs(g)<.005?'warn':'bad') : (g>=0?'good':g>-.02?'warn':'bad'); }
+      h+=`<td class="num h-${c}" title="Posisi ${fmtV(o.kind,o.v.cur)} · Target ${fmtV(o.kind,o.tgt[w==='p1'?1:0])}">${txt}</td>`; });
+    h+='</tr>';
+  });
+  const el=$('heat'); el.innerHTML=h+'</tbody>';
+  el.querySelectorAll('tbody tr').forEach(tr=>tr.onclick=()=>{ const r=rows[+tr.dataset.i]; if(r.drill) r.drill(); });
+}
+$('segHeat').querySelectorAll('button').forEach(b=>b.onclick=()=>{S.heat=b.dataset.h; $('segHeat').querySelectorAll('button').forEach(x=>x.classList.toggle('on',x===b)); renderHeat();});
+function renderRegionCharts(){
+  const ek=entityKey(), pts=monthPoints(13), lbl=pts.map(p=>p.label);
+  $('trendHint').textContent=`${entityName()} · posisi akhir bulan (Rp Juta) dan target RKA bulanan (putus-putus)`;
+  const c1=css('--c1'), c2=css('--c2');
+  const pinj=pts.map(p=>val('Pinjaman',PBLK[0],'rp',ek,p)), dana=pts.map(p=>val('Simpanan',SBLK[0],'rp',ek,p));
+  const tp=pts.map(p=>tgtAt('Pinjaman',PBLK[0],'rp',ek,p)), td=pts.map(p=>tgtAt('Simpanan',SBLK[0],'rp',ek,p));
+  const mx=Math.max(1,...[...pinj,...dana,...tp,...td].filter(x=>x!=null));
+  mk('trendRegion',{type:'line',data:{labels:lbl,datasets:[
+    {label:'Pinjaman',data:pinj,borderColor:c1,backgroundColor:c1,tension:.25,pointRadius:3,spanGaps:true},
+    {label:'RKA Pinjaman',data:tp,borderColor:c1,borderDash:[5,4],pointRadius:2,pointStyle:'rectRot',backgroundColor:c1,spanGaps:true},
+    {label:'Simpanan',data:dana,borderColor:c2,backgroundColor:c2,tension:.25,pointRadius:3,spanGaps:true},
+    {label:'RKA Simpanan',data:td,borderColor:c2,borderDash:[5,4],pointRadius:2,pointStyle:'rectRot',backgroundColor:c2,spanGaps:true}]},
+    options:{maintainAspectRatio:false,interaction:{mode:'index',intersect:false},plugins:{legend:{position:'bottom',labels:{boxWidth:10}},tooltip:{callbacks:{label:c=>c.raw==null?null:`${c.dataset.label}: ${fRp(c.raw)}`}}},
+      scales:{y:{ticks:{callback:scaleFmt(mx)}},x:{grid:{display:false}}}}});
+  const sml=pts.map(p=>val('SML',PBLK[0],'pct',ek,p)), npl=pts.map(p=>val('NPL',PBLK[0],'pct',ek,p)), ldr=pts.map(p=>val('LDR',LBLK[0],'pct',ek,p));
+  mk('ratioRegion',{type:'line',data:{labels:lbl,datasets:[
+    {label:'SML %',data:sml,borderColor:c2,backgroundColor:c2,yAxisID:'y',tension:.25,spanGaps:true},
+    {label:'NPL %',data:npl,borderColor:css('--bad'),backgroundColor:css('--bad'),yAxisID:'y',tension:.25,spanGaps:true},
+    {label:'LDR % (sumbu kanan)',data:ldr,borderColor:c1,backgroundColor:c1,yAxisID:'y2',borderDash:[4,3],tension:.25,spanGaps:true}]},
+    options:{maintainAspectRatio:false,interaction:{mode:'index',intersect:false},plugins:{legend:{position:'bottom',labels:{boxWidth:10}},tooltip:{callbacks:{label:c=>`${c.dataset.label}: ${fPct(c.raw)}`}}},
+      scales:{y:{ticks:{callback:v=>nf2.format(v*100)+'%'}},y2:{position:'right',grid:{display:false},ticks:{callback:v=>nf0.format(v*100)+'%'}},x:{grid:{display:false}}}}});
+}
+
+/* ================= TABEL PRODUK (Pinjaman / Simpanan / Profil) ================= */
+function prodTable(elId, cats, ek, withRank){
+  const [m0,m1]=rkaMonths();
+  const R0=cats.includes('Simpanan')&&cats.length===1?RES.s:RES.p;
+  let t=`<thead><tr><th>Segmen / Produk</th><th>${fD(R0.ytd)}</th><th>${fD(R0.mtd)}</th><th>${fD(R0.cur)}</th><th>RKA ${mLbl(m0)}</th><th>Penc. ${mLbl(m0)}</th><th>Gap ${mLbl(m0)}</th><th>RKA Des</th><th>Penc. Des</th><th>MtD %</th><th>YtD %</th><th>YoY %</th><th>Porsi</th>`+
+    (cats.length===1&&cats[0]==='Pinjaman'?'<th>SML %</th><th>NPL %</th><th>Debitur</th>':'')+(cats.length===1&&cats[0]==='Simpanan'?'<th>Rekening</th>':'')+(withRank?'<th>Peringkat</th>':'')+'</tr></thead><tbody>';
+  const ncol=13+(cats.length===1&&cats[0]==='Pinjaman'?3:0)+(cats.length===1&&cats[0]==='Simpanan'?1:0)+(withRank?1:0);
+  cats.forEach(cat=>{
+    if(cats.length>1) t+=`<tr class="catttl"><td colspan="${ncol}">${cat}</td></tr>`;
+    const kind = cat==='SML'||cat==='NPL'||cat==='LDR' ? 'pct' : 'rp', inv=LOWGOOD[cat];
+    BLOCKS[cat].forEach((b,bi)=>{
+      const o=view(cat,b,kind,ek); if(PTS.every(w=>!o.v[w]) && o.tgt[0]==null) return;
+      const k=o.kind, cur=PT('cur');
+      const por = k==='pct'||b.excl ? null : val(cat,b,'pct',ek,cur);
+      const rowCls = b.tot? 'total' : (b.lvl===0? 'area':'');
+      const ind = b.lvl===2? '     · ' : b.lvl===1? '  · ' : '';
+      let rk=''; if(withRank){ const r=rankIn(cat,b,kind,ek); rk=r?`${r[0]} / ${r[1]}`:''; }
+      t+=`<tr class="${rowCls}" data-cat="${cat}" data-bi="${bi}" data-kind="${kind}"><td>${ind}${esc(blkTitle(cat,b))}</td>
+        <td class="num">${fmtV(k,o.v.ytd)}</td><td class="num">${fmtV(k,o.v.mtd)}</td><td class="num"><b>${fmtV(k,o.v.cur)}</b></td>
+        <td class="num">${fmtV(k,o.tgt[0])}</td><td>${pill(o.penc[0])}</td><td class="num ${growthCls(o.gap[0],inv)}">${fmtG(k,o.gap[0])}</td>
+        <td class="num">${fmtV(k,o.tgt[1])}</td><td>${pill(o.penc[1])}</td>
+        <td class="num">${gSpan(o,'mtd',inv)}</td><td class="num">${gSpan(o,'ytd',inv)}</td><td class="num">${gSpan(o,'yoy',inv)}</td>
+        <td class="num">${por==null?'':fPct(por)}</td>`+
+        (cats.length===1&&cats[0]==='Pinjaman'?`<td class="num">${fPct(val('SML',b,'pct',ek,cur))}</td><td class="num">${fPct(val('NPL',b,'pct',ek,cur))}</td><td class="num">${fRp(val('Pinjaman',b,'cnt',ek,cur))}</td>`:'')+
+        (cats.length===1&&cats[0]==='Simpanan'?`<td class="num">${fRp(val('Simpanan',b,'cnt',ek,cur))}</td>`:'')+
+        (withRank?`<td class="num">${rk}</td>`:'')+'</tr>';
+    });
+  });
+  const tb=$(elId); tb.innerHTML=t+'</tbody>';
+  tb.querySelectorAll('tbody tr[data-cat]').forEach(tr=>tr.onclick=()=>{ S.cat=tr.dataset.cat; S.bi=+tr.dataset.bi; S.kind=S.cat==='LDR'?'pct':tr.dataset.kind; S.sort=null; S.sel=null; fillBlocks(); goTab('eksplor'); });
+}
+/* tabel per uker generik */
+const UKSORT = {pj:{i:null,asc:false}, sp:{i:null,asc:false}};
+function ukTable(elId, sortKey, cols){
+  let data=tableRows().map(r=>({...r,c:cols.map(c=>c.v(r.key))})).filter(r=>r.t!=='leaf' || r.c.some(x=>x!=null&&x!==0));
+  const st=UKSORT[sortKey];
+  if(st.i!=null){
+    const body=data.filter(x=>x.t==='leaf'), tail=data.filter(x=>x.t!=='leaf');
+    body.sort((a,b)=>{ if(st.i<0) return st.asc? a.label.localeCompare(b.label):b.label.localeCompare(a.label);
+      const A=a.c[st.i],B=b.c[st.i]; if(A==null) return 1; if(B==null) return -1; return st.asc? A-B:B-A; });
+    data=[...body,...tail];
+  }
+  const sel=entityKey();
+  let h='<thead><tr><th data-i="-1">Uker</th>'+cols.map((c,i)=>`<th data-i="${i}" class="${st.i===i?'sorted'+(st.asc?' asc':''):''}" title="${c.t||''}">${c.h}</th>`).join('')+'</tr></thead><tbody>';
+  data.forEach((r,ri)=>{
+    h+=`<tr class="${r.t==='area'?'area':r.t==='total'?'total':''}${r.key===sel&&r.t==='leaf'?' sel':''}" data-i="${ri}"><td>${esc(r.label)}${r.drill?'<span class="drill">›</span>':''}</td>`+
+      cols.map((c,i)=>`<td class="num">${c.f(r.c[i])}</td>`).join('')+'</tr>';
+  });
+  const el=$(elId); el.innerHTML=h+'</tbody>';
+  el.querySelectorAll('th').forEach(th=>th.onclick=()=>{const i=+th.dataset.i; if(st.i===i) st.asc=!st.asc; else {st.i=i; st.asc=i<0;} ukTable(elId,sortKey,cols);});
+  el.querySelectorAll('tbody tr').forEach(tr=>tr.onclick=()=>{ const r=data[+tr.dataset.i]; if(r.drill) r.drill(); });
+}
+function stackedMonthly(id, pts, series, fmt){
+  const pal=PAL();
+  mk(id,{type:'bar',data:{labels:pts.map(p=>p.label),datasets:series.map((s,i)=>({type:s.line?'line':'bar',label:s.label,data:pts.map(s.f),backgroundColor:s.color||pal[i%pal.length],borderColor:s.color||pal[i%pal.length],borderDash:s.line?[5,4]:undefined,pointRadius:s.line?2:0,borderRadius:2,stack:s.line?undefined:'a',order:s.line?0:1}))},
+    options:{maintainAspectRatio:false,interaction:{mode:'index',intersect:false},
+      plugins:{legend:{position:'bottom',labels:{boxWidth:10}},tooltip:{callbacks:{label:c=>c.raw==null?null:`${c.dataset.label}: ${fRp(c.raw)}`}}},
+      scales:{x:{stacked:true,grid:{display:false}},y:{stacked:true,ticks:{callback:fmt}}}}});
+}
+function ratioLines(id, pts, series){
+  const pal=PAL();
+  mk(id,{type:'line',data:{labels:pts.map(p=>p.label),datasets:series.map((s,i)=>({label:s.label,data:pts.map(s.f),borderColor:s.color||pal[i%pal.length],backgroundColor:s.color||pal[i%pal.length],borderDash:s.dash,tension:.25,pointRadius:2.5,spanGaps:true}))},
+    options:{maintainAspectRatio:false,interaction:{mode:'index',intersect:false},
+      plugins:{legend:{position:'bottom',labels:{boxWidth:10}},tooltip:{callbacks:{label:c=>c.raw==null?null:`${c.dataset.label}: ${fPct(c.raw)}`}}},
+      scales:{y:{ticks:{callback:v=>nf1.format(v*100)+'%'}},x:{grid:{display:false}}}}});
+}
+const pencCols = (cat,b,label) => { const [m0]=rkaMonths(); return [
+  {h:`RKA ${mLbl(m0)}`,v:k=>tgt(cat,b,'rp',k,m0),f:fRp},
+  {h:`Penc. ${mLbl(m0)}`,v:k=>pencOf(cat,val(cat,b,'rp',k,PT('cur')),tgt(cat,b,'rp',k,m0)),f:pill},
+  {h:`Gap ${mLbl(m0)}`,v:k=>{const a=val(cat,b,'rp',k,PT('cur')),t=tgt(cat,b,'rp',k,m0);return a==null||t==null?null:a-t;},f:v=>`<span class="${growthCls(v)}">${fSigned(v)}</span>`},
+];};
+const grCol = (cat,b,w,h) => ({h,v:k=>{const a=val(cat,b,'rp',k,PT('cur')),x=val(cat,b,'rp',k,PT(w));return a==null||!x?null:a/x-1;},f:v=>`<span class="${growthCls(v)}">${fSPct(v)}</span>`});
+
+/* ================= HALAMAN PINJAMAN ================= */
+function renderPinjaman(){
+  const ek=entityKey(), tot=PBLK[0], segs=PBLK.filter(b=>b.seg), cur=PT('cur');
+  if(!has('p',S.date)) $('pjKpis').innerHTML=`<div class="card empty" style="grid-column:1/-1">Data Pinjaman tidak tersedia pada ${fDL(S.date)}. Pilih tanggal lain.</div>`;
+  else {
+    const D=view('Pinjaman',tot,'cnt',ek);
+    let h=stdCard({cat:'Pinjaman',title:'Total',lbl:'Total Pinjaman'},ek,'min');
+    h+=kpiCard({lbl:'Jumlah Debitur',main:fRp(D.v.cur),cat:'Pinjaman',title:'Total',kind:'cnt',
+      rows:[['MtD',gSpan(D,'mtd')],['YtD',gSpan(D,'ytd')],['YoY',gSpan(D,'yoy')]],low:`Δ MtD: <b class="num">${fSigned(D.g.mtd[0])}</b> debitur`});
+    segs.forEach(b=>{ const o=view('Pinjaman',b,'rp',ek); if(PTS.every(w=>!o.v[w]) && o.tgt[0]==null) return;
+      h+=stdCard({cat:'Pinjaman',title:b.title,lbl:b.title,porsi:1,low:`SML ${fPct(val('SML',b,'pct',ek,cur))} · NPL ${fPct(val('NPL',b,'pct',ek,cur))}`},ek); });
+    h+=stdCard({cat:'SML',title:'Total',lbl:'SML (Kol 2)',kind:'pct',nominal:1},ek,'none');
+    h+=stdCard({cat:'NPL',title:'Total',lbl:'NPL (Kol 3–5)',kind:'pct',nominal:1},ek,'none');
+    $('pjKpis').innerHTML=h; bindKpi($('pjKpis'));
+  }
+  const pts=monthPoints(13), inS=segs.filter(b=>!b.excl);
+  $('pjMixHint').textContent=`${entityName()} · posisi akhir bulan (Rp Juta), di luar Commercial; garis putus = RKA`;
+  const mx=Math.max(1,...pts.map(p=>Math.max(val('Pinjaman',tot,'rp',ek,p)||0, tgtAt('Pinjaman',tot,'rp',ek,p)||0)));
+  stackedMonthly('pjMix',pts,[...inS.map(b=>({label:b.title,f:p=>val('Pinjaman',b,'rp',ek,p)})),{label:'RKA Pinjaman',line:1,color:css('--text'),f:p=>tgtAt('Pinjaman',tot,'rp',ek,p)}],scaleFmt(mx));
+  const mik=inS.find(b=>/^mikro$/i.test(b.seg));
+  ratioLines('pjQual',pts,[
+    {label:'SML Total',f:p=>val('SML',tot,'pct',ek,p),color:css('--c2')},
+    {label:'NPL Total',f:p=>val('NPL',tot,'pct',ek,p),color:css('--bad')},
+    ...(mik?[{label:'SML Mikro',f:p=>val('SML',mik,'pct',ek,p),dash:[4,3],color:css('--c2')},{label:'NPL Mikro',f:p=>val('NPL',mik,'pct',ek,p),dash:[4,3],color:css('--bad')}]:[])]);
+  $('pjProdTitle').textContent='Pinjaman per Segmen & Produk · '+entityName();
+  $('pjProdHint').textContent=`Hirarki sesuai sheet Pola. Posisi ${fDL(RES.p.cur)}; baris bertanda "(di luar total)" (Commercial, Consumer–Lainnya) ditampilkan tetapi tidak dihitung dalam total. Klik baris untuk membuka di Eksplorasi.`;
+  prodTable('pjProd',['Pinjaman'],ek,false);
+  $('pjUkTitle').textContent='Pinjaman per Uker · '+entityName()+' · '+fD(RES.p.cur);
+  const cols=[
+    ...inS.map(b=>({h:b.title,v:k=>val('Pinjaman',b,'rp',k,cur),f:fRp})),
+    {h:'Total',v:k=>val('Pinjaman',tot,'rp',k,cur),f:v=>`<b>${fRp(v)}</b>`},
+    ...pencCols('Pinjaman',tot),
+    grCol('Pinjaman',tot,'mtd','MtD %'), grCol('Pinjaman',tot,'yoy','YoY %'),
+    {h:'SML %',v:k=>val('SML',tot,'pct',k,cur),f:fPct},
+    {h:'NPL %',v:k=>val('NPL',tot,'pct',k,cur),f:fPct},
+    ...PBLK.filter(b=>b.exclTop).map(b=>({h:b.name+'*',t:'Di luar total',v:k=>val('Pinjaman',b,'rp',k,cur),f:fRp})),
+    {h:'Debitur',v:k=>val('Pinjaman',tot,'cnt',k,cur),f:fRp},
+  ];
+  ukTable('pjUk','pj',cols);
+}
+
+/* ================= HALAMAN SIMPANAN ================= */
+function renderSimpanan(){
+  const ek=entityKey(), tot=SBLK[0], cur=PT('cur');
+  const prods=[...new Set(SC.map(c=>c[1]))], dsegs=[...new Set(SC.map(c=>c[0]))];
+  const pb = p => ({title:p,cells:SC.map((_,i)=>i).filter(i=>SC[i][1]===p)});
+  if(!has('s',S.date)) $('spKpis').innerHTML=`<div class="card empty" style="grid-column:1/-1">Data Simpanan tidak tersedia pada ${fDL(S.date)}. Pilih tanggal lain.</div>`;
+  else {
+    const R=view('Simpanan',tot,'cnt',ek);
+    let h=stdCard({cat:'Simpanan',title:tot.title,lbl:'Total Simpanan'},ek,'min');
+    h+=stdCard({cat:'Simpanan',title:'CASA Total (Giro + Tabungan)',lbl:'Rasio CASA',kind:'pct',nominal:1,rkaNote:false},ek,'none');
+    SBLK.filter(b=>b.lvl===0 && b.seg).forEach(b=>{ h+=stdCard({cat:'Simpanan',title:b.title,lbl:b.title,porsi:1},ek); });
+    SBLK.filter(b=>b.prod && b.rk.D).forEach(b=>{ h+=stdCard({cat:'Simpanan',title:b.title,lbl:b.title,porsi:1},ek); });
+    h+=kpiCard({lbl:'Jumlah Rekening',main:fRp(R.v.cur),cat:'Simpanan',title:tot.title,kind:'cnt',
+      rows:[['MtD',gSpan(R,'mtd')],['YtD',gSpan(R,'ytd')],['YoY',gSpan(R,'yoy')]],low:`Δ MtD: <b class="num">${fSigned(R.g.mtd[0])}</b> rekening`});
+    $('spKpis').innerHTML=h; bindKpi($('spKpis'));
+  }
+  const pts=monthPoints(13);
+  $('spMixHint').textContent=`${entityName()} · posisi akhir bulan (Rp Juta), 13 bulan terakhir; garis putus = RKA`;
+  const mx=Math.max(1,...pts.map(p=>Math.max(val('Simpanan',tot,'rp',ek,p)||0,tgtAt('Simpanan',tot,'rp',ek,p)||0)));
+  stackedMonthly('spMix',pts,[...prods.map(p=>({label:p,f:q=>val('Simpanan',pb(p),'rp',ek,q)})),{label:'RKA Simpanan',line:1,color:css('--text'),f:q=>tgtAt('Simpanan',tot,'rp',ek,q)}],scaleFmt(mx));
+  const casaOf=cells=>q=>{ const a=agg('s',q.s); if(!a) return null; const e=a.get(ek); if(!e) return null;
+    const t=sumS(e,cells,0); return t? sumS(e,cells.filter(c=>SC[c][1]!=='Deposito'),0)/t : null; };
+  ratioLines('spCasa',pts,[{label:'CASA Total',f:casaOf(tot.cells),color:css('--c1')},
+    ...dsegs.map(sg=>({label:'CASA '+sg,f:casaOf(SC.map((_,i)=>i).filter(i=>SC[i][0]===sg)),dash:[4,3]}))]);
+  $('spProdTitle').textContent='Simpanan per Segmen & Produk · '+entityName();
+  $('spProdHint').textContent=`Hirarki sesuai sheet Pola. Posisi ${fDL(RES.s.cur)}. RKA Giro/Tabungan/Deposito tersedia di level Non Wholesale (tidak dipisah Mikro/Ritel). Klik baris untuk membuka di Eksplorasi.`;
+  prodTable('spProd',['Simpanan'],ek,false);
+  $('spUkTitle').textContent='Simpanan per Uker · '+entityName()+' · '+fD(RES.s.cur);
+  const casaCells=SC.map((_,i)=>i).filter(i=>SC[i][1]!=='Deposito');
+  const cols=[
+    ...prods.map(p=>({h:p,v:k=>val('Simpanan',pb(p),'rp',k,cur),f:fRp})),
+    {h:'Total',v:k=>val('Simpanan',tot,'rp',k,cur),f:v=>`<b>${fRp(v)}</b>`},
+    ...pencCols('Simpanan',tot),
+    grCol('Simpanan',tot,'mtd','MtD %'), grCol('Simpanan',tot,'yoy','YoY %'),
+    {h:'CASA %',v:k=>{const a=val('Simpanan',{cells:casaCells},'rp',k,cur),b=val('Simpanan',tot,'rp',k,cur);return a==null||!b?null:a/b;},f:fPct},
+    {h:'Rekening',v:k=>val('Simpanan',tot,'cnt',k,cur),f:fRp},
+  ];
+  ukTable('spUk','sp',cols);
+}
+
+/* ================= EKSPLORASI ================= */
+const segCat=$('segCat');
+segCat.innerHTML=CATS.map(c=>`<button data-c="${c}">${c}</button>`).join('');
+segCat.querySelectorAll('button').forEach(b=>b.onclick=()=>{S.cat=b.dataset.c;S.bi=0;S.kind=S.cat==='LDR'?'pct':'rp';S.sort=null;fillBlocks();renderExplore();});
+$('selBlock').onchange=e=>{S.bi=+e.target.value;S.sort=null;renderExplore();};
+$('selMetric').onchange=e=>{S.metric=e.target.value;renderBar();};
+document.querySelectorAll('#segView button').forEach(b=>b.onclick=()=>{if(b.disabled)return;S.kind=b.dataset.v;S.sort=null;fillMetrics();renderExplore();});
+$('segTrend').querySelectorAll('button').forEach(b=>b.onclick=async()=>{S.trend=b.dataset.t; $('segTrend').querySelectorAll('button').forEach(x=>x.classList.toggle('on',x===b)); if(S.trend==='day') await ensure(dayPoints().flatMap(p=>[p.p,p.s])); renderLine();});
+function fillBlocks(){
+  $('selBlock').innerHTML=BLOCKS[S.cat].map((b,i)=>`<option value="${i}">${b.lvl===2?'      · ':b.lvl?'   · ':''}${esc(blkTitle(S.cat,b))}</option>`).join('');
+  $('selBlock').value=S.bi; fillMetrics();
+}
+function fillMetrics(){
+  $('segView').querySelector('[data-v=cnt]').textContent = S.cat==='Simpanan'?'Rekening':'Debitur';
+  $('segView').querySelector('[data-v=pct]').textContent = S.cat==='Pinjaman'||S.cat==='Simpanan' ? 'Porsi %' : 'Rasio %';
+  const [m0]=rkaMonths(), hasT = S.kind==='rp' || (S.kind==='pct' && (S.cat==='SML'||S.cat==='NPL'||S.cat==='LDR'));
+  const m = [
+    ...(hasT?[['p0',`Pencapaian RKA ${mLbl(m0)}`],['p1','Pencapaian RKA Des'],['g0',`Gap RKA ${mLbl(m0)}`]]:[]),
+    ['cur','Posisi'],
+    ...(S.kind==='pct'
+      ? [['mtdA','Perubahan MtD (pp)'],['ytdA','Perubahan YtD (pp)'],['yoyA','Perubahan YoY (pp)']]
+      : [['mtdP','Pertumbuhan MtD (%)'],['ytdP','Pertumbuhan YtD (%)'],['yoyP','Pertumbuhan YoY (%)'],['dtdA','Pertumbuhan DtD (nominal)']])];
+  $('selMetric').innerHTML=m.map(x=>`<option value="${x[0]}">${x[1]}</option>`).join('');
+  if(!m.find(x=>x[0]===S.metric)) S.metric=m[0][0];
+  $('selMetric').value=S.metric;
+}
+function openExplore(cat,title,kind){
+  S.cat=cat; S.bi=Math.max(0,findBlk(cat,title)); S.kind=cat==='LDR'?'pct':(kind||'rp'); S.sort=null;
+  fillBlocks(); goTab('eksplor');
+}
+function metricVal(o,m){
+  if(m==='cur') return o.v.cur; if(m==='p0') return o.penc[0]; if(m==='p1') return o.penc[1]; if(m==='g0') return o.gap[0];
+  const w=m.slice(0,3), t=m.slice(3);
+  if(o.kind==='pct') return o.g[w][0];
+  return t==='P'? o.g[w][1] : o.g[w][0];
+}
+function renderExplore(){
+  segCat.querySelectorAll('button').forEach(b=>b.classList.toggle('on',b.dataset.c===S.cat));
+  document.querySelectorAll('#segView button').forEach(b=>{
+    const v=b.dataset.v; b.disabled = S.cat==='LDR' ? v!=='pct' : false;
+    b.classList.toggle('on',v===S.kind);
+  });
+  fillMetrics();
+  renderStrip(); renderTable(); renderBar(); renderLine();
+}
+function renderStrip(){
+  const b=BLOCKS[S.cat][S.bi], o=view(S.cat,b,S.kind,entityKey()), k=o.kind, inv=LOWGOOD[S.cat], [m0]=rkaMonths();
+  let h=`<div class="s"><span>Posisi ${fD(ptDate(S.cat,'cur'))}</span><b class="num">${fmtV(k,o.v.cur)}</b></div>`;
+  if(o.tgt[0]!=null||o.tgt[1]!=null){
+    h+=`<div class="s"><span>Target ${mLbl(m0)}</span><b class="num">${fmtV(k,o.tgt[0])}</b></div>
+        <div class="s"><span>Pencapaian ${mLbl(m0)}</span><b>${pill(o.penc[0])}</b></div>
+        <div class="s"><span>Gap ${mLbl(m0)}</span><b class="num ${growthCls(o.gap[0],inv)}">${fmtG(k,o.gap[0])}</b></div>
+        <div class="s"><span>Target Des</span><b class="num">${fmtV(k,o.tgt[1])}</b></div>
+        <div class="s"><span>Pencapaian Des</span><b>${pill(o.penc[1])}</b></div>`;
+  }
+  [['mtd','MtD'],['ytd','YtD'],['yoy','YoY']].forEach(([g,l])=>{ const x=o.g[g];
+    h+=`<div class="s"><span>${l}</span><b class="num ${growthCls(x[0],inv)}">${fmtG(k,x[0])}${k!=='pct'&&x[1]!=null?` <small class="muted">(${fSPct(x[1])})</small>`:''}</b></div>`; });
+  const lv=liveRows(S.cat,b,S.kind).filter(x=>x.t==='leaf'&&!x.opt&&x.o.penc[0]!=null);
+  if(lv.length) h+=`<div class="s"><span>Uker ≥ 100%</span><b class="num">${lv.filter(x=>x.o.penc[0]>=1).length} / ${lv.length}</b></div>`;
+  $('strip').innerHTML=h;
+}
+function renderTable(){
+  const b=BLOCKS[S.cat][S.bi], inv=LOWGOOD[S.cat], [m0]=rkaMonths();
+  const data0=liveRows(S.cat,b,S.kind); const k=data0.length?data0[0].o.kind:(S.cat==='LDR'?'pct':S.kind);
+  const hasT=data0.some(x=>x.o.tgt[0]!=null||x.o.tgt[1]!=null);
+  const cols=[{h:'Uker',f:r=>esc(r.label)+(r.drill?'<span class="drill" data-drill="1">›</span>':''),raw:r=>r.label}];
+  [['yoy','YoY base'],['ytd','YtD base'],['mtd','MtD base'],['dtd','DtD base'],['cur','Posisi']].forEach(([w,l])=>{
+    const d=ptDate(S.cat,w); cols.push({h:d==null?l:fD(d),t:l,f:r=>(w==='cur'?'<b>':'')+fmtV(k,r.o.v[w])+(w==='cur'?'</b>':''),raw:r=>r.o.v[w]}); });
+  if(hasT) cols.push(
+    {h:`RKA ${mLbl(m0)}`,f:r=>fmtV(k,r.o.tgt[0]),raw:r=>r.o.tgt[0]},
+    {h:`Penc. ${mLbl(m0)}`,f:r=>pill(r.o.penc[0]),raw:r=>r.o.penc[0]},
+    {h:`Gap ${mLbl(m0)}`,f:r=>`<span class="${growthCls(r.o.gap[0],inv)}">${fmtG(k,r.o.gap[0])}</span>`,raw:r=>r.o.gap[0]},
+    {h:'RKA Des',f:r=>fmtV(k,r.o.tgt[1]),raw:r=>r.o.tgt[1]},
+    {h:'Penc. Des',f:r=>pill(r.o.penc[1]),raw:r=>r.o.penc[1]},
+    {h:'Gap Des',f:r=>`<span class="${growthCls(r.o.gap[1],inv)}">${fmtG(k,r.o.gap[1])}</span>`,raw:r=>r.o.gap[1]});
+  GR.forEach(g=>{
+    cols.push({h:g.toUpperCase(),f:r=>`<span class="${growthCls(r.o.g[g][0],inv)}">${fmtG(k,r.o.g[g][0])}</span>`,raw:r=>r.o.g[g][0]});
+    if(k!=='pct' && g!=='dtd') cols.push({h:g.toUpperCase()+' %',f:r=>`<span class="${growthCls(r.o.g[g][1],inv)}">${fSPct(r.o.g[g][1])}</span>`,raw:r=>r.o.g[g][1]});
+  });
+  if(k!=='pct'){ const tot=data0.find(x=>x.t==='total'); const T=tot?tot.o.v.cur:null;
+    cols.push({h:'Porsi',f:r=>fPct(T&&r.o.v.cur!=null? r.o.v.cur/T:null),raw:r=>r.o.v.cur}); }
+  let data=data0;
+  if(S.sort!=null && cols[S.sort]){
+    const c=cols[S.sort];
+    const body=data.filter(x=>x.t==='leaf'), tail=data.filter(x=>x.t!=='leaf');
+    body.sort((a,b)=>{const A=c.raw(a),B=c.raw(b);
+      if(typeof A==='string') return S.asc? A.localeCompare(B):B.localeCompare(A);
+      if(A==null) return 1; if(B==null) return -1; return S.asc? A-B : B-A;});
+    data=[...body,...tail];
+  }
+  const sel=S.sel||entityKey();
+  let h='<thead><tr>'+cols.map((c,i)=>`<th data-i="${i}" title="${c.t||''}" class="${S.sort===i?'sorted'+(S.asc?' asc':''):''}">${c.h}</th>`).join('')+'</tr></thead><tbody>';
+  data.forEach((r,ri)=>{
+    const trc=(r.t==='area'?'area':r.t==='total'?'total':'')+(r.key===sel?' sel':'');
+    h+=`<tr class="${trc}" data-i="${ri}">`+cols.map(c=>`<td class="num">${c.f(r)}</td>`).join('')+'</tr>';
+  });
+  if(!data.length) h+=`<tr><td class="empty" colspan="${cols.length}">Tidak ada data untuk pilihan ini</td></tr>`;
+  const el=$('detail'); el.innerHTML=h+'</tbody>';
+  el.querySelectorAll('th').forEach(th=>th.onclick=()=>{const i=+th.dataset.i; if(S.sort===i) S.asc=!S.asc; else {S.sort=i;S.asc=i===0;} renderTable();});
+  el.querySelectorAll('tbody tr[data-i]').forEach(tr=>tr.onclick=e=>{ const r=data[+tr.dataset.i];
+    if(e.target.dataset.drill && r.drill){ r.drill(); return; }
+    S.sel=r.key; renderTable(); renderLine(); renderBar(); });
+  let note='Header kolom tanggal = tanggal data yang dipakai. ';
+  if(INVERSE[S.cat]) note+= S.cat==='LDR' ? 'LDR: pencapaian = target ÷ aktual, maks. 110%. ' : 'SML = kol 2, NPL = kol 3–5; makin rendah makin baik — pencapaian = target ÷ aktual, maks. 110%. ';
+  if(b.excl) note+='Baris ini tidak dihitung dalam total segmen / Total Pinjaman. ';
+  if(!hasT) note+='Tidak ada target RKA untuk pilihan ini (lihat sheet Pola/RKA, atau target tidak dapat dipisah di level ini). ';
+  if(k==='pct') note+='Perubahan rasio dalam poin persentase (pp). ';
+  $('tblNote').textContent=note;
+}
+function renderBar(){
+  const b=BLOCKS[S.cat][S.bi];
+  let rs=liveRows(S.cat,b,S.kind).filter(x=>x.t==='leaf'&&!x.opt).map(x=>({...x,m:metricVal(x.o,S.metric)})).filter(x=>x.m!=null&&isFinite(x.m));
+  const k=rs.length?rs[0].o.kind:'rp', inv=LOWGOOD[S.cat];
+  const isPenc=S.metric[0]==='p' && S.metric.length===2;
+  const lowGood = !isPenc && !!inv;
+  rs.sort((a,c)=> lowGood? a.m-c.m : c.m-a.m);
+  const isPctG = k!=='pct' && S.metric.endsWith('P');
+  const mname=$('selMetric').options[$('selMetric').selectedIndex]?.text||'';
+  $('barTitle').textContent=mname+' per Uker';
+  $('barHint').textContent=blkTitle(S.cat,b)+' · '+entityName()+' · '+fD(ptDate(S.cat,'cur'))+(isPenc?' · garis putus = 100%':'');
+  $('barBox').style.height=Math.max(420,rs.length*24+60)+'px';
+  const sel=S.sel||entityKey();
+  const colFor = x => isPenc ? css('--'+({good:'good',warn:'warn',bad:'bad',na:'faint'})[cls(x.m)]) : S.metric==='cur' ? css('--c1') : ((x.m>=0)!==!!inv)? css('--good'):css('--bad');
+  const fmtX = v => isPenc? fPct(v) : S.metric==='cur' ? fmtV(k,v) : k==='pct'? fPP(v) : isPctG? fSPct(v) : fSigned(v);
+  const tick = v => isPenc? nf0.format(v*100)+'%' : S.metric==='cur' ? (k==='pct'? nf1.format(v*100)+'%' : nf0.format(v)) : k==='pct'? nf2.format(v*100)+' pp' : isPctG? nf1.format(v*100)+'%' : nf0.format(v);
+  const refLine={id:'ref',afterDatasetsDraw(ch){ if(!isPenc) return; const x=ch.scales.x.getPixelForValue(1),{top,bottom}=ch.chartArea; const c=ch.ctx; c.save(); c.strokeStyle=css('--text'); c.setLineDash([4,4]); c.beginPath(); c.moveTo(x,top); c.lineTo(x,bottom); c.stroke(); c.restore(); }};
+  let xmin; if(isPenc && rs.length){ xmin=Math.max(0,Math.floor((Math.min(...rs.map(x=>x.m),1)-.05)*20)/20); }
+  mk('barChart',{type:'bar',data:{labels:rs.map(x=>x.label),datasets:[{data:rs.map(x=>x.m),backgroundColor:rs.map(x=>colFor(x)+(x.key===sel?'':'cc')),borderColor:rs.map(x=>x.key===sel?css('--text'):'transparent'),borderWidth:1.5,borderRadius:4,barPercentage:.8}]},
+    options:{indexAxis:'y',maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>fmtX(c.raw)}}},
+      scales:{x:{min:xmin,ticks:{callback:tick}},y:{grid:{display:false},ticks:{autoSkip:false}}},
+      onClick:(e,els)=>{ if(els.length){ S.sel=rs[els[0].index].key; renderTable(); renderLine(); renderBar(); } }},
+    plugins:[refLine]});
+}
+function renderLine(){
+  const b=BLOCKS[S.cat][S.bi]; const key=S.sel||entityKey();
+  const kind=S.cat==='LDR'?'pct':S.kind;
+  const pts = S.trend==='day'? dayPoints() : monthPoints(S.trend==='m13'?13:0);
+  const ser=pts.map(p=>val(S.cat,b,kind,key,p)), tg=pts.map(p=>tgtAt(S.cat,b,kind,key,p));
+  $('lineTitle').textContent='Tren · '+entityName(key);
+  const ds=[{label:blkTitle(S.cat,b),data:ser,borderColor:css('--c1'),backgroundColor:css('--c1'),tension:.25,pointRadius:pts.length>40?1.5:3,spanGaps:true}];
+  if(tg.some(x=>x!=null)) ds.push({label:'Target RKA',data:tg,borderColor:css('--c2'),backgroundColor:css('--c2'),borderDash:[5,4],pointStyle:'rectRot',pointRadius:pts.length>40?0:3,spanGaps:true});
+  mk('lineChart',{type:'line',data:{labels:pts.map(p=>p.label),datasets:ds},options:{maintainAspectRatio:false,interaction:{mode:'index',intersect:false},
+    plugins:{legend:{position:'bottom',labels:{boxWidth:10}},tooltip:{callbacks:{label:c=>c.raw==null?null:`${c.dataset.label}: ${fmtV(kind,c.raw)}`}}},
+    scales:{y:{ticks:{callback:x=>kind==='pct'?nf2.format(x*100)+'%':nf0.format(x)}},x:{grid:{display:false},ticks:{maxRotation:0,autoSkip:true}}}}});
+  const o=view(S.cat,b,kind,key), [m0]=rkaMonths();
+  $('lineInfo').innerHTML = (o.tgt[0]!=null||o.tgt[1]!=null ? `Penc. ${mLbl(m0)} ${pill(o.penc[0])} · Penc. Des ${pill(o.penc[1])} · Gap Des <b class="num">${fmtG(o.kind,o.gap[1])}</b> · ` : '')+`YoY <b class="num">${fGMain(o,'yoy')}</b>`;
+}
+
+/* ================= PROFIL ================= */
+function renderProfil(){
+  const ek=entityKey();
+  renderKpis('profKpis',ek,'rank');
+  $('profTitle').textContent='Seluruh Produk · '+entityName();
+  const sib=siblings();
+  $('profHint').textContent=`Posisi ${fDL(S.date)} terhadap RKA, hirarki sesuai sheet Pola`+(sib.length?`; peringkat pencapaian RKA di antara ${sib.length} uker setingkat`:'')+'. Commercial dan Consumer–Lainnya ditampilkan tetapi tidak dihitung dalam total. Klik baris untuk membuka di Eksplorasi.';
+  prodTable('profTbl',CATS,ek,true);
+}
+
+/* ================= INIT / REFRESH ================= */
+function header(){
+  const [m0]=rkaMonths();
+  $('sub').textContent=`Posisi ${fDL(S.date)} · `+(m0!=null?`target RKA ${BLNL[m0]} ${RK.year}`:`tanpa target RKA${RK?' (RKA hanya tahun '+RK.year+')':''}`)+' · nominal dalam Rp Juta';
+  $('foot').textContent=`Sumber: ${M.source}${M.hirarki?' + '+M.hirarki+' (Pola)':''} · dikonversi ${M.generated} · ${DT.length} tanggal, ${CABS.length-1} cabang, ${UKS.length-1} unit kerja.`+
+    (has('p',S.date)?'':' Catatan: tanggal ini tidak ada di data Pinjaman.')+(has('s',S.date)?'':' Catatan: tanggal ini tidak ada di data Simpanan.');
+  document.title='Keragaan '+entityName()+' · '+fD(S.date);
+}
+function redrawAll(){
+  chartBase(); header(); crumb();
+  const p=document.querySelector('#tabs button.on').dataset.p;
+  if(p==='ringkasan'){ renderKpis('kpis'); renderHeat(); renderRegionCharts(); }
+  if(p==='pinjaman'){ renderPinjaman(); }
+  if(p==='simpanan'){ renderSimpanan(); }
+  if(p==='eksplor'){ renderExplore(); }
+  if(p==='profil'){ renderProfil(); }
+}
+let busy=0;
+async function refresh(){
+  const my=++busy;
+  resolveAll(); fillGeo();
+  await ensure(S.trend==='day'? dayPoints().flatMap(p=>[p.p,p.s]) : []);
+  if(my!==busy) return;
+  redrawAll();
+}
+S.date=defaultDate();
+fillDate(); fillRka(); fillBlocks();
+$('logoutBtn').onclick=()=>KRA.logout();
+refresh();
+});
+</script>
+</body>
+</html>
