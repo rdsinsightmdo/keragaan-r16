@@ -631,6 +631,10 @@ const fmtG = (k,v) => k==='pct'? fPP(v) : fSigned(v);
 const gMain = (o,w) => o.kind==='pct'? o.g[w][0] : o.g[w][1];
 const fGMain = (o,w) => o.kind==='pct'? fPP(o.g[w][0]) : fSPct(o.g[w][1]);
 const gSpan = (o,w,inv) => `<span class="num ${growthCls(gMain(o,w),inv)}">${fGMain(o,w)}</span>`;
+/* delta nominal (Rp Juta / jumlah); untuk rasio (CASA, LDR, dll) tetap pp. Persentase tampil sebagai tooltip. */
+const gAbs = (o,w,inv) => o.kind==='pct'
+  ? `<span class="num ${growthCls(o.g[w][0],inv)}">${fPP(o.g[w][0])}</span>`
+  : `<span class="num ${growthCls(o.g[w][0],inv)}" title="${fSPct(o.g[w][1])}">${fSigned(o.g[w][0])}</span>`;
 
 /* ================= ENTITY / ROWS ================= */
 function entityKey(){ return S.uk? 'U|'+S.uk : S.cab? 'C|'+S.cab : S.area? 'A|'+S.area : 'T'; }
@@ -791,7 +795,7 @@ function stdCard(k, ek, mode){
   if(k.nominal){ const r=view(cat,b,'rp',ek); rows.push(['Nominal',`<span class="num">${fRp(r.v.cur)}</span>`]); }
   if(k.ratio){ const r=view(cat,b,'pct',ek); rows.push(['Rasio',`<span class="num">${fPct(r.v.cur)}${r.tgt[0]!=null?` <span class="muted">(target ${fPct(r.tgt[0])})</span>`:''}</span>`]); }
   if(k.porsi){ rows.push(['Porsi',`<span class="num">${b.excl?'–':fPct(val(cat,b,'pct',ek,PT('cur')))}</span>`]); }
-  rows.push(['MtD',gSpan(o,'mtd',inv)]); rows.push(['YoY',gSpan(o,'yoy',inv)]);
+  rows.push(['DtD',gAbs(o,'dtd',inv)]); rows.push(['MtD',gAbs(o,'mtd',inv)]); rows.push(['YtD',gAbs(o,'ytd',inv)]); rows.push(['YoY',gAbs(o,'yoy',inv)]);
   let low=k.low||'';
   if(!low && mode==='rank'){ const rk=rankIn(cat,b,kind,ek); if(rk) low=`Peringkat pencapaian: <b>${rk[0]}</b> dari ${rk[1]}`; }
   else if(!low && mode!=='none'){
@@ -952,7 +956,7 @@ function renderPinjaman(){
     const D=view('Pinjaman',tot,'cnt',ek);
     let h=stdCard({cat:'Pinjaman',title:'Total',lbl:'Total Pinjaman'},ek,'min');
     h+=kpiCard({lbl:'Jumlah Debitur',main:fRp(D.v.cur),cat:'Pinjaman',title:'Total',kind:'cnt',
-      rows:[['MtD',gSpan(D,'mtd')],['YtD',gSpan(D,'ytd')],['YoY',gSpan(D,'yoy')]],low:`Δ MtD: <b class="num">${fSigned(D.g.mtd[0])}</b> debitur`});
+      rows:[['DtD',gAbs(D,'dtd')],['MtD',gAbs(D,'mtd')],['YtD',gAbs(D,'ytd')],['YoY',gAbs(D,'yoy')]],low:'Satuan: debitur'});
     segs.forEach(b=>{ const o=view('Pinjaman',b,'rp',ek); if(PTS.every(w=>!o.v[w]) && o.tgt[0]==null) return;
       h+=stdCard({cat:'Pinjaman',title:b.title,lbl:b.title,porsi:1,low:`SML ${fPct(val('SML',b,'pct',ek,cur))} · NPL ${fPct(val('NPL',b,'pct',ek,cur))}`},ek); });
     h+=stdCard({cat:'SML',title:'Total',lbl:'SML (Kol 2)',ratio:1},ek,'none');
@@ -998,7 +1002,7 @@ function renderSimpanan(){
     SBLK.filter(b=>b.lvl===0 && b.seg).forEach(b=>{ h+=stdCard({cat:'Simpanan',title:b.title,lbl:b.title,porsi:1},ek); });
     SBLK.filter(b=>b.prod && b.rk.D).forEach(b=>{ h+=stdCard({cat:'Simpanan',title:b.title,lbl:b.title,porsi:1},ek); });
     h+=kpiCard({lbl:'Jumlah Rekening',main:fRp(R.v.cur),cat:'Simpanan',title:tot.title,kind:'cnt',
-      rows:[['MtD',gSpan(R,'mtd')],['YtD',gSpan(R,'ytd')],['YoY',gSpan(R,'yoy')]],low:`Δ MtD: <b class="num">${fSigned(R.g.mtd[0])}</b> rekening`});
+      rows:[['DtD',gAbs(R,'dtd')],['MtD',gAbs(R,'mtd')],['YtD',gAbs(R,'ytd')],['YoY',gAbs(R,'yoy')]],low:'Satuan: rekening'});
     $('spKpis').innerHTML=h; bindKpi($('spKpis'));
   }
   const pts=monthPoints(13);
@@ -1036,7 +1040,7 @@ function renderKualitas(){
     const D=view(q,tot,'cnt',ek);
     let h=stdCard({cat:q,title:'Total',lbl:lbl+' Total',ratio:1},ek,'min');
     h+=kpiCard({lbl:'Debitur '+q,main:fRp(D.v.cur),cat:q,title:'Total',kind:'cnt',
-      rows:[['MtD',gSpan(D,'mtd',1)],['YtD',gSpan(D,'ytd',1)],['YoY',gSpan(D,'yoy',1)]],low:`Δ MtD: <b class="num">${fSigned(D.g.mtd[0])}</b> debitur`});
+      rows:[['DtD',gAbs(D,'dtd',1)],['MtD',gAbs(D,'mtd',1)],['YtD',gAbs(D,'ytd',1)],['YoY',gAbs(D,'yoy',1)]],low:'Satuan: debitur'});
     segs.forEach(b=>{ const o=view(q,b,'rp',ek); if(PTS.every(w=>!o.v[w]) && o.tgt[0]==null) return;
       h+=stdCard({cat:q,title:b.title,lbl:q+' '+b.name,ratio:1},ek); });
     $('kqKpis').innerHTML=h; bindKpi($('kqKpis'));
