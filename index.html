@@ -150,6 +150,7 @@ td.muted{color:var(--faint)}
    <button data-p="ringkasan" class="on">Ringkasan</button>
    <button data-p="pinjaman">Pinjaman</button>
    <button data-p="simpanan">Simpanan</button>
+   <button data-p="kualitas">SML &amp; NPL</button>
    <button data-p="eksplor">Eksplorasi Kinerja</button>
    <button data-p="profil">Profil Uker</button>
   </nav>
@@ -236,6 +237,36 @@ td.muted{color:var(--faint)}
    <h2 id="spUkTitle">Simpanan per Uker</h2>
    <p class="hint">Nominal Rp Juta. Klik judul kolom untuk mengurutkan, klik › untuk masuk ke rinciannya.</p>
    <div class="tblwrap"><table id="spUk"></table></div>
+  </div>
+ </section>
+
+ <!-- SML & NPL (NOMINAL) -->
+ <section class="page" id="p-kualitas">
+  <div class="controls">
+   <div class="ctl"><label>Kualitas</label><div class="seg" id="segQ"><button data-q="SML" class="on">SML (Kol 2)</button><button data-q="NPL">NPL (Kol 3–5)</button></div></div>
+  </div>
+  <div class="grid kpis" id="kqKpis"></div>
+  <div class="grid mt" style="grid-template-columns:repeat(auto-fit,minmax(320px,1fr))">
+   <div class="card">
+    <h2 id="kqMixTitle">Komposisi per Segmen</h2>
+    <p class="hint" id="kqMixHint"></p>
+    <div class="chartbox sm"><canvas id="kqMix"></canvas></div>
+   </div>
+   <div class="card">
+    <h2 id="kqRatioTitle">Rasio per Segmen</h2>
+    <p class="hint">Rasio terhadap baki debet segmen, posisi akhir bulan</p>
+    <div class="chartbox sm"><canvas id="kqRatio"></canvas></div>
+   </div>
+  </div>
+  <div class="card mt">
+   <h2 id="kqProdTitle">Per Segmen &amp; Produk</h2>
+   <p class="hint" id="kqProdHint"></p>
+   <div class="tblwrap"><table id="kqProd"></table></div>
+  </div>
+  <div class="card mt">
+   <h2 id="kqUkTitle">Per Uker</h2>
+   <p class="hint">Nominal Rp Juta. Makin rendah makin baik; pencapaian = target ÷ aktual (maks. 110%). Klik judul kolom untuk mengurutkan, klik › untuk masuk ke rinciannya.</p>
+   <div class="tblwrap"><table id="kqUk"></table></div>
   </div>
  </section>
 
@@ -489,10 +520,11 @@ function tgt(cat,b,kind,key,m){
   const x=sk(b.rk[cat]); if(kind==='rp') return x;
   const p=sk(b.rk.Pinjaman); return x!=null&&p? x/p : null;
 }
+const PENC_CAP = 1.1;   // pencapaian RKA dibatasi maksimal 110%
 function pencOf(cat,act,t){
   if(act==null||t==null) return null;
-  if(INVERSE[cat]) return act>0? Math.min(t/act,1.1) : 1.1;
-  return t? act/t : null;
+  if(INVERSE[cat]) return act>0? Math.min(t/act,PENC_CAP) : PENC_CAP;
+  return t? Math.min(act/t,PENC_CAP) : null;
 }
 
 /* ================= DATE RESOLUTION ================= */
@@ -715,6 +747,7 @@ function stdCard(k, ek, mode){
   if(o.tgt[0]!=null){ rows.push([`Penc. RKA ${mLbl(m0)}`,pill(o.penc[0])]); rows.push([`Target ${mLbl(m0)}`,`<span class="num">${fmtV(o.kind,o.tgt[0])}</span>`]); }
   else if(k.rkaNote!==false && kind!=='cnt' && !(cat==='Simpanan'&&kind==='pct')) rows.push(['Penc. RKA',pill(null)]);
   if(k.nominal){ const r=view(cat,b,'rp',ek); rows.push(['Nominal',`<span class="num">${fRp(r.v.cur)}</span>`]); }
+  if(k.ratio){ const r=view(cat,b,'pct',ek); rows.push(['Rasio',`<span class="num">${fPct(r.v.cur)}${r.tgt[0]!=null?` <span class="muted">(target ${fPct(r.tgt[0])})</span>`:''}</span>`]); }
   if(k.porsi){ rows.push(['Porsi',`<span class="num">${b.excl?'–':fPct(val(cat,b,'pct',ek,PT('cur')))}</span>`]); }
   rows.push(['MtD',gSpan(o,'mtd',inv)]); rows.push(['YoY',gSpan(o,'yoy',inv)]);
   let low=k.low||'';
@@ -738,8 +771,8 @@ const KEY = () => [
   ...SBLK.filter(b=>b.prod && b.lvl===1 && b.rk.D && /non wholesale$/i.test(b.title)).map(b=>({cat:'Simpanan',title:b.title,lbl:b.title,short:({Giro:'Giro',Tabungan:'Tab',Deposito:'Depo'})[b.prod]||b.prod,hide:1})),
   {cat:'Pinjaman',title:'Total',lbl:'Total Pinjaman',short:'Pinj'},
   ...segTitles().map(t=>({cat:'Pinjaman',title:t,lbl:t,short:({Consumer:'Kons',Medium:'Med',Mikro:'Mikro',Small:'Small'})[t]||t.slice(0,5)})),
-  {cat:'SML',title:'Total',lbl:'SML',short:'SML %',kind:'pct',nominal:1},
-  {cat:'NPL',title:'Total',lbl:'NPL',short:'NPL %',kind:'pct',nominal:1},
+  {cat:'SML',title:'Total',lbl:'SML (Kol 2)',short:'SML',ratio:1},
+  {cat:'NPL',title:'Total',lbl:'NPL (Kol 3–5)',short:'NPL',ratio:1},
   {cat:'LDR',title:'LDR Total',lbl:'LDR',short:'LDR %',kind:'pct'},
 ].filter(k=>findBlk(k.cat,k.title)>=0);
 function renderKpis(elId, ek, mode){
@@ -750,8 +783,8 @@ function renderHeat(){
   const lab={p0:`Pencapaian RKA ${BLNL[m0]??''}`,p1:'Pencapaian RKA Desember',mtd:'Pertumbuhan MtD',yoy:'Pertumbuhan YoY'}[w];
   $('heatTitle').textContent=`Peta ${lab} · ${entityName()}`;
   $('heatHint').textContent = w[0]==='p'
-    ? 'Hijau ≥ 100%, kuning 95–99,99%, merah < 95%. SML/NPL/LDR: pencapaian dihitung terbalik (target ÷ aktual), maks. 110%. Klik nama untuk masuk ke rinciannya.'
-    : 'Nominal: pertumbuhan % (hijau ≥ 0, kuning 0 s/d −2%, merah < −2%); rasio: perubahan pp (SML/NPL turun = hijau). Klik nama untuk masuk ke rinciannya.';
+    ? 'Hijau ≥ 100%, kuning 95–99,99%, merah < 95%. Pencapaian dibatasi maks. 110%; SML/NPL/LDR dihitung terbalik (target ÷ aktual). Klik nama untuk masuk ke rinciannya.'
+    : 'Nominal: pertumbuhan % (hijau ≥ 0, kuning 0 s/d −2%, merah < −2%; SML/NPL kebalikannya: turun = hijau); rasio: perubahan pp. Klik nama untuk masuk ke rinciannya.';
   const K=KEY().filter(k=> w[0]!=='p' || k.rkaNote!==false);
   let h='<thead><tr><th>Uker</th>'+K.map(k=>`<th title="${esc(k.title)}">${k.short}</th>`).join('')+'</tr></thead><tbody>';
   const rows=tableRows();
@@ -763,7 +796,7 @@ function renderHeat(){
     V[ri].forEach((o,ki)=>{ const k=K[ki]; let txt,c;
       if(w[0]==='p'){ const p=o.penc[w==='p0'?0:1]; txt=p==null?'–':nf2.format(p*100); c=cls(p); }
       else { const g=gMain(o,w); txt=g==null?'–':nf2.format(g*100); const inv=LOWGOOD[k.cat];
-        c = g==null?'na': o.kind==='pct' ? ((inv? g<=0 : g>=0)?'good':Math.abs(g)<.005?'warn':'bad') : (g>=0?'good':g>-.02?'warn':'bad'); }
+        c = g==null?'na': o.kind==='pct' ? ((inv? g<=0 : g>=0)?'good':Math.abs(g)<.005?'warn':'bad') : inv ? (g<=0?'good':g<.02?'warn':'bad') : (g>=0?'good':g>-.02?'warn':'bad'); }
       h+=`<td class="num h-${c}" title="Posisi ${fmtV(o.kind,o.v.cur)} · Target ${fmtV(o.kind,o.tgt[w==='p1'?1:0])}">${txt}</td>`; });
     h+='</tr>';
   });
@@ -795,15 +828,16 @@ function renderRegionCharts(){
 }
 
 /* ================= TABEL PRODUK (Pinjaman / Simpanan / Profil) ================= */
-function prodTable(elId, cats, ek, withRank){
+function prodTable(elId, cats, ek, withRank, kindOv){
+  const qN = kindOv==='rp' && cats.length===1 && (cats[0]==='SML'||cats[0]==='NPL');
   const [m0,m1]=rkaMonths();
   const R0=cats.includes('Simpanan')&&cats.length===1?RES.s:RES.p;
   let t=`<thead><tr><th>Segmen / Produk</th><th>${fD(R0.ytd)}</th><th>${fD(R0.mtd)}</th><th>${fD(R0.cur)}</th><th>RKA ${mLbl(m0)}</th><th>Penc. ${mLbl(m0)}</th><th>Gap ${mLbl(m0)}</th><th>RKA Des</th><th>Penc. Des</th><th>MtD %</th><th>YtD %</th><th>YoY %</th><th>Porsi</th>`+
-    (cats.length===1&&cats[0]==='Pinjaman'?'<th>SML %</th><th>NPL %</th><th>Debitur</th>':'')+(cats.length===1&&cats[0]==='Simpanan'?'<th>Rekening</th>':'')+(withRank?'<th>Peringkat</th>':'')+'</tr></thead><tbody>';
-  const ncol=13+(cats.length===1&&cats[0]==='Pinjaman'?3:0)+(cats.length===1&&cats[0]==='Simpanan'?1:0)+(withRank?1:0);
+    (cats.length===1&&cats[0]==='Pinjaman'?'<th>SML %</th><th>NPL %</th><th>Debitur</th>':'')+(cats.length===1&&cats[0]==='Simpanan'?'<th>Rekening</th>':'')+(qN?'<th>Rasio %</th><th>Target Rasio</th><th>Debitur</th>':'')+(withRank?'<th>Peringkat</th>':'')+'</tr></thead><tbody>';
+  const ncol=13+(cats.length===1&&cats[0]==='Pinjaman'?3:0)+(cats.length===1&&cats[0]==='Simpanan'?1:0)+(qN?3:0)+(withRank?1:0);
   cats.forEach(cat=>{
     if(cats.length>1) t+=`<tr class="catttl"><td colspan="${ncol}">${cat}</td></tr>`;
-    const kind = cat==='SML'||cat==='NPL'||cat==='LDR' ? 'pct' : 'rp', inv=LOWGOOD[cat];
+    const kind = qN? 'rp' : cat==='SML'||cat==='NPL'||cat==='LDR' ? 'pct' : 'rp', inv=LOWGOOD[cat];
     BLOCKS[cat].forEach((b,bi)=>{
       const o=view(cat,b,kind,ek); if(PTS.every(w=>!o.v[w]) && o.tgt[0]==null) return;
       const k=o.kind, cur=PT('cur');
@@ -819,6 +853,7 @@ function prodTable(elId, cats, ek, withRank){
         <td class="num">${por==null?'':fPct(por)}</td>`+
         (cats.length===1&&cats[0]==='Pinjaman'?`<td class="num">${fPct(val('SML',b,'pct',ek,cur))}</td><td class="num">${fPct(val('NPL',b,'pct',ek,cur))}</td><td class="num">${fRp(val('Pinjaman',b,'cnt',ek,cur))}</td>`:'')+
         (cats.length===1&&cats[0]==='Simpanan'?`<td class="num">${fRp(val('Simpanan',b,'cnt',ek,cur))}</td>`:'')+
+        (qN?(()=>{ const r=view(cat,b,'pct',ek); return `<td class="num">${fPct(r.v.cur)}</td><td class="num">${fPct(r.tgt[0])}</td><td class="num">${fRp(val(cat,b,'cnt',ek,cur))}</td>`; })():'')+
         (withRank?`<td class="num">${rk}</td>`:'')+'</tr>';
     });
   });
@@ -826,7 +861,7 @@ function prodTable(elId, cats, ek, withRank){
   tb.querySelectorAll('tbody tr[data-cat]').forEach(tr=>tr.onclick=()=>{ S.cat=tr.dataset.cat; S.bi=+tr.dataset.bi; S.kind=S.cat==='LDR'?'pct':tr.dataset.kind; S.sort=null; S.sel=null; fillBlocks(); goTab('eksplor'); });
 }
 /* tabel per uker generik */
-const UKSORT = {pj:{i:null,asc:false}, sp:{i:null,asc:false}};
+const UKSORT = {pj:{i:null,asc:false}, sp:{i:null,asc:false}, kq:{i:null,asc:false}};
 function ukTable(elId, sortKey, cols){
   let data=tableRows().map(r=>({...r,c:cols.map(c=>c.v(r.key))})).filter(r=>r.t!=='leaf' || r.c.some(x=>x!=null&&x!==0));
   const st=UKSORT[sortKey];
@@ -878,8 +913,8 @@ function renderPinjaman(){
       rows:[['MtD',gSpan(D,'mtd')],['YtD',gSpan(D,'ytd')],['YoY',gSpan(D,'yoy')]],low:`Δ MtD: <b class="num">${fSigned(D.g.mtd[0])}</b> debitur`});
     segs.forEach(b=>{ const o=view('Pinjaman',b,'rp',ek); if(PTS.every(w=>!o.v[w]) && o.tgt[0]==null) return;
       h+=stdCard({cat:'Pinjaman',title:b.title,lbl:b.title,porsi:1,low:`SML ${fPct(val('SML',b,'pct',ek,cur))} · NPL ${fPct(val('NPL',b,'pct',ek,cur))}`},ek); });
-    h+=stdCard({cat:'SML',title:'Total',lbl:'SML (Kol 2)',kind:'pct',nominal:1},ek,'none');
-    h+=stdCard({cat:'NPL',title:'Total',lbl:'NPL (Kol 3–5)',kind:'pct',nominal:1},ek,'none');
+    h+=stdCard({cat:'SML',title:'Total',lbl:'SML (Kol 2)',ratio:1},ek,'none');
+    h+=stdCard({cat:'NPL',title:'Total',lbl:'NPL (Kol 3–5)',ratio:1},ek,'none');
     $('pjKpis').innerHTML=h; bindKpi($('pjKpis'));
   }
   const pts=monthPoints(13), inS=segs.filter(b=>!b.excl);
@@ -946,6 +981,52 @@ function renderSimpanan(){
     {h:'Rekening',v:k=>val('Simpanan',tot,'cnt',k,cur),f:fRp},
   ];
   ukTable('spUk','sp',cols);
+}
+
+/* ================= HALAMAN SML & NPL (NOMINAL) ================= */
+let KQ='SML';
+$('segQ').querySelectorAll('button').forEach(b=>b.onclick=()=>{KQ=b.dataset.q; $('segQ').querySelectorAll('button').forEach(x=>x.classList.toggle('on',x===b)); UKSORT.kq={i:null,asc:false}; renderKualitas();});
+function renderKualitas(){
+  const q=KQ, ek=entityKey(), tot=PBLK[0], segs=PBLK.filter(b=>b.seg), inS=segs.filter(b=>!b.excl), cur=PT('cur');
+  const lbl = q==='SML'?'SML (Kol 2)':'NPL (Kol 3–5)';
+  if(!has('p',S.date)) $('kqKpis').innerHTML=`<div class="card empty" style="grid-column:1/-1">Data Pinjaman tidak tersedia pada ${fDL(S.date)}. Pilih tanggal lain.</div>`;
+  else {
+    const D=view(q,tot,'cnt',ek);
+    let h=stdCard({cat:q,title:'Total',lbl:lbl+' Total',ratio:1},ek,'min');
+    h+=kpiCard({lbl:'Debitur '+q,main:fRp(D.v.cur),cat:q,title:'Total',kind:'cnt',
+      rows:[['MtD',gSpan(D,'mtd',1)],['YtD',gSpan(D,'ytd',1)],['YoY',gSpan(D,'yoy',1)]],low:`Δ MtD: <b class="num">${fSigned(D.g.mtd[0])}</b> debitur`});
+    segs.forEach(b=>{ const o=view(q,b,'rp',ek); if(PTS.every(w=>!o.v[w]) && o.tgt[0]==null) return;
+      h+=stdCard({cat:q,title:b.title,lbl:q+' '+b.name,ratio:1},ek); });
+    $('kqKpis').innerHTML=h; bindKpi($('kqKpis'));
+  }
+  const pts=monthPoints(13);
+  $('kqMixTitle').textContent=`Komposisi ${q} per Segmen`;
+  $('kqMixHint').textContent=`${entityName()} · nominal akhir bulan (Rp Juta), di luar Commercial & Consumer–Lainnya; garis putus = RKA ${q}`;
+  const mx=Math.max(1,...pts.map(p=>Math.max(val(q,tot,'rp',ek,p)||0, tgtAt(q,tot,'rp',ek,p)||0)));
+  stackedMonthly('kqMix',pts,[...inS.map(b=>({label:b.name,f:p=>val(q,b,'rp',ek,p)})),{label:'RKA '+q,line:1,color:css('--text'),f:p=>tgtAt(q,tot,'rp',ek,p)}],scaleFmt(mx));
+  $('kqRatioTitle').textContent=`Rasio ${q} per Segmen`;
+  ratioLines('kqRatio',pts,[{label:q+' Total',f:p=>val(q,tot,'pct',ek,p),color:css(q==='SML'?'--c2':'--bad')},
+    {label:'Target '+q+' Total',f:p=>tgtAt(q,tot,'pct',ek,p),color:css('--text'),dash:[5,4]},
+    ...inS.map(b=>({label:q+' '+b.name,f:p=>val(q,b,'pct',ek,p),dash:[3,3]}))]);
+  $('kqProdTitle').textContent=`${q} per Segmen & Produk · ${entityName()}`;
+  $('kqProdHint').textContent=`Nominal ${q} posisi ${fDL(RES.p.cur)} (Rp Juta) terhadap RKA; hirarki sesuai sheet Pola. Makin rendah makin baik — pencapaian = target ÷ aktual (maks. 110%). Klik baris untuk membuka di Eksplorasi.`;
+  prodTable('kqProd',[q],ek,false,'rp');
+  $('kqUkTitle').textContent=`${q} per Uker · ${entityName()} · ${fD(RES.p.cur)}`;
+  const [m0]=rkaMonths();
+  const cols=[
+    ...inS.map(b=>({h:b.name,v:k=>val(q,b,'rp',k,cur),f:fRp})),
+    {h:'Total',v:k=>val(q,tot,'rp',k,cur),f:v=>`<b>${fRp(v)}</b>`},
+    {h:`RKA ${mLbl(m0)}`,v:k=>tgt(q,tot,'rp',k,m0),f:fRp},
+    {h:`Penc. ${mLbl(m0)}`,v:k=>pencOf(q,val(q,tot,'rp',k,cur),tgt(q,tot,'rp',k,m0)),f:pill},
+    {h:`Gap ${mLbl(m0)}`,v:k=>{const a=val(q,tot,'rp',k,cur),t=tgt(q,tot,'rp',k,m0);return a==null||t==null?null:a-t;},f:v=>`<span class="${growthCls(v,1)}">${fSigned(v)}</span>`},
+    {h:'MtD',v:k=>{const a=val(q,tot,'rp',k,cur),x=val(q,tot,'rp',k,PT('mtd'));return a==null||x==null?null:a-x;},f:v=>`<span class="${growthCls(v,1)}">${fSigned(v)}</span>`},
+    {h:'YoY',v:k=>{const a=val(q,tot,'rp',k,cur),x=val(q,tot,'rp',k,PT('yoy'));return a==null||x==null?null:a-x;},f:v=>`<span class="${growthCls(v,1)}">${fSigned(v)}</span>`},
+    {h:'Rasio %',v:k=>val(q,tot,'pct',k,cur),f:fPct},
+    {h:'Target Rasio',v:k=>tgt(q,tot,'pct',k,m0),f:fPct},
+    ...PBLK.filter(b=>b.exclTop).map(b=>({h:b.name+'*',t:'Di luar total',v:k=>val(q,b,'rp',k,cur),f:fRp})),
+    {h:'Debitur',v:k=>val(q,tot,'cnt',k,cur),f:fRp},
+  ];
+  ukTable('kqUk','kq',cols);
 }
 
 /* ================= EKSPLORASI ================= */
@@ -1120,6 +1201,7 @@ function redrawAll(){
   if(p==='ringkasan'){ renderKpis('kpis'); renderHeat(); renderRegionCharts(); }
   if(p==='pinjaman'){ renderPinjaman(); }
   if(p==='simpanan'){ renderSimpanan(); }
+  if(p==='kualitas'){ renderKualitas(); }
   if(p==='eksplor'){ renderExplore(); }
   if(p==='profil'){ renderProfil(); }
 }
