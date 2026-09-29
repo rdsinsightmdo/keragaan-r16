@@ -122,6 +122,37 @@ select,input[type=search]{font:inherit;padding:7px 10px;border-radius:8px;border
 .seg.sm button{padding:5px 10px;font-size:12px}
 .cardhead{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;flex-wrap:wrap}
 td.muted{color:var(--faint)}
+header{position:relative}   /* bagian judul, filter & tab tidak menempel saat halaman di-scroll */
+@media (max-width:640px){
+  header{position:relative}
+  .hwrap{padding:12px 12px 0}
+  .htop{align-items:flex-start}
+  .htop>div:last-child{flex-wrap:wrap;justify-content:flex-end}
+  h1{font-size:18px}
+  .filters{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin-top:12px}
+  .filters .ctl,.filters .ctl.wide{min-width:0}
+  .filters .ctl.wide{grid-column:1/-1}
+  .filters select,.filters .ctl.wide select{width:100%;min-width:0;min-height:42px}
+  .filters .btn{min-height:42px}
+  nav.tabs{margin:10px -12px 0;padding:0 8px;scrollbar-width:thin;scroll-behavior:smooth;scroll-snap-type:x proximity;touch-action:pan-x}
+  nav.tabs button{min-height:44px;padding:10px 12px;scroll-snap-align:center}
+  main{padding:12px}
+  .card{padding:12px;border-radius:8px}
+  .grid:not(.kpis){grid-template-columns:minmax(0,1fr)!important}
+  .grid.kpis{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .kpi .val{font-size:18px}
+  .kpi .row{gap:6px;flex-wrap:wrap}
+  .strip{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .controls{align-items:stretch}
+  .controls>.ctl{min-width:0!important;width:100%}
+  .controls select,.controls input[type=search]{width:100%;min-width:0}
+  .seg{max-width:100%;overflow-x:auto;scrollbar-width:thin;touch-action:pan-x}
+  .seg button{min-height:40px;white-space:nowrap}
+  .seg.sm button{min-height:38px}
+  .chartbox{height:360px}
+  .chartbox.sm{height:260px}
+  .tblwrap{max-height:65vh}
+}
 </style>
 </head>
 <body>
@@ -709,6 +740,8 @@ document.querySelectorAll('#tabs button').forEach(b=>b.onclick=()=>goTab(b.datas
 function goTab(p){
   document.querySelectorAll('#tabs button').forEach(x=>x.classList.toggle('on',x.dataset.p===p));
   document.querySelectorAll('section.page').forEach(s=>s.classList.toggle('on',s.id==='p-'+p));
+  const tabs=$('tabs'), active=tabs.querySelector('button.on');
+  tabs.scrollBy({left:active.getBoundingClientRect().left-tabs.getBoundingClientRect().left-(tabs.clientWidth-active.offsetWidth)/2,behavior:'smooth'});
   window.scrollTo({top:0}); redrawAll();
 }
 function chartBase(){
