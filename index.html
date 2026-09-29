@@ -122,36 +122,6 @@ select,input[type=search]{font:inherit;padding:7px 10px;border-radius:8px;border
 .seg.sm button{padding:5px 10px;font-size:12px}
 .cardhead{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;flex-wrap:wrap}
 td.muted{color:var(--faint)}
-@media (max-width:640px){
-  header{position:relative}
-  .hwrap{padding:12px 12px 0}
-  .htop{align-items:flex-start}
-  .htop>div:last-child{flex-wrap:wrap;justify-content:flex-end}
-  h1{font-size:18px}
-  .filters{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin-top:12px}
-  .filters .ctl,.filters .ctl.wide{min-width:0}
-  .filters .ctl.wide{grid-column:1/-1}
-  .filters select,.filters .ctl.wide select{width:100%;min-width:0;min-height:42px}
-  .filters .btn{min-height:42px}
-  nav.tabs{margin:10px -12px 0;padding:0 8px;scrollbar-width:thin;scroll-behavior:smooth;scroll-snap-type:x proximity;touch-action:pan-x}
-  nav.tabs button{min-height:44px;padding:10px 12px;scroll-snap-align:center}
-  main{padding:12px}
-  .card{padding:12px;border-radius:8px}
-  .grid:not(.kpis){grid-template-columns:minmax(0,1fr)!important}
-  .grid.kpis{grid-template-columns:repeat(2,minmax(0,1fr))}
-  .kpi .val{font-size:18px}
-  .kpi .row{gap:6px;flex-wrap:wrap}
-  .strip{grid-template-columns:repeat(2,minmax(0,1fr))}
-  .controls{align-items:stretch}
-  .controls>.ctl{min-width:0!important;width:100%}
-  .controls select,.controls input[type=search]{width:100%;min-width:0}
-  .seg{max-width:100%;overflow-x:auto;scrollbar-width:thin;touch-action:pan-x}
-  .seg button{min-height:40px;white-space:nowrap}
-  .seg.sm button{min-height:38px}
-  .chartbox{height:360px}
-  .chartbox.sm{height:260px}
-  .tblwrap{max-height:65vh}
-}
 </style>
 </head>
 <body>
@@ -488,14 +458,21 @@ const findBlk = (cat,title) => BLOCKS[cat].findIndex(b=>b.title===title);
 
 /* ================= AGGREGATION ================= */
 const AGG = new Map();
+/* Segmen yang dibukukan di KANWIL (target RKA hanya di Kanwil): baki debet dari cabang dipindah ke Kanwil.
+   Total Region tetap konsolidasi (segmen ini tetap dihitung), tetapi tidak masuk ke angka cabang/uker/area. */
+const KE_KANWIL = new Set(['Medium']);
+const KW_CI = CABS.findIndex(c=>c.k===254), KW_UI = UKS.findIndex(u=>u.k===254);
+const PC_KW = PC.map(c=>KE_KANWIL.has(c[2]));
 function agg(ds,i){
   if(i==null || !has(ds,i)) return null;
   const key=ds+i+'|'+S.type; if(AGG.has(key)) return AGG.get(key);
   const rows=DB[ds].get(i); if(!rows) return null;
   const nc=(ds==='p'?PC.length*3:SC.length)*2, E=new Map(), t=S.type;
   const add=(k,c,v,n)=>{let a=E.get(k); if(!a){a=new Float64Array(nc);E.set(k,a);} a[c]+=v; a[c+1]+=n;};
+  const moveKW = ds==='p' && KW_CI>0 && KW_UI>0;
   for(let r=0;r<rows.length;r+=5){
-    const ci=rows[r], ui=rows[r+1], c=rows[r+2]*2, v=rows[r+3]/100, n=rows[r+4];
+    let ci=rows[r], ui=rows[r+1]; const c=rows[r+2]*2, v=rows[r+3]/100, n=rows[r+4];
+    if(moveKW && PC_KW[(rows[r+2]/3)|0]){ ci=KW_CI; ui=KW_UI; }
     if(t && UKS[ui].t!==t) continue;
     add('T',c,v,n); const a=CABS[ci].a; if(a) add('A|'+a,c,v,n);
     add('C|'+ci,c,v,n); if(ui>0) add('U|'+ui,c,v,n);
@@ -732,8 +709,6 @@ document.querySelectorAll('#tabs button').forEach(b=>b.onclick=()=>goTab(b.datas
 function goTab(p){
   document.querySelectorAll('#tabs button').forEach(x=>x.classList.toggle('on',x.dataset.p===p));
   document.querySelectorAll('section.page').forEach(s=>s.classList.toggle('on',s.id==='p-'+p));
-  const tabs=$('tabs'), active=tabs.querySelector('button.on');
-  tabs.scrollBy({left:active.getBoundingClientRect().left-tabs.getBoundingClientRect().left-(tabs.clientWidth-active.offsetWidth)/2,behavior:'smooth'});
   window.scrollTo({top:0}); redrawAll();
 }
 function chartBase(){
