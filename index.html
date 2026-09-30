@@ -606,7 +606,7 @@ const nf1 = new Intl.NumberFormat('id-ID',{maximumFractionDigits:1});
 const nf2 = new Intl.NumberFormat('id-ID',{minimumFractionDigits:2,maximumFractionDigits:2});
 const fRp = v => v==null? '–' : nf0.format(v);
 const fPct = v => v==null||!isFinite(v)? '–' : nf2.format(v*100)+'%';
-const fPP = v => v==null? '–' : (v>0?'+':'')+nf2.format(v*100)+' pp';
+const fPP = v => v==null? '–' : (v>0?'+':'')+nf2.format(v*100)+'%';   // selisih rasio (poin persentase), ditampilkan dengan %
 const fSigned = v => v==null? '–' : (v>0?'+':'')+nf0.format(v);
 const fSPct = v => v==null||!isFinite(v)? '–' : (v>0?'+':'')+nf2.format(v*100)+'%';
 const cls = p => p==null? 'na' : p>=1? 'good' : p>=.95? 'warn':'bad';
@@ -631,7 +631,7 @@ const fmtG = (k,v) => k==='pct'? fPP(v) : fSigned(v);
 const gMain = (o,w) => o.kind==='pct'? o.g[w][0] : o.g[w][1];
 const fGMain = (o,w) => o.kind==='pct'? fPP(o.g[w][0]) : fSPct(o.g[w][1]);
 const gSpan = (o,w,inv) => `<span class="num ${growthCls(gMain(o,w),inv)}">${fGMain(o,w)}</span>`;
-/* delta nominal (Rp Juta / jumlah); untuk rasio (CASA, LDR, dll) tetap pp. Persentase tampil sebagai tooltip. */
+/* delta nominal (Rp Juta / jumlah); untuk rasio (CASA, LDR, dll) selisih rasio dalam %. Persentase tampil sebagai tooltip. */
 const gAbs = (o,w,inv) => o.kind==='pct'
   ? `<span class="num ${growthCls(o.g[w][0],inv)}">${fPP(o.g[w][0])}</span>`
   : `<span class="num ${growthCls(o.g[w][0],inv)}" title="${fSPct(o.g[w][1])}">${fSigned(o.g[w][0])}</span>`;
@@ -830,7 +830,7 @@ function renderHeat(){
   $('heatTitle').textContent=`Peta ${lab} · ${entityName()}`;
   $('heatHint').textContent = w[0]==='p'
     ? 'Hijau ≥ 100%, kuning 95–99,99%, merah < 95%. Pencapaian dibatasi maks. 110%; SML/NPL/LDR dihitung terbalik (target ÷ aktual). Klik nama untuk masuk ke rinciannya.'
-    : 'Nominal: pertumbuhan % (hijau ≥ 0, kuning 0 s/d −2%, merah < −2%; SML/NPL kebalikannya: turun = hijau); rasio: perubahan pp. Klik nama untuk masuk ke rinciannya.';
+    : 'Nominal: pertumbuhan % (hijau ≥ 0, kuning 0 s/d −2%, merah < −2%; SML/NPL kebalikannya: turun = hijau); rasio: selisih rasio dalam %. Klik nama untuk masuk ke rinciannya.';
   const K=KEY().filter(k=> w[0]!=='p' || k.rkaNote!==false);
   let h='<thead><tr><th>Uker</th>'+K.map(k=>`<th title="${esc(k.title)}">${k.short}</th>`).join('')+'</tr></thead><tbody>';
   const rows=tableRows();
@@ -1095,7 +1095,7 @@ function fillMetrics(){
     ...(hasT?[['p0',`Pencapaian RKA ${mLbl(m0)}`],['p1','Pencapaian RKA Des'],['g0',`Gap RKA ${mLbl(m0)}`]]:[]),
     ['cur','Posisi'],
     ...(S.kind==='pct'
-      ? [['mtdA','Perubahan MtD (pp)'],['ytdA','Perubahan YtD (pp)'],['yoyA','Perubahan YoY (pp)']]
+      ? [['mtdA','Perubahan MtD (%)'],['ytdA','Perubahan YtD (%)'],['yoyA','Perubahan YoY (%)']]
       : [['mtdP','Pertumbuhan MtD (%)'],['ytdP','Pertumbuhan YtD (%)'],['yoyP','Pertumbuhan YoY (%)'],['dtdA','Pertumbuhan DtD (nominal)']])];
   $('selMetric').innerHTML=m.map(x=>`<option value="${x[0]}">${x[1]}</option>`).join('');
   if(!m.find(x=>x[0]===S.metric)) S.metric=m[0][0];
@@ -1181,7 +1181,7 @@ function renderTable(){
   if(INVERSE[S.cat]) note+= S.cat==='LDR' ? 'LDR: pencapaian = target ÷ aktual, maks. 110%. ' : 'SML = kol 2, NPL = kol 3–5; makin rendah makin baik — pencapaian = target ÷ aktual, maks. 110%. ';
   if(b.excl) note+='Baris ini tidak dihitung dalam total segmen / Total Pinjaman. ';
   if(!hasT) note+='Tidak ada target RKA untuk pilihan ini (lihat sheet Pola/RKA, atau target tidak dapat dipisah di level ini). ';
-  if(k==='pct') note+='Perubahan rasio dalam poin persentase (pp). ';
+  if(k==='pct') note+='Perubahan rasio = selisih langsung dua angka rasio (mis. 183,03% → 189,46% = +6,43%). ';
   $('tblNote').textContent=note;
 }
 function renderBar(){
@@ -1199,7 +1199,7 @@ function renderBar(){
   const sel=S.sel||entityKey();
   const colFor = x => isPenc ? css('--'+({good:'good',warn:'warn',bad:'bad',na:'faint'})[cls(x.m)]) : S.metric==='cur' ? css('--c1') : ((x.m>=0)!==!!inv)? css('--good'):css('--bad');
   const fmtX = v => isPenc? fPct(v) : S.metric==='cur' ? fmtV(k,v) : k==='pct'? fPP(v) : isPctG? fSPct(v) : fSigned(v);
-  const tick = v => isPenc? nf0.format(v*100)+'%' : S.metric==='cur' ? (k==='pct'? nf1.format(v*100)+'%' : nf0.format(v)) : k==='pct'? nf2.format(v*100)+' pp' : isPctG? nf1.format(v*100)+'%' : nf0.format(v);
+  const tick = v => isPenc? nf0.format(v*100)+'%' : S.metric==='cur' ? (k==='pct'? nf1.format(v*100)+'%' : nf0.format(v)) : k==='pct'? nf2.format(v*100)+'%' : isPctG? nf1.format(v*100)+'%' : nf0.format(v);
   const refLine={id:'ref',afterDatasetsDraw(ch){ if(!isPenc) return; const x=ch.scales.x.getPixelForValue(1),{top,bottom}=ch.chartArea; const c=ch.ctx; c.save(); c.strokeStyle=css('--text'); c.setLineDash([4,4]); c.beginPath(); c.moveTo(x,top); c.lineTo(x,bottom); c.stroke(); c.restore(); }};
   let xmin; if(isPenc && rs.length){ xmin=Math.max(0,Math.floor((Math.min(...rs.map(x=>x.m),1)-.05)*20)/20); }
   mk('barChart',{type:'bar',data:{labels:rs.map(x=>x.label),datasets:[{data:rs.map(x=>x.m),backgroundColor:rs.map(x=>colFor(x)+(x.key===sel?'':'cc')),borderColor:rs.map(x=>x.key===sel?css('--text'):'transparent'),borderWidth:1.5,borderRadius:4,barPercentage:.8}]},
