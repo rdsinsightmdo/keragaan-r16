@@ -9,30 +9,33 @@
 <title>Keragaan Region Manado</title>
 <style>
 :root{
-  --bg:#f5f6f8; --surface:#ffffff; --surface-2:#f0f2f5; --border:#e2e5ea;
-  --text:#1b2330; --muted:#5d6878; --faint:#8a94a3;
-  --accent:#1d4f91; --accent-soft:#e3ecf8;
+  --bg:#f3f7fc; --surface:#ffffff; --surface-2:#eef3fa; --border:#dce5f1;
+  --text:#13233d; --muted:#52627a; --faint:#8593a8;
+  --accent:#0857C3; --accent-soft:#e3eefb; --on-accent:#ffffff;
+  --brand-grad:linear-gradient(120deg,#0857C3 0%,#307FE2 65%,#71C5E8 130%);
   --good:#1e7a46; --good-bg:#dcf1e4; --warn:#9a6300; --warn-bg:#fcefd2; --bad:#b3261e; --bad-bg:#fbe0dd;
-  --area-bg:#eef2f8; --total-bg:#e3eaf5;
-  --c1:#1d4f91; --c2:#d9822b; --c3:#2a9d8f; --grid:#e6e9ee;
+  --area-bg:#eaf2fc; --total-bg:#d6e6fa;
+  --c1:#0857C3; --c2:#71C5E8; --c3:#307FE2; --grid:#e3eaf4;
 }
 @media (prefers-color-scheme: dark){
   :root:not([data-theme="light"]){
-    --bg:#11151b; --surface:#1a2029; --surface-2:#222a35; --border:#2e3845;
-    --text:#e6ebf2; --muted:#a3adbb; --faint:#768293;
-    --accent:#7fb0f0; --accent-soft:#1f3350;
+    --bg:#0a1526; --surface:#0f1f38; --surface-2:#152a4a; --border:#23395c;
+    --text:#e6eef9; --muted:#a4b4cb; --faint:#7487a3;
+    --accent:#71C5E8; --accent-soft:#16345c; --on-accent:#0a1526;
+    --brand-grad:linear-gradient(120deg,#06408f 0%,#0857C3 60%,#307FE2 130%);
     --good:#6fd39a; --good-bg:#173a27; --warn:#f0c064; --warn-bg:#3d3017; --bad:#ff8f86; --bad-bg:#44201d;
-    --area-bg:#1f2836; --total-bg:#243148;
-    --c1:#7fb0f0; --c2:#f0a860; --c3:#5cc9bb; --grid:#2a333f;
+    --area-bg:#132b4f; --total-bg:#1a3763;
+    --c1:#71C5E8; --c2:#4f95ec; --c3:#a9dcf2; --grid:#1d3354;
   }
 }
 :root[data-theme="dark"]{
-  --bg:#11151b; --surface:#1a2029; --surface-2:#222a35; --border:#2e3845;
-  --text:#e6ebf2; --muted:#a3adbb; --faint:#768293;
-  --accent:#7fb0f0; --accent-soft:#1f3350;
+  --bg:#0a1526; --surface:#0f1f38; --surface-2:#152a4a; --border:#23395c;
+  --text:#e6eef9; --muted:#a4b4cb; --faint:#7487a3;
+  --accent:#71C5E8; --accent-soft:#16345c; --on-accent:#0a1526;
+  --brand-grad:linear-gradient(120deg,#06408f 0%,#0857C3 60%,#307FE2 130%);
   --good:#6fd39a; --good-bg:#173a27; --warn:#f0c064; --warn-bg:#3d3017; --bad:#ff8f86; --bad-bg:#44201d;
-  --area-bg:#1f2836; --total-bg:#243148;
-  --c1:#7fb0f0; --c2:#f0a860; --c3:#5cc9bb; --grid:#2a333f;
+  --area-bg:#132b4f; --total-bg:#1a3763;
+  --c1:#71C5E8; --c2:#4f95ec; --c3:#a9dcf2; --grid:#1d3354;
 }
 *{box-sizing:border-box}
 html,body{margin:0}
@@ -89,7 +92,7 @@ select,input[type=search]{font:inherit;padding:7px 10px;border-radius:8px;border
 .seg{display:inline-flex;border:1px solid var(--border);border-radius:8px;overflow:hidden;background:var(--surface)}
 .seg button{border:0;background:none;padding:7px 12px;font:inherit;color:var(--muted);cursor:pointer;border-right:1px solid var(--border)}
 .seg button:last-child{border-right:0}
-.seg button.on{background:var(--accent);color:#fff}
+.seg button.on{background:var(--accent);color:var(--on-accent)}
 .seg button:disabled{opacity:.4;cursor:not-allowed}
 .chartbox{position:relative;height:420px}
 .chartbox.sm{height:280px}
@@ -124,7 +127,18 @@ select,input[type=search]{font:inherit;padding:7px 10px;border-radius:8px;border
 .seg.sm button{padding:5px 10px;font-size:12px}
 .cardhead{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;flex-wrap:wrap}
 td.muted{color:var(--faint)}
-header{position:relative}   /* bagian judul, filter & tab tidak menempel saat halaman di-scroll */
+header{position:relative;background:var(--brand-grad);border-bottom:0;color:#fff}   /* bagian judul, filter & tab tidak menempel saat halaman di-scroll */
+header h1{color:#fff}
+header .sub,header .crumb{color:rgba(255,255,255,.82)}
+header .crumb a{color:#fff}
+header .ctl label{color:rgba(255,255,255,.85)}
+header .theme-btn,header .btn{background:rgba(255,255,255,.14);border-color:rgba(255,255,255,.35);color:#fff}
+header .theme-btn:hover,header .btn:hover{background:rgba(255,255,255,.24);border-color:#fff}
+header select{border-color:rgba(255,255,255,.4)}
+header .chip{background:rgba(255,255,255,.18);color:#fff}
+header nav.tabs button{color:rgba(255,255,255,.72)}
+header nav.tabs button:hover{color:#fff}
+header nav.tabs button.on{color:#fff;border-bottom:3px solid #71C5E8}
 @media (max-width:640px){
   header{position:relative}
   .hwrap{padding:12px 12px 0}
