@@ -1,5 +1,6 @@
 # Hanya file website (index.html, login.html, lib/, data/) yang di-upload ke GitHub.
 tools/
+*.bat
 *.txt
 __pycache__/
 *.py
