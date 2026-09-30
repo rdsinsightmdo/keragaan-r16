@@ -97,10 +97,12 @@ th.sorted::after{content:" ▾"} th.sorted.asc::after{content:" ▴"}
 .sb td.p-warn{background:var(--warn-bg);color:var(--warn);font-weight:600}
 .sb td.p-bad{background:var(--bad-bg);color:var(--bad);font-weight:600}
 .sb td.tot{font-weight:700}
-/* kolom Total: warna isi sedikit lebih terang/kuat agar menonjol */
-.sb td.tot.p-good{background:color-mix(in srgb,var(--good-bg) 72%,var(--good) 28%)}
-.sb td.tot.p-warn{background:color-mix(in srgb,var(--warn-bg) 72%,var(--warn) 28%)}
-.sb td.tot.p-bad{background:color-mix(in srgb,var(--bad-bg) 72%,var(--bad) 28%)}
+/* Scoreboard: kolom nama & header tidak menempel (ikut tergeser saat scroll samping) */
+#p-scoreboard .sb th,#p-scoreboard .sb td{position:static}
+/* hanya header "Total" yang diberi warna penanda */
+.sb thead tr th.tt,.sb thead tr.g th.tt{background:#71C5E8;color:#0a1526;font-weight:800}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .sb thead tr th.tt,:root:not([data-theme="light"]) .sb thead tr.g th.tt{background:#307FE2;color:#fff}}
+:root[data-theme="dark"] .sb thead tr th.tt,:root[data-theme="dark"] .sb thead tr.g th.tt{background:#307FE2;color:#fff}
 .sb td.sc-y{background:var(--good-bg);color:var(--good);font-weight:800;text-align:center;min-width:34px}
 .sb td.sc-n{background:var(--bad-bg);color:var(--bad);font-weight:800;text-align:center;min-width:34px}
 .sb td.no{color:var(--muted);text-align:center}
@@ -1052,9 +1054,9 @@ function sbHead(mode, withNo, delta){
   let g='<tr class="g">'+(withNo?'<th rowspan="2">No</th>':'')+'<th rowspan="2" class="nm">Uker</th>';
   let h='<tr>';
   cats.forEach(cat=>D[cat].cols.forEach((c,i)=>{
-    if(mode==='all'){ if(i===0) g+=`<th colspan="${D[cat].cols.length}" class="gs">${D[cat].lbl}</th>`; h+=`<th class="${i===0?'gs':''}">${c.l}</th>`; }
-    else if(delta){ g+=`<th colspan="2" class="gs">${c.l}</th>`; h+='<th class="gs">Δ Real</th><th>Δ Penc</th>'; }
-    else { g+=`<th colspan="4" class="gs">${c.l}</th>`; h+='<th class="gs">Real</th><th>RKA</th><th>Penc</th><th>Gap</th>'; }
+    if(mode==='all'){ if(i===0) g+=`<th colspan="${D[cat].cols.length}" class="gs">${D[cat].lbl}</th>`; h+=`<th class="${i===0?'gs tt':''}">${c.l}</th>`; }
+    else if(delta){ g+=`<th colspan="2" class="gs${i===0?' tt':''}">${c.l}</th>`; h+='<th class="gs">Δ Real</th><th>Δ Penc</th>'; }
+    else { g+=`<th colspan="4" class="gs${i===0?' tt':''}">${c.l}</th>`; h+='<th class="gs">Real</th><th>RKA</th><th>Penc</th><th>Gap</th>'; }
   }));
   g+=`<th colspan="2" class="gs">${delta?'Δ Score':'Score'}</th></tr>`; h+='<th class="gs" title="Jumlah kategori total ≥ 100%">✓</th><th title="Jumlah kategori total < 100%">✗</th></tr>';
   return '<thead>'+g+h+'</thead>';
