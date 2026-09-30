@@ -1256,7 +1256,7 @@ function renderProfil(){
 function header(){
   const [m0]=rkaMonths();
   $('sub').textContent=`Posisi ${fDL(S.date)} · `+(m0!=null?`target RKA ${BLNL[m0]} ${RK.year}`:`tanpa target RKA${RK?' (RKA hanya tahun '+RK.year+')':''}`)+' · nominal dalam Rp Juta';
-  $('foot').textContent=`Sumber: ${M.source}${M.hirarki?' + '+M.hirarki+' (Pola)':''} · dikonversi ${M.generated} · ${DT.length} tanggal, ${CABS.length-1} cabang, ${UKS.length-1} unit kerja.`+
+  $('foot').textContent=`Sumber: Olahan BRISIM · dikonversi ${M.generated} · © Regional Strategy & Finance - Region 16 Manado`+
     (has('p',S.date)?'':' Catatan: tanggal ini tidak ada di data Pinjaman.')+(has('s',S.date)?'':' Catatan: tanggal ini tidak ada di data Simpanan.');
   document.title='Keragaan '+entityName()+' · '+fD(S.date);
 }
