@@ -97,6 +97,10 @@ th.sorted::after{content:" ▾"} th.sorted.asc::after{content:" ▴"}
 .sb td.p-warn{background:var(--warn-bg);color:var(--warn);font-weight:600}
 .sb td.p-bad{background:var(--bad-bg);color:var(--bad);font-weight:600}
 .sb td.tot{font-weight:700}
+/* kolom Total: warna isi sedikit lebih terang/kuat agar menonjol */
+.sb td.tot.p-good{background:color-mix(in srgb,var(--good-bg) 72%,var(--good) 28%)}
+.sb td.tot.p-warn{background:color-mix(in srgb,var(--warn-bg) 72%,var(--warn) 28%)}
+.sb td.tot.p-bad{background:color-mix(in srgb,var(--bad-bg) 72%,var(--bad) 28%)}
 .sb td.sc-y{background:var(--good-bg);color:var(--good);font-weight:800;text-align:center;min-width:34px}
 .sb td.sc-n{background:var(--bad-bg);color:var(--bad);font-weight:800;text-align:center;min-width:34px}
 .sb td.no{color:var(--muted);text-align:center}
@@ -257,7 +261,7 @@ header nav.tabs button.on{color:#fff;border-bottom:3px solid #71C5E8}
  <!-- SCOREBOARD -->
  <section class="page" id="p-scoreboard">
   <div class="controls">
-   <div class="ctl"><label>Kategori</label><div class="seg" id="segSb"><button data-k="all" class="on">Semua</button><button data-k="Simpanan">Simpanan</button><button data-k="Pinjaman">Pinjaman</button><button data-k="SML">SML (DPK)</button><button data-k="NPL">NPL</button></div></div>
+   <div class="ctl"><label>Kategori</label><div class="seg" id="segSb"><button data-k="all" class="on">Semua</button><button data-k="Simpanan">Simpanan</button><button data-k="Pinjaman">Pinjaman</button><button data-k="SML">SML</button><button data-k="NPL">NPL</button></div></div>
   </div>
   <div class="card">
    <h2 id="sbTitle">Scoreboard</h2>
@@ -1009,7 +1013,7 @@ const pencCols = (cat,b,label) => { const [m0]=rkaMonths(); return [
 const grCol = (cat,b,w,h) => ({h,v:k=>{const a=val(cat,b,'rp',k,PT('cur')),x=val(cat,b,'rp',k,PT(w));return a==null||!x?null:a/x-1;},f:v=>`<span class="${growthCls(v)}">${fSPct(v)}</span>`});
 
 /* ================= SCOREBOARD ================= */
-/* Skor = jumlah kategori TOTAL (Simpanan, Pinjaman, SML/DPK, NPL) dengan pencapaian RKA >= 100%. */
+/* Skor = jumlah kategori TOTAL (Simpanan, Pinjaman, SML, NPL) dengan pencapaian RKA >= 100%. */
 const SB_SCORE = ['Simpanan','Pinjaman','SML','NPL'];
 const SB_DEF = () => {
   const segOf = (seg,lbl) => ({t:(PBLK.find(b=>b.seg===seg)||{}).title, l:lbl});
@@ -1017,7 +1021,7 @@ const SB_DEF = () => {
   return {
     Simpanan:{lbl:'Simpanan', cols:[{t:'Simpanan Total',l:'Total',tot:1},{t:'Tabungan Total',l:'Tabungan'},{t:'Giro Total',l:'Giro'},{t:'Deposito Total',l:'Deposito'}]},
     Pinjaman:{lbl:'Pinjaman', cols:prodCols('Pinjaman','Pinjaman Total')},
-    SML:{lbl:'SML (DPK)', cols:prodCols('SML','SML Total')},
+    SML:{lbl:'SML', cols:prodCols('SML','SML Total')},
     NPL:{lbl:'NPL', cols:prodCols('NPL','NPL Total')},
   };
 };
@@ -1077,7 +1081,7 @@ function renderScoreboard(){
   const curD=RES.p.cur??RES.s.cur, prevD=RES.p.mtd??RES.s.mtd, [m0]=rkaMonths();
   const catLbl = mode==='all'? 'KC Region 16 Manado' : SB_DEF()[mode].lbl;
   $('sbTitle').textContent=`Scoreboard ${fDL(curD)} – ${catLbl}`;
-  $('sbHint').textContent=`Pencapaian terhadap RKA ${m0!=null?BLNL[m0]:'–'} (maks. 110%; SML/NPL dihitung terbalik). Score ✓ = jumlah kategori total (Simpanan, Pinjaman, SML/DPK, NPL) dengan pencapaian ≥ 100%, ✗ = di bawah 100%. KC diurutkan per area dari score terbanyak.`;
+  $('sbHint').textContent=`Pencapaian terhadap RKA ${m0!=null?BLNL[m0]:'–'} (maks. 110%; SML/NPL dihitung terbalik). Score ✓ = jumlah kategori total (Simpanan, Pinjaman, SML, NPL) dengan pencapaian ≥ 100%, ✗ = di bawah 100%. KC diurutkan per area dari score terbanyak.`;
   let h=sbHead(mode,true)+'<tbody>', no=0;
   areas.forEach(a=>{
     const ks=cabsIn(a).map(c=>({c,o:sbRow('C|'+c,'cur')})).filter(x=>x.o.n||Object.values(x.o.cells).some(v=>v&&v.act));
