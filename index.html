@@ -98,6 +98,8 @@ select,input[type=search]{font:inherit;padding:7px 10px;border-radius:8px;border
 .strip{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px;margin-bottom:14px}
 .strip .s{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:10px 12px}
 .strip .s b{display:block;font-size:17px;margin-top:2px}
+.strip .s b .pill{font-size:17px;padding:1px 10px;line-height:1.35;font-weight:700;text-transform:none;letter-spacing:0}
+.strip .s b .pill.p-good{color:var(--good)} .strip .s b .pill.p-warn{color:var(--warn)} .strip .s b .pill.p-bad{color:var(--bad)} .strip .s b .pill.p-na{color:var(--faint)}
 .strip .s span{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.04em;font-weight:600}
 .note{font-size:12px;color:var(--muted);margin-top:10px}
 .muted{color:var(--muted)}
@@ -456,7 +458,9 @@ const PBLK = (()=>{
 })();
 const SBLK = (()=>{
   const all=SC.map((_,i)=>i);
-  const B=[mkS('Simpanan Total',all,0,{tot:1}), mkS('CASA Total (Giro + Tabungan)',all.filter(i=>SC[i][1]!=='Deposito'),0,{casa:1})];
+  const B=[mkS('Simpanan Total',all,0,{tot:1})];
+  order(SC.map(c=>c[1])).forEach(p=>B.push(mkS(p+' Total',all.filter(i=>SC[i][1]===p),1,{prodTot:p})));   // Giro/Tabungan/Deposito Total (semua segmen)
+  B.push(mkS('CASA Total (Giro + Tabungan)',all.filter(i=>SC[i][1]!=='Deposito'),0,{casa:1}));
   order(SC.map(c=>c[2])).forEach(sg=>{
     const ci=all.filter(i=>SC[i][2]===sg); B.push(mkS('Simpanan '+sg,ci,0,{seg:sg}));
     const p1s=order(ci.map(i=>SC[i][3]));
@@ -1096,7 +1100,8 @@ function fillMetrics(){
     ['cur','Posisi'],
     ...(S.kind==='pct'
       ? [['mtdA','Perubahan MtD (%)'],['ytdA','Perubahan YtD (%)'],['yoyA','Perubahan YoY (%)']]
-      : [['mtdP','Pertumbuhan MtD (%)'],['ytdP','Pertumbuhan YtD (%)'],['yoyP','Pertumbuhan YoY (%)'],['dtdA','Pertumbuhan DtD (nominal)']])];
+      : [['dtdA','Pertumbuhan DtD (nominal)'],['mtdA','Pertumbuhan MtD (nominal)'],['ytdA','Pertumbuhan YtD (nominal)'],['yoyA','Pertumbuhan YoY (nominal)'],
+         ['mtdP','Pertumbuhan MtD (%)'],['ytdP','Pertumbuhan YtD (%)'],['yoyP','Pertumbuhan YoY (%)']])];
   $('selMetric').innerHTML=m.map(x=>`<option value="${x[0]}">${x[1]}</option>`).join('');
   if(!m.find(x=>x[0]===S.metric)) S.metric=m[0][0];
   $('selMetric').value=S.metric;
