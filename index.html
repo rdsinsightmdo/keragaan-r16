@@ -84,6 +84,24 @@ tbody tr{cursor:pointer}
 th.sorted::after{content:" ▾"} th.sorted.asc::after{content:" ▴"}
 .heat td{text-align:center;font-weight:600}
 .heat td:first-child{text-align:left}
+.sb{font-size:11px}
+.sb th,.sb td{padding:4px 4px}
+.sb td.nm,.sb th.nm{text-align:left;white-space:nowrap}
+#p-scoreboard .tblwrap{overflow-x:auto}
+.sb th{cursor:default;text-align:center;white-space:normal;line-height:1.2}
+.sb thead tr.g th{background:var(--accent);color:var(--on-accent,#fff);font-size:11.5px;letter-spacing:.02em}
+.sb th.gs,.sb td.gs{border-left:2px solid var(--accent)}
+.sb td{text-align:right}
+.sb td.c{text-align:center}
+.sb td.p-good{background:var(--good-bg);color:var(--good);font-weight:600}
+.sb td.p-warn{background:var(--warn-bg);color:var(--warn);font-weight:600}
+.sb td.p-bad{background:var(--bad-bg);color:var(--bad);font-weight:600}
+.sb td.tot{font-weight:700}
+.sb td.sc-y{background:var(--good-bg);color:var(--good);font-weight:800;text-align:center;min-width:34px}
+.sb td.sc-n{background:var(--bad-bg);color:var(--bad);font-weight:800;text-align:center;min-width:34px}
+.sb td.no{color:var(--muted);text-align:center}
+.sb tbody tr{cursor:default}
+.sbnote{font-size:12px;color:var(--muted);margin:6px 0 0}
 .heat td.h-good{background:var(--good-bg);color:var(--good)} .heat td.h-warn{background:var(--warn-bg);color:var(--warn)} .heat td.h-bad{background:var(--bad-bg);color:var(--bad)}
 .controls{display:flex;flex-wrap:wrap;gap:10px;align-items:flex-end;margin-bottom:14px}
 .ctl{display:flex;flex-direction:column;gap:4px}
@@ -197,6 +215,7 @@ header nav.tabs button.on{color:#fff;border-bottom:3px solid #71C5E8}
   </div>
   <nav class="tabs" id="tabs">
    <button data-p="ringkasan" class="on">Ringkasan</button>
+   <button data-p="scoreboard">Scoreboard</button>
    <button data-p="pinjaman">Pinjaman</button>
    <button data-p="simpanan">Simpanan</button>
    <button data-p="kualitas">SML &amp; NPL</button>
@@ -232,6 +251,29 @@ header nav.tabs button.on{color:#fff;border-bottom:3px solid #71C5E8}
      <div class="chartbox sm"><canvas id="ratioRegion"></canvas></div>
     </div>
    </div>
+  </div>
+ </section>
+
+ <!-- SCOREBOARD -->
+ <section class="page" id="p-scoreboard">
+  <div class="controls">
+   <div class="ctl"><label>Kategori</label><div class="seg" id="segSb"><button data-k="all" class="on">Semua</button><button data-k="Simpanan">Simpanan</button><button data-k="Pinjaman">Pinjaman</button><button data-k="SML">SML (DPK)</button><button data-k="NPL">NPL</button></div></div>
+  </div>
+  <div class="card">
+   <h2 id="sbTitle">Scoreboard</h2>
+   <p class="hint" id="sbHint"></p>
+   <div class="tblwrap" style="max-height:none"><table class="sb" id="sbNow"></table></div>
+   <p class="sbnote" id="sbNote"></p>
+  </div>
+  <div class="card mt">
+   <h2 id="sbDeltaTitle">Perubahan Pencapaian</h2>
+   <p class="hint" id="sbDeltaHint"></p>
+   <div class="tblwrap" style="max-height:none"><table class="sb" id="sbDelta"></table></div>
+  </div>
+  <div class="card mt">
+   <h2 id="sbPrevTitle">Scoreboard Akhir Bulan Lalu</h2>
+   <p class="hint" id="sbPrevHint"></p>
+   <div class="tblwrap" style="max-height:none"><table class="sb" id="sbPrev"></table></div>
   </div>
  </section>
 
@@ -966,6 +1008,102 @@ const pencCols = (cat,b,label) => { const [m0]=rkaMonths(); return [
 ];};
 const grCol = (cat,b,w,h) => ({h,v:k=>{const a=val(cat,b,'rp',k,PT('cur')),x=val(cat,b,'rp',k,PT(w));return a==null||!x?null:a/x-1;},f:v=>`<span class="${growthCls(v)}">${fSPct(v)}</span>`});
 
+/* ================= SCOREBOARD ================= */
+/* Skor = jumlah kategori TOTAL (Simpanan, Pinjaman, SML/DPK, NPL) dengan pencapaian RKA >= 100%. */
+const SB_SCORE = ['Simpanan','Pinjaman','SML','NPL'];
+const SB_DEF = () => {
+  const segOf = (seg,lbl) => ({t:(PBLK.find(b=>b.seg===seg)||{}).title, l:lbl});
+  const prodCols = (cat,totLbl) => [{t:'Total',l:'Total',tot:1}, segOf('Mikro','Mikro'), segOf('Small','Small'), segOf('Consumer','Konsumer')];
+  return {
+    Simpanan:{lbl:'Simpanan', cols:[{t:'Simpanan Total',l:'Total',tot:1},{t:'Tabungan Total',l:'Tabungan'},{t:'Giro Total',l:'Giro'},{t:'Deposito Total',l:'Deposito'}]},
+    Pinjaman:{lbl:'Pinjaman', cols:prodCols('Pinjaman','Pinjaman Total')},
+    SML:{lbl:'SML (DPK)', cols:prodCols('SML','SML Total')},
+    NPL:{lbl:'NPL', cols:prodCols('NPL','NPL Total')},
+  };
+};
+let SBK='all';
+$('segSb').querySelectorAll('button').forEach(b=>b.onclick=()=>{SBK=b.dataset.k; $('segSb').querySelectorAll('button').forEach(x=>x.classList.toggle('on',x===b)); renderScoreboard();});
+function sbMonthOf(ds,w){ const i=RES[ds][w]; if(i==null||!RK||DT[i].y!==RK.year) return null; return w==='cur'? rkaMonths()[0] : DT[i].m-1; }
+function sbCell(cat,title,key,w){
+  const bi=findBlk(cat,title); if(bi<0) return null;
+  const b=BLOCKS[cat][bi], ds=cat==='Simpanan'?'s':'p';
+  const act=val(cat,b,'rp',key,PT(w)), t=tgt(cat,b,'rp',key,sbMonthOf(ds,w));
+  return {act, t, penc:pencOf(cat,act,t), gap:(act==null||t==null)?null:act-t};
+}
+function sbRow(key,w){
+  const D=SB_DEF(), o={cells:{}, score:0, fail:0, sum:0, n:0};
+  Object.keys(D).forEach(cat=>D[cat].cols.forEach(c=>{ o.cells[cat+'|'+c.l]=c.t? sbCell(cat,c.t,key,w) : null; }));
+  SB_SCORE.forEach(cat=>{ const c=o.cells[cat+'|'+D[cat].cols[0].l]; if(!c||c.penc==null) return;
+    if(c.penc>=1) o.score++; else o.fail++; o.sum+=c.penc; o.n++; });
+  o.avg=o.n? o.sum/o.n : -1; return o;
+}
+const sbCls = p => p==null? '' : ' p-'+cls(p);
+function sbHead(mode, withNo, delta){
+  const D=SB_DEF(), cats = mode==='all'? Object.keys(D) : [mode];
+  let g='<tr class="g">'+(withNo?'<th rowspan="2">No</th>':'')+'<th rowspan="2" class="nm">Uker</th>';
+  let h='<tr>';
+  cats.forEach(cat=>D[cat].cols.forEach((c,i)=>{
+    if(mode==='all'){ if(i===0) g+=`<th colspan="${D[cat].cols.length}" class="gs">${D[cat].lbl}</th>`; h+=`<th class="${i===0?'gs':''}">${c.l}</th>`; }
+    else if(delta){ g+=`<th colspan="2" class="gs">${c.l}</th>`; h+='<th class="gs">Δ Real</th><th>Δ Penc</th>'; }
+    else { g+=`<th colspan="4" class="gs">${c.l}</th>`; h+='<th class="gs">Real</th><th>RKA</th><th>Penc</th><th>Gap</th>'; }
+  }));
+  g+=`<th colspan="2" class="gs">${delta?'Δ Score':'Score'}</th></tr>`; h+='<th class="gs" title="Jumlah kategori total ≥ 100%">✓</th><th title="Jumlah kategori total < 100%">✗</th></tr>';
+  return '<thead>'+g+h+'</thead>';
+}
+function sbCells(o, mode){
+  const D=SB_DEF(), cats = mode==='all'? Object.keys(D) : [mode]; let h='';
+  cats.forEach(cat=>D[cat].cols.forEach((c,i)=>{
+    const x=o.cells[cat+'|'+c.l];
+    if(mode==='all') h+=`<td class="num${i===0?' gs tot':''}${sbCls(x&&x.penc)}">${x&&x.penc!=null? nf2.format(x.penc*100)+'%':'–'}</td>`;
+    else h+=`<td class="num gs${c.tot?' tot':''}">${fRp(x&&x.act)}</td><td class="num">${fRp(x&&x.t)}</td><td class="num${sbCls(x&&x.penc)}">${x&&x.penc!=null? nf2.format(x.penc*100)+'%':'–'}</td><td class="num ${growthCls(x&&x.gap,LOWGOOD[cat])}">${x&&x.gap!=null? fSigned(x.gap):'–'}</td>`;
+  }));
+  return h+`<td class="sc-y gs">${o.n?o.score:'–'}</td><td class="sc-n">${o.n?o.fail:'–'}</td>`;
+}
+function sbDeltaCells(a,b,mode){
+  const D=SB_DEF(), cats = mode==='all'? Object.keys(D) : [mode]; let h='';
+  const dp=(x,y)=> (x&&y&&x.penc!=null&&y.penc!=null)? x.penc-y.penc : null;
+  const fd=v=> v==null?'–':(v>0?'+':'')+nf2.format(v*100)+'%';
+  cats.forEach(cat=>D[cat].cols.forEach((c,i)=>{
+    const x=a.cells[cat+'|'+c.l], y=b.cells[cat+'|'+c.l], d=dp(x,y);
+    if(mode==='all') h+=`<td class="num${i===0?' gs tot':''} ${growthCls(d)}">${fd(d)}</td>`;
+    else { const da=(x&&y&&x.act!=null&&y.act!=null)? x.act-y.act : null;
+      h+=`<td class="num gs ${growthCls(da,LOWGOOD[cat])}">${fSigned(da)}</td><td class="num ${growthCls(d)}">${fd(d)}</td>`; }
+  }));
+  const ds=a.n&&b.n? a.score-b.score : null;
+  return h+`<td class="c gs ${growthCls(ds)}"><b>${ds==null?'–':(ds>0?'+':'')+ds}</b></td><td class="c">${a.n&&b.n?(a.fail-b.fail>0?'+':'')+(a.fail-b.fail):'–'}</td>`;
+}
+function renderScoreboard(){
+  const mode=SBK, areas=AREAS.filter(a=>a.startsWith('Area') && (!S.area||S.area===a));
+  const curD=RES.p.cur??RES.s.cur, prevD=RES.p.mtd??RES.s.mtd, [m0]=rkaMonths();
+  const catLbl = mode==='all'? 'KC Region 16 Manado' : SB_DEF()[mode].lbl;
+  $('sbTitle').textContent=`Scoreboard ${fDL(curD)} – ${catLbl}`;
+  $('sbHint').textContent=`Pencapaian terhadap RKA ${m0!=null?BLNL[m0]:'–'} (maks. 110%; SML/NPL dihitung terbalik). Score ✓ = jumlah kategori total (Simpanan, Pinjaman, SML/DPK, NPL) dengan pencapaian ≥ 100%, ✗ = di bawah 100%. KC diurutkan per area dari score terbanyak.`;
+  let h=sbHead(mode,true)+'<tbody>', no=0;
+  areas.forEach(a=>{
+    const ks=cabsIn(a).map(c=>({c,o:sbRow('C|'+c,'cur')})).filter(x=>x.o.n||Object.values(x.o.cells).some(v=>v&&v.act));
+    ks.sort((x,y)=> y.o.score-x.o.score || y.o.avg-x.o.avg);
+    ks.forEach(x=>{ no++; h+=`<tr class="${S.cab===x.c?'sel':''}"><td class="no">${no}</td><td class="nm">${esc(CABS[x.c].n)}</td>${sbCells(x.o,mode)}</tr>`; });
+    h+=`<tr class="area"><td colspan="2" class="nm">${esc(a.toUpperCase())}</td>${sbCells(sbRow('A|'+a,'cur'),mode)}</tr>`;
+  });
+  if(!S.area) h+=`<tr class="total"><td colspan="2" class="nm">Total Region</td>${sbCells(sbRow('T','cur'),mode)}</tr>`;
+  $('sbNow').innerHTML=h+'</tbody>';
+  $('sbNote').textContent='Total Region = konsolidasi (termasuk Medium di Kanwil); baris KC tanpa Medium. Recovery tidak ditampilkan karena belum ada di data Excel.'+(S.cab||S.uk?' Filter cabang/unit kerja tidak berlaku di Scoreboard (baris terpilih ditandai).':'');
+  // akhir bulan lalu & delta (per area + total)
+  const keys=[...areas.map(a=>({k:'A|'+a,l:a.toUpperCase(),c:'area'})), ...(S.area?[]:[{k:'T',l:'Total Region',c:'total'}])];
+  const mPrev = prevD!=null? DT[prevD].m-1 : null;
+  $('sbPrevTitle').textContent=`Scoreboard ${fDL(prevD)} (akhir bulan lalu)`;
+  $('sbPrevHint').textContent=`Pencapaian posisi ${fDL(prevD)} terhadap RKA ${mPrev!=null?BLNL[mPrev]:'–'}.`;
+  let hp=sbHead(mode,false).replace('<th rowspan="2" class="nm">Uker</th>','<th rowspan="2" class="nm">Area</th>')+'<tbody>';
+  let hd=sbHead(mode,false,true).replace('<th rowspan="2" class="nm">Uker</th>','<th rowspan="2" class="nm">Area</th>')+'<tbody>';
+  keys.forEach(x=>{ const now=sbRow(x.k,'cur'), prev=sbRow(x.k,'mtd');
+    hp+=`<tr class="${x.c}"><td class="nm">${esc(x.l)}</td>${sbCells(prev,mode)}</tr>`;
+    hd+=`<tr class="${x.c}"><td class="nm">${esc(x.l)}</td>${sbDeltaCells(now,prev,mode)}</tr>`; });
+  $('sbPrev').innerHTML=hp+'</tbody>';
+  $('sbDeltaTitle').textContent=`Perubahan Pencapaian: ${fD(curD)} vs ${fD(prevD)}`;
+  $('sbDeltaHint').textContent='Selisih pencapaian posisi saat ini dikurangi akhir bulan lalu (dalam %). Hijau = pencapaian membaik.'+(mode!=='all'?' Δ Real = perubahan nominal (Rp Juta).':'');
+  $('sbDelta').innerHTML=hd+'</tbody>';
+}
+
 /* ================= HALAMAN PINJAMAN ================= */
 function renderPinjaman(){
   const ek=entityKey(), tot=PBLK[0], segs=PBLK.filter(b=>b.seg), cur=PT('cur');
@@ -1264,6 +1402,7 @@ function redrawAll(){
   chartBase(); header(); crumb();
   const p=document.querySelector('#tabs button.on').dataset.p;
   if(p==='ringkasan'){ renderKpis('kpis'); renderHeat(); renderRegionCharts(); }
+  if(p==='scoreboard'){ renderScoreboard(); }
   if(p==='pinjaman'){ renderPinjaman(); }
   if(p==='simpanan'){ renderSimpanan(); }
   if(p==='kualitas'){ renderKualitas(); }
