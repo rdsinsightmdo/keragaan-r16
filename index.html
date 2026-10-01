@@ -89,6 +89,8 @@ th.sorted::after{content:" ▾"} th.sorted.asc::after{content:" ▴"}
 .au-ins ul{margin:6px 0 0;padding-left:18px}
 .spark{display:block;margin-left:auto}
 #auTbl td.st{text-align:left}
+#auQ{min-width:240px}
+@media (max-width:640px){#auQ{width:100%;min-width:0;min-height:42px}}
 .sb{font-size:11px}
 .sb th,.sb td{padding:4px 4px}
 .sb td.nm,.sb th.nm{text-align:left;white-space:nowrap}
@@ -310,7 +312,7 @@ header nav.tabs button.on{color:#fff;border-bottom:3px solid #71C5E8}
   <div class="card au-ins" id="auIns"></div>
   <div class="grid two mt">
    <div class="card">
-    <h2>Peta Pencapaian vs Tren</h2>
+    <h2>Peta Pencapaian vs Tren · 3-Month Performance Movement</h2>
     <p class="hint" id="auQuadHint"></p>
     <div class="chartbox"><canvas id="auQuad"></canvas></div>
    </div>
@@ -322,7 +324,10 @@ header nav.tabs button.on{color:#fff;border-bottom:3px solid #71C5E8}
    </div>
   </div>
   <div class="card mt">
-   <h2 id="auTblTitle">Daftar Uker</h2>
+   <div class="cardhead">
+    <h2 id="auTblTitle">Daftar Uker</h2>
+    <input type="search" id="auQ" placeholder="🔍 Cari uker / kanca…" autocomplete="off" aria-label="Cari uker atau kanca">
+   </div>
    <p class="hint" id="auTblHint"></p>
    <div class="tblwrap"><table id="auTbl"></table></div>
   </div>
@@ -1157,7 +1162,8 @@ function renderScoreboard(){
 
 /* ================= ANALISIS UKER ================= */
 /* Per segmen: unit kerja yang belum mencapai RKA + analisis tren pencapaian (13 bulan akhir bulan). */
-const AU = {cat:'Simpanan', bi:0, show:'under', sort:null, asc:true, sel:null, R:null};
+const AU = {cat:'Simpanan', bi:0, show:'under', sort:null, asc:true, sel:null, R:null, q:''};
+$('auQ').oninput=e=>{ AU.q=e.target.value; renderAuTable(); };
 const auRk = (cat,b) => b && (cat==='Simpanan'? b.rk.D : b.rk[cat]);
 /* status: [label, kelas warna, urutan sort] */
 const AU_ST = {crit:['Kritis','bad',0], down:['Memburuk','bad',1], below:['Di bawah RKA','bad',2], up:['Membaik','warn',3], ok:['Tercapai','good',4], na:['Tanpa RKA','na',5]};
@@ -1306,7 +1312,8 @@ function renderAuTable(){
     {h:'Kebutuhan / bln',t:'Perubahan per bulan yang dibutuhkan untuk mencapai RKA Desember',raw:r=>r.needDone?null:r.need,f:r=>r.need==null?'–':r.needDone?'<span class="up">✓ tercapai</span>':fSigned(r.need)},
     {h:'Tren 13 Bln',t:'Garis biru = realisasi, putus-putus = RKA',f:r=>auSpark(r.act,r.tg,r.st)},
   ];
-  let data=R.rows.filter(r=>AU.show==='all' || (r.p!=null && r.p<1));
+  const q=AU.q.trim().toLowerCase();
+  let data=R.rows.filter(r=>(AU.show==='all' || (r.p!=null && r.p<1)) && (!q || r.label.toLowerCase().includes(q) || r.cab.toLowerCase().includes(q)));
   const si=AU.sort, c=si!=null&&cols[si]&&cols[si].raw? cols[si] : null;
   data.sort((a,b)=>{
     if(!c){ if(a.p==null) return 1; if(b.p==null) return -1; return a.p-b.p; }
@@ -1319,7 +1326,7 @@ function renderAuTable(){
     Status: <b>Kritis</b> = &lt; 95% dan pencapaian turun 3 bln terakhir; <b>Memburuk</b> = &lt; 100% dan turun; <b>Membaik</b> = &lt; 100% tetapi naik.`;
   let h='<thead><tr>'+cols.map((x,i)=>`<th data-i="${i}" title="${x.t||''}" class="${si===i?'sorted'+(AU.asc?' asc':''):''}">${x.h}</th>`).join('')+'</tr></thead><tbody>';
   data.forEach((r,ri)=>{ h+=`<tr class="${r.key===AU.sel?'sel':''}" data-i="${ri}">`+cols.map(x=>`<td class="num${x.c?' '+x.c:''}">${x.f(r)}</td>`).join('')+'</tr>'; });
-  if(!data.length) h+=`<tr><td class="empty" colspan="${cols.length}">${AU.show==='under'&&R.rows.some(r=>r.p!=null)?'Semua uker sudah mencapai RKA 🎉':'Tidak ada data untuk pilihan ini'}</td></tr>`;
+  if(!data.length) h+=`<tr><td class="empty" colspan="${cols.length}">${q?`Tidak ada uker yang cocok dengan "${esc(AU.q.trim())}"`:AU.show==='under'&&R.rows.some(r=>r.p!=null)?'Semua uker sudah mencapai RKA 🎉':'Tidak ada data untuk pilihan ini'}</td></tr>`;
   const el=$('auTbl'); el.innerHTML=h+'</tbody>';
   el.querySelectorAll('th').forEach(th=>{ const i=+th.dataset.i; if(!cols[i].raw){ th.style.cursor='default'; return; }
     th.onclick=()=>{ if(AU.sort===i) AU.asc=!AU.asc; else {AU.sort=i; AU.asc=i<=2;} renderAuTable(); }; });
