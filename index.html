@@ -241,8 +241,8 @@ header nav.tabs button.on{color:#fff;border-bottom:3px solid #71C5E8}
    <button data-p="pinjaman">Pinjaman</button>
    <button data-p="simpanan">Simpanan</button>
    <button data-p="kualitas">SML &amp; NPL</button>
-   <button data-p="eksplor">Eksplorasi Kinerja</button>
-   <button data-p="profil">Profil Uker</button>
+   <button data-p="eksplor">Detail Segmen</button>
+   <button data-p="profil">Kinerja Uker</button>
   </nav>
  </div>
 </header>
@@ -590,7 +590,7 @@ const LBLK = [
 const CATS = ['Pinjaman','Simpanan','SML','NPL','LDR'];
 const BLOCKS = {Pinjaman:PBLK, SML:PBLK, NPL:PBLK, Simpanan:SBLK, LDR:LBLK};
 const INVERSE = {SML:1,NPL:1,LDR:1};
-const LOWGOOD = {SML:1,NPL:1};
+const LOWGOOD = {SML:1,NPL:1,LDR:1};   // makin rendah makin baik (penurunan = hijau)
 const blkTitle = (cat,b) => {
   if(cat==='Simpanan'||cat==='LDR') return b.name||b.title;
   const t = b.tot? cat+' Total' : (b.lvl===0? cat+' '+b.name : b.name);
@@ -1351,7 +1351,7 @@ function renderPinjaman(){
     {label:'NPL Total',f:p=>val('NPL',tot,'pct',ek,p),color:css('--bad')},
     ...(mik?[{label:'SML Mikro',f:p=>val('SML',mik,'pct',ek,p),dash:[4,3],color:css('--c2')},{label:'NPL Mikro',f:p=>val('NPL',mik,'pct',ek,p),dash:[4,3],color:css('--bad')}]:[])]);
   $('pjProdTitle').textContent='Pinjaman per Segmen & Produk · '+entityName();
-  $('pjProdHint').textContent=`Hirarki sesuai sheet Pola. Posisi ${fDL(RES.p.cur)}; baris bertanda "(di luar total)" (Commercial, Consumer–Lainnya) ditampilkan tetapi tidak dihitung dalam total. Klik baris untuk membuka di Eksplorasi.`;
+  $('pjProdHint').textContent=`Hirarki sesuai sheet Pola. Posisi ${fDL(RES.p.cur)}; baris bertanda "(di luar total)" (Commercial, Consumer–Lainnya) ditampilkan tetapi tidak dihitung dalam total. Klik baris untuk membuka di Detail Segmen.`;
   prodTable('pjProd',['Pinjaman'],ek,false);
   $('pjUkTitle').textContent='Pinjaman per Uker · '+entityName()+' · '+fD(RES.p.cur);
   const cols=[
@@ -1392,7 +1392,7 @@ function renderSimpanan(){
   ratioLines('spCasa',pts,[{label:'CASA Total',f:casaOf(tot.cells),color:css('--c1')},
     ...dsegs.map(sg=>({label:'CASA '+sg,f:casaOf(SC.map((_,i)=>i).filter(i=>SC[i][0]===sg)),dash:[4,3]}))]);
   $('spProdTitle').textContent='Simpanan per Segmen & Produk · '+entityName();
-  $('spProdHint').textContent=`Hirarki sesuai sheet Pola. Posisi ${fDL(RES.s.cur)}. RKA Giro/Tabungan/Deposito tersedia di level Non Wholesale (tidak dipisah Mikro/Ritel). Klik baris untuk membuka di Eksplorasi.`;
+  $('spProdHint').textContent=`Hirarki sesuai sheet Pola. Posisi ${fDL(RES.s.cur)}. RKA Giro/Tabungan/Deposito tersedia di level Non Wholesale (tidak dipisah Mikro/Ritel). Klik baris untuk membuka di Detail Segmen.`;
   prodTable('spProd',['Simpanan'],ek,false);
   $('spUkTitle').textContent='Simpanan per Uker · '+entityName()+' · '+fD(RES.s.cur);
   const casaCells=SC.map((_,i)=>i).filter(i=>SC[i][1]!=='Deposito');
@@ -1433,7 +1433,7 @@ function renderKualitas(){
     {label:'Target '+q+' Total',f:p=>tgtAt(q,tot,'pct',ek,p),color:css('--text'),dash:[5,4]},
     ...inS.map(b=>({label:q+' '+b.name,f:p=>val(q,b,'pct',ek,p),dash:[3,3]}))]);
   $('kqProdTitle').textContent=`${q} per Segmen & Produk · ${entityName()}`;
-  $('kqProdHint').textContent=`Nominal ${q} posisi ${fDL(RES.p.cur)} (Rp Juta) terhadap RKA; hirarki sesuai sheet Pola. Makin rendah makin baik — pencapaian = target ÷ aktual (maks. 110%). Klik baris untuk membuka di Eksplorasi.`;
+  $('kqProdHint').textContent=`Nominal ${q} posisi ${fDL(RES.p.cur)} (Rp Juta) terhadap RKA; hirarki sesuai sheet Pola. Makin rendah makin baik — pencapaian = target ÷ aktual (maks. 110%). Klik baris untuk membuka di Detail Segmen.`;
   prodTable('kqProd',[q],ek,false,'rp');
   $('kqUkTitle').textContent=`${q} per Uker · ${entityName()} · ${fD(RES.p.cur)}`;
   const [m0]=rkaMonths();
@@ -1608,7 +1608,7 @@ function renderProfil(){
   renderKpis('profKpis',ek,'rank');
   $('profTitle').textContent='Seluruh Produk · '+entityName();
   const sib=siblings();
-  $('profHint').textContent=`Posisi ${fDL(S.date)} terhadap RKA, hirarki sesuai sheet Pola`+(sib.length?`; peringkat pencapaian RKA di antara ${sib.length} uker setingkat`:'')+'. Commercial dan Consumer–Lainnya ditampilkan tetapi tidak dihitung dalam total. Klik baris untuk membuka di Eksplorasi.';
+  $('profHint').textContent=`Posisi ${fDL(S.date)} terhadap RKA, hirarki sesuai sheet Pola`+(sib.length?`; peringkat pencapaian RKA di antara ${sib.length} uker setingkat`:'')+'. Commercial dan Consumer–Lainnya ditampilkan tetapi tidak dihitung dalam total. Klik baris untuk membuka di Detail Segmen.';
   prodTable('profTbl',CATS,ek,true);
 }
 
