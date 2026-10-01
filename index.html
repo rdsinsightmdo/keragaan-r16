@@ -84,6 +84,11 @@ tbody tr{cursor:pointer}
 th.sorted::after{content:" ▾"} th.sorted.asc::after{content:" ▴"}
 .heat td{text-align:center;font-weight:600}
 .heat td:first-child{text-align:left}
+/* Analisis Uker */
+.au-ins{font-size:13.5px;line-height:1.65;border-left:4px solid var(--accent)}
+.au-ins ul{margin:6px 0 0;padding-left:18px}
+.spark{display:block;margin-left:auto}
+#auTbl td.st{text-align:left}
 .sb{font-size:11px}
 .sb th,.sb td{padding:4px 4px}
 .sb td.nm,.sb th.nm{text-align:left;white-space:nowrap}
@@ -232,6 +237,7 @@ header nav.tabs button.on{color:#fff;border-bottom:3px solid #71C5E8}
   <nav class="tabs" id="tabs">
    <button data-p="ringkasan" class="on">Overview</button>
    <button data-p="scoreboard">Scoreboard</button>
+   <button data-p="analisis">Analisis Uker</button>
    <button data-p="pinjaman">Pinjaman</button>
    <button data-p="simpanan">Simpanan</button>
    <button data-p="kualitas">SML &amp; NPL</button>
@@ -290,6 +296,35 @@ header nav.tabs button.on{color:#fff;border-bottom:3px solid #71C5E8}
    <h2 id="sbPrevTitle">Scoreboard Akhir Bulan Lalu</h2>
    <p class="hint" id="sbPrevHint"></p>
    <div class="tblwrap" style="max-height:none"><table class="sb" id="sbPrev"></table></div>
+  </div>
+ </section>
+
+ <!-- ANALISIS UKER -->
+ <section class="page" id="p-analisis">
+  <div class="controls">
+   <div class="ctl"><label>Segmen</label><div class="seg" id="auCat"><button data-c="Simpanan" class="on">Simpanan</button><button data-c="Pinjaman">Pinjaman</button><button data-c="SML">SML</button><button data-c="NPL">NPL</button></div></div>
+   <div class="ctl" style="flex:1;min-width:220px"><label>Produk</label><select id="auBlk" style="width:100%"></select></div>
+   <div class="ctl"><label>Tampilkan</label><div class="seg" id="auShow"><button data-s="under" class="on">Belum Capai RKA</button><button data-s="all">Semua Uker</button></div></div>
+  </div>
+  <div class="strip" id="auStrip"></div>
+  <div class="card au-ins" id="auIns"></div>
+  <div class="grid two mt">
+   <div class="card">
+    <h2>Peta Pencapaian vs Tren</h2>
+    <p class="hint" id="auQuadHint"></p>
+    <div class="chartbox"><canvas id="auQuad"></canvas></div>
+   </div>
+   <div class="card">
+    <h2 id="auTrendTitle">Tren Uker</h2>
+    <p class="hint">Realisasi vs target RKA akhir bulan, dan pencapaian (sumbu kanan). Klik baris tabel atau titik peta untuk mengganti uker.</p>
+    <div class="chartbox"><canvas id="auTrend"></canvas></div>
+    <div class="note" id="auTrendInfo"></div>
+   </div>
+  </div>
+  <div class="card mt">
+   <h2 id="auTblTitle">Daftar Uker</h2>
+   <p class="hint" id="auTblHint"></p>
+   <div class="tblwrap"><table id="auTbl"></table></div>
   </div>
  </section>
 
@@ -1120,6 +1155,177 @@ function renderScoreboard(){
   $('sbDelta').innerHTML=hd+'</tbody>';
 }
 
+/* ================= ANALISIS UKER ================= */
+/* Per segmen: unit kerja yang belum mencapai RKA + analisis tren pencapaian (13 bulan akhir bulan). */
+const AU = {cat:'Simpanan', bi:0, show:'under', sort:null, asc:true, sel:null, R:null};
+const auRk = (cat,b) => b && (cat==='Simpanan'? b.rk.D : b.rk[cat]);
+/* status: [label, kelas warna, urutan sort] */
+const AU_ST = {crit:['Kritis','bad',0], down:['Memburuk','bad',1], below:['Di bawah RKA','bad',2], up:['Membaik','warn',3], ok:['Tercapai','good',4], na:['Tanpa RKA','na',5]};
+const auPill = st => `<span class="pill p-${AU_ST[st][1]}">${AU_ST[st][0]}</span>`;
+$('auCat').querySelectorAll('button').forEach(b=>b.onclick=()=>{AU.cat=b.dataset.c; AU.bi=0; AU.sort=null; AU.sel=null; auFillBlk(); renderAnalisis();});
+$('auBlk').onchange=e=>{AU.bi=+e.target.value; AU.sort=null; AU.sel=null; renderAnalisis();};
+$('auShow').querySelectorAll('button').forEach(b=>b.onclick=()=>{AU.show=b.dataset.s; renderAnalisis();});
+function auFillBlk(){
+  const B=BLOCKS[AU.cat];
+  if(!auRk(AU.cat,B[AU.bi])) AU.bi=Math.max(0,B.findIndex(b=>auRk(AU.cat,b)));
+  $('auBlk').innerHTML=B.map((b,i)=>auRk(AU.cat,b)?`<option value="${i}">${b.lvl===2?'      · ':b.lvl?'   · ':''}${esc(blkTitle(AU.cat,b))}</option>`:'').join('');
+  $('auBlk').value=AU.bi;
+}
+function auScopeKey(){ return S.cab? 'C|'+S.cab : S.area? 'A|'+S.area : 'T'; }
+function auUkers(){
+  const cs = S.cab? [S.cab] : S.area? cabsIn(S.area) : CABS.map((_,i)=>i).filter(i=>i>0);
+  const m=new Map(); cs.forEach(c=>uksIn(c).forEach(u=>{ if(!m.has(u)) m.set(u,c); }));
+  return [...m];
+}
+function auCompute(){
+  const cat=AU.cat, b=BLOCKS[cat][AU.bi], inv=LOWGOOD[cat], pts=monthPoints(13), n=pts.length;
+  const ci=ptDate(cat,'cur'), ds=cat==='Simpanan'?'s':'p';
+  const ml = ci==null? null : 12-DT[ci].m+(isME(ds,ci)?0:1);   // sisa bulan sampai Desember
+  const rows = auUkers().map(([u,c])=>{
+    const key='U|'+u, o=view(cat,b,'rp',key);
+    const act=pts.map(p=>val(cat,b,'rp',key,p)), tg=pts.map(p=>tgtAt(cat,b,'rp',key,p));
+    if(o.v.cur==null && o.tgt[0]==null && act.every(x=>x==null)) return null;
+    const pc=act.map((a,i)=>pencOf(cat,a,tg[i]));
+    const p=o.penc[0], p1=n>=2?pc[n-2]:null, p3=n>=4?pc[n-4]:null;
+    const d1=p!=null&&p1!=null?p-p1:null, d3=p!=null&&p3!=null?p-p3:null, dT=d3??d1;
+    let streak=0; for(let i=n-1;i>=0;i--){ const x=i===n-1?p:pc[i]; if(x!=null&&x<1) streak++; else break; }
+    const st = p==null?'na' : p>=1?'ok' : dT==null?'below' : dT<0?(p<.95?'crit':'down') : 'up';
+    const need = o.tgt[1]!=null&&o.v.cur!=null&&ml>0 ? (o.tgt[1]-o.v.cur)/ml : null;
+    return {u,key,label:UKS[u].n,cab:CABS[c].n,o,act,tg,pc,p,p1,d1,d3,dT,streak,st,need,
+      needDone: need!=null && (inv? need>=0 : need<=0),
+      ratio: inv? val(cat,b,'pct',key,PT('cur')) : null};
+  }).filter(Boolean);
+  return {cat,b,inv,pts,rows};
+}
+function auSpark(a,t,st){
+  const xs=[...a,...t].filter(v=>v!=null); if(xs.length<2) return '';
+  const lo=Math.min(...xs), hi=Math.max(...xs), W=96, H=26, n=a.length;
+  const sx=i=>2+i/(n-1||1)*(W-6), sy=v=>hi===lo?H/2:H-3-(v-lo)/(hi-lo)*(H-6);
+  const path=arr=>{ let d='',pen=false; arr.forEach((v,i)=>{ if(v==null){pen=false;return;} d+=(pen?'L':'M')+sx(i).toFixed(1)+' '+sy(v).toFixed(1); pen=true; }); return d; };
+  let li=n-1; while(li>=0&&a[li]==null) li--;
+  const dot = li>=0? `<circle cx="${sx(li).toFixed(1)}" cy="${sy(a[li]).toFixed(1)}" r="2.6" style="fill:var(--${({good:'good',warn:'warn',bad:'bad',na:'faint'})[AU_ST[st][1]]})"/>` : '';
+  return `<svg class="spark" width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" aria-hidden="true"><path d="${path(t)}" fill="none" style="stroke:var(--faint)" stroke-width="1.2" stroke-dasharray="3 2"/><path d="${path(a)}" fill="none" style="stroke:var(--c1)" stroke-width="1.6"/>${dot}</svg>`;
+}
+function renderAnalisis(){
+  $('auCat').querySelectorAll('button').forEach(x=>x.classList.toggle('on',x.dataset.c===AU.cat));
+  $('auShow').querySelectorAll('button').forEach(x=>x.classList.toggle('on',x.dataset.s===AU.show));
+  auFillBlk();
+  const R=AU.R=auCompute(), [m0]=rkaMonths(), title=blkTitle(R.cat,R.b), scope=entityName(auScopeKey())+typeSfx();
+  const wt=R.rows.filter(r=>r.p!=null), under=wt.filter(r=>r.p<1);
+  const down=under.filter(r=>r.st==='down'||r.st==='crit'), crit=under.filter(r=>r.st==='crit'), up=under.filter(r=>r.st==='up');
+  const s3=under.filter(r=>r.streak>=3), gapSum=under.reduce((s,r)=>s+(r.o.gap[0]||0),0);
+  const worst=under.slice().sort((a,b)=>a.p-b.p);
+  /* strip ringkasan */
+  $('auStrip').innerHTML=`
+    <div class="s"><span>Uker dengan RKA</span><b class="num">${wt.length}</b></div>
+    <div class="s"><span>Belum capai RKA ${mLbl(m0)}</span><b class="num down">${under.length}${wt.length?` <small class="muted">(${fPct(under.length/wt.length)})</small>`:''}</b></div>
+    <div class="s"><span>Total gap belum capai</span><b class="num ${growthCls(gapSum,R.inv)}">${under.length?fSigned(gapSum):'–'}</b></div>
+    <div class="s"><span>Memburuk (3 bln)</span><b class="num down">${down.length}</b></div>
+    <div class="s"><span>Kritis (&lt; 95% &amp; turun)</span><b class="num down">${crit.length}</b></div>
+    <div class="s"><span>Membaik</span><b class="num">${up.length}</b></div>
+    <div class="s"><span>≥ 3 bln di bawah RKA</span><b class="num down">${s3.length}</b></div>`;
+  /* insight */
+  let ins;
+  if(m0==null) ins=`Tidak ada target RKA untuk tanggal posisi ${fDL(S.date)}${RK?` (RKA hanya tahun ${RK.year})`:''}, sehingga pencapaian tidak dapat dihitung.`;
+  else if(!wt.length) ins=`Tidak ada uker dengan target RKA untuk <b>${esc(title)}</b> di ${esc(scope)}. Target mungkin hanya tersedia di level yang lebih tinggi.`;
+  else {
+    const nm=a=>a.slice(0,3).map(r=>`<b>${esc(r.label)}</b> (${fPct(r.p)})`).join(', ');
+    ins=`<b>${under.length} dari ${wt.length} uker</b> (${fPct(under.length/wt.length)}) di ${esc(scope)} belum mencapai RKA ${BLNL[m0]} untuk <b>${esc(title)}</b>`+
+      (under.length?`, dengan total gap <b class="num ${growthCls(gapSum,R.inv)}">${fSigned(gapSum)}</b> Rp Juta.`:'. Semua uker sudah mencapai target. 🎉')+
+      (under.length?`<ul>
+        <li>Pencapaian terendah: ${nm(worst)}.</li>
+        <li><b>${down.length}</b> uker pencapaiannya <span class="down">menurun</span> dalam 3 bulan terakhir${crit.length?`, ${crit.length} di antaranya kritis (&lt; 95%): ${nm(crit.slice().sort((a,b)=>a.p-b.p))}`:''}.</li>
+        <li><b>${up.length}</b> uker masih di bawah RKA tetapi <span class="up">membaik</span>.</li>
+        ${s3.length?`<li><b>${s3.length}</b> uker berada di bawah RKA ≥ 3 bulan berturut-turut: ${nm(s3.slice().sort((a,b)=>b.streak-a.streak||a.p-b.p))}.</li>`:''}
+      </ul>`:'');
+  }
+  $('auIns').innerHTML=ins;
+  if(!AU.sel || !R.rows.find(r=>r.key===AU.sel)) AU.sel=(worst[0]||wt[0]||R.rows[0]||{}).key||null;
+  renderAuQuad(); renderAuTrend(); renderAuTable();
+}
+function renderAuQuad(){
+  const R=AU.R, rs=R.rows.filter(r=>r.p!=null && r.dT!=null);
+  const colOf = r => css('--'+({good:'good',warn:'warn',bad:'bad',na:'faint'})[AU_ST[r.st][1]]);
+  $('auQuadHint').textContent=`Sumbu X = pencapaian RKA saat ini (maks. 110%), sumbu Y = perubahan pencapaian 3 bulan terakhir. Kiri bawah = di bawah RKA dan memburuk (prioritas).`;
+  const quad={id:'quad',beforeDatasetsDraw(ch){
+    const {left,right,top,bottom}=ch.chartArea, c=ch.ctx, x=ch.scales.x.getPixelForValue(1), y=ch.scales.y.getPixelForValue(0);
+    c.save();
+    if(x>left){ c.fillStyle=css('--bad-bg'); c.globalAlpha=.45; c.fillRect(left,Math.max(top,Math.min(y,bottom)),Math.min(x,right)-left,bottom-Math.max(top,Math.min(y,bottom))); c.globalAlpha=1; }
+    c.strokeStyle=css('--text'); c.globalAlpha=.5; c.setLineDash([4,4]); c.beginPath();
+    if(x>=left&&x<=right){ c.moveTo(x,top); c.lineTo(x,bottom); }
+    if(y>=top&&y<=bottom){ c.moveTo(left,y); c.lineTo(right,y); }
+    c.stroke(); c.globalAlpha=1; c.setLineDash([]); c.fillStyle=css('--faint'); c.font='11px system-ui,sans-serif';
+    c.textAlign='left'; c.fillText('Di bawah RKA · membaik',left+6,top+14); c.fillText('Di bawah RKA · memburuk',left+6,bottom-6);
+    c.textAlign='right'; c.fillText('Tercapai · membaik',right-6,top+14); c.fillText('Tercapai · menurun',right-6,bottom-6);
+    c.restore(); }};
+  const xs=rs.map(r=>r.p), xmin=xs.length? Math.max(0,Math.floor((Math.min(...xs,1)-.05)*20)/20) : 0;
+  mk('auQuad',{type:'scatter',data:{datasets:[{data:rs.map(r=>({x:r.p,y:r.dT,r})),
+      backgroundColor:rs.map(r=>colOf(r)+(r.key===AU.sel?'':'b3')),borderColor:rs.map(r=>r.key===AU.sel?css('--text'):'transparent'),borderWidth:2,
+      pointRadius:rs.map(r=>r.key===AU.sel?7:4.5),pointHoverRadius:7}]},
+    options:{maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>{const r=c.raw.r; return [`${r.label} (${r.cab})`,`Penc. ${fPct(r.p)} · Δ ${r.d3!=null?'3 bln':'MtD'} ${fPP(r.dT)}`,`Status: ${AU_ST[r.st][0]}`];}}}},
+      scales:{x:{min:xmin,max:1.12,title:{display:true,text:'Pencapaian RKA'},ticks:{callback:v=>nf0.format(v*100)+'%'}},
+              y:{title:{display:true,text:'Δ Pencapaian'},ticks:{callback:v=>nf1.format(v*100)+'%'}}},
+      onClick:(e,els)=>{ if(els.length){ AU.sel=rs[els[0].index].key; renderAuQuad(); renderAuTrend(); renderAuTable(); } }},
+    plugins:[quad]});
+}
+function renderAuTrend(){
+  const R=AU.R, r=R.rows.find(x=>x.key===AU.sel);
+  if(!r){ $('auTrendTitle').textContent='Tren Uker'; $('auTrendInfo').innerHTML=''; if(charts.auTrend){charts.auTrend.destroy(); delete charts.auTrend;} return; }
+  $('auTrendTitle').textContent=`Tren · ${r.label}`;
+  const c1=css('--c1'), c2=css('--c2'), w=css('--warn');
+  const mx=Math.max(1,...[...r.act,...r.tg].filter(x=>x!=null));
+  mk('auTrend',{type:'line',data:{labels:R.pts.map(p=>p.label),datasets:[
+      {label:'Realisasi',data:r.act,borderColor:c1,backgroundColor:c1,tension:.25,pointRadius:3,spanGaps:true,yAxisID:'y'},
+      {label:'Target RKA',data:r.tg,borderColor:c2,backgroundColor:c2,borderDash:[5,4],pointStyle:'rectRot',pointRadius:3,spanGaps:true,yAxisID:'y'},
+      {label:'Pencapaian (kanan)',data:r.pc,borderColor:w,backgroundColor:w,borderDash:[2,3],pointRadius:2,tension:.2,spanGaps:true,yAxisID:'y2'}]},
+    options:{maintainAspectRatio:false,interaction:{mode:'index',intersect:false},
+      plugins:{legend:{position:'bottom',labels:{boxWidth:10}},tooltip:{callbacks:{label:c=>c.raw==null?null:`${c.dataset.label}: ${c.dataset.yAxisID==='y2'?fPct(c.raw):fRp(c.raw)}`}}},
+      scales:{y:{ticks:{callback:scaleFmt(mx)}},y2:{position:'right',grid:{display:false},ticks:{callback:v=>nf0.format(v*100)+'%'}},x:{grid:{display:false}}}}});
+  $('auTrendInfo').innerHTML=`${auPill(r.st)} · Penc. ${pill(r.p)} · Δ MtD <b class="num ${growthCls(r.d1)}">${fPP(r.d1)}</b> · Δ 3 bln <b class="num ${growthCls(r.d3)}">${fPP(r.d3)}</b>`+
+    (r.streak?` · <b>${r.streak}</b> bln berturut di bawah RKA`:'')+
+    (r.need!=null?` · ${r.needDone?'RKA Des sudah tercapai':`Kebutuhan ke RKA Des <b class="num">${fSigned(r.need)}</b> / bln`}`:'');
+}
+function renderAuTable(){
+  const R=AU.R, inv=R.inv, [m0]=rkaMonths(), cat=R.cat;
+  const gc=(v,i)=>`<span class="${growthCls(v,i)}">`;
+  const cols=[
+    {h:'Uker',raw:r=>r.label,f:r=>esc(r.label)},
+    {h:'Kanca',raw:r=>r.cab,f:r=>esc(r.cab)},
+    {h:'Status',raw:r=>AU_ST[r.st][2],f:r=>auPill(r.st),c:'st'},
+    {h:`Posisi ${fD(ptDate(cat,'cur'))}`,raw:r=>r.o.v.cur,f:r=>`<b>${fRp(r.o.v.cur)}</b>`},
+    ...(inv?[{h:`Rasio ${cat}`,raw:r=>r.ratio,f:r=>fPct(r.ratio)}]:[]),
+    {h:`RKA ${mLbl(m0)}`,raw:r=>r.o.tgt[0],f:r=>fRp(r.o.tgt[0])},
+    {h:`Penc. ${mLbl(m0)}`,raw:r=>r.p,f:r=>pill(r.p)},
+    {h:`Gap ${mLbl(m0)}`,raw:r=>r.o.gap[0],f:r=>gc(r.o.gap[0],inv)+fSigned(r.o.gap[0])+'</span>'},
+    {h:'Penc. Bln Lalu',t:'Pencapaian akhir bulan lalu terhadap RKA bulan tersebut',raw:r=>r.p1,f:r=>pill(r.p1)},
+    {h:'Δ Penc MtD',raw:r=>r.d1,f:r=>gc(r.d1)+fPP(r.d1)+'</span>'},
+    {h:'Δ Penc 3 Bln',raw:r=>r.d3,f:r=>gc(r.d3)+fPP(r.d3)+'</span>'},
+    {h:'MtD %',raw:r=>r.o.g.mtd[1],f:r=>gc(r.o.g.mtd[1],inv)+fSPct(r.o.g.mtd[1])+'</span>'},
+    {h:'YoY %',raw:r=>r.o.g.yoy[1],f:r=>gc(r.o.g.yoy[1],inv)+fSPct(r.o.g.yoy[1])+'</span>'},
+    {h:'Bln &lt; RKA',t:'Jumlah bulan berturut-turut (sampai posisi) di bawah RKA',raw:r=>r.streak,f:r=>r.streak?`<span class="${r.streak>=3?'down':''}">${r.streak} bln</span>`:'–'},
+    {h:'Kebutuhan / bln',t:'Perubahan per bulan yang dibutuhkan untuk mencapai RKA Desember',raw:r=>r.needDone?null:r.need,f:r=>r.need==null?'–':r.needDone?'<span class="up">✓ tercapai</span>':fSigned(r.need)},
+    {h:'Tren 13 Bln',t:'Garis biru = realisasi, putus-putus = RKA',f:r=>auSpark(r.act,r.tg,r.st)},
+  ];
+  let data=R.rows.filter(r=>AU.show==='all' || (r.p!=null && r.p<1));
+  const si=AU.sort, c=si!=null&&cols[si]&&cols[si].raw? cols[si] : null;
+  data.sort((a,b)=>{
+    if(!c){ if(a.p==null) return 1; if(b.p==null) return -1; return a.p-b.p; }
+    const A=c.raw(a), B=c.raw(b);
+    if(typeof A==='string') return AU.asc? A.localeCompare(B) : B.localeCompare(A);
+    if(A==null) return 1; if(B==null) return -1; return AU.asc? A-B : B-A;
+  });
+  $('auTblTitle').textContent=`${AU.show==='all'?'Semua Uker':'Uker Belum Capai RKA'} · ${blkTitle(cat,R.b)} · ${entityName(auScopeKey())}`;
+  $('auTblHint').innerHTML=`Nominal Rp Juta. Default diurutkan dari pencapaian terendah; klik judul kolom untuk mengurutkan, klik baris untuk melihat trennya.${inv?' SML/NPL: makin rendah makin baik, pencapaian = target ÷ aktual (maks. 110%).':''}
+    Status: <b>Kritis</b> = &lt; 95% dan pencapaian turun 3 bln terakhir; <b>Memburuk</b> = &lt; 100% dan turun; <b>Membaik</b> = &lt; 100% tetapi naik.`;
+  let h='<thead><tr>'+cols.map((x,i)=>`<th data-i="${i}" title="${x.t||''}" class="${si===i?'sorted'+(AU.asc?' asc':''):''}">${x.h}</th>`).join('')+'</tr></thead><tbody>';
+  data.forEach((r,ri)=>{ h+=`<tr class="${r.key===AU.sel?'sel':''}" data-i="${ri}">`+cols.map(x=>`<td class="num${x.c?' '+x.c:''}">${x.f(r)}</td>`).join('')+'</tr>'; });
+  if(!data.length) h+=`<tr><td class="empty" colspan="${cols.length}">${AU.show==='under'&&R.rows.some(r=>r.p!=null)?'Semua uker sudah mencapai RKA 🎉':'Tidak ada data untuk pilihan ini'}</td></tr>`;
+  const el=$('auTbl'); el.innerHTML=h+'</tbody>';
+  el.querySelectorAll('th').forEach(th=>{ const i=+th.dataset.i; if(!cols[i].raw){ th.style.cursor='default'; return; }
+    th.onclick=()=>{ if(AU.sort===i) AU.asc=!AU.asc; else {AU.sort=i; AU.asc=i<=2;} renderAuTable(); }; });
+  el.querySelectorAll('tbody tr[data-i]').forEach(tr=>tr.onclick=()=>{ AU.sel=data[+tr.dataset.i].key; renderAuQuad(); renderAuTrend(); renderAuTable(); });
+}
+
 /* ================= HALAMAN PINJAMAN ================= */
 function renderPinjaman(){
   const ek=entityKey(), tot=PBLK[0], segs=PBLK.filter(b=>b.seg), cur=PT('cur');
@@ -1419,6 +1625,7 @@ function redrawAll(){
   const p=document.querySelector('#tabs button.on').dataset.p;
   if(p==='ringkasan'){ renderKpis('kpis'); renderHeat(); renderRegionCharts(); }
   if(p==='scoreboard'){ renderScoreboard(); }
+  if(p==='analisis'){ renderAnalisis(); }
   if(p==='pinjaman'){ renderPinjaman(); }
   if(p==='simpanan'){ renderSimpanan(); }
   if(p==='kualitas'){ renderKualitas(); }
