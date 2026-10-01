@@ -168,6 +168,10 @@ header .chip{background:rgba(255,255,255,.18);color:#fff}
 header nav.tabs button{color:rgba(255,255,255,.72)}
 header nav.tabs button:hover{color:#fff}
 header nav.tabs button.on{color:#fff;border-bottom:3px solid #71C5E8}
+/* Tanggal Posisi: disorot agar langsung terlihat */
+.filters .ctl.date-ctl label{color:#fff;font-size:12px;letter-spacing:.06em}
+.filters .ctl.date-ctl select{min-width:200px;padding:8px 12px 8px 38px;font-size:16px;font-weight:700;color:#0857C3;background:#fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='18' height='18' viewBox='0 0 24 24' fill='none' stroke='%230857C3' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='3' y='5' width='18' height='16' rx='2'/%3E%3Cpath d='M16 3v4M8 3v4M3 10h18'/%3E%3C/svg%3E") no-repeat 12px center;border:2px solid #71C5E8;border-radius:10px;box-shadow:0 4px 14px rgba(4,30,70,.25);cursor:pointer}
+.filters .ctl.date-ctl select:focus{outline:none;box-shadow:0 0 0 3px rgba(113,197,232,.6),0 4px 14px rgba(4,30,70,.25)}
 @media (max-width:640px){
   header{position:relative}
   .hwrap{padding:12px 12px 0}
@@ -176,7 +180,8 @@ header nav.tabs button.on{color:#fff;border-bottom:3px solid #71C5E8}
   h1{font-size:18px}
   .filters{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin-top:12px}
   .filters .ctl,.filters .ctl.wide{min-width:0}
-  .filters .ctl.wide{grid-column:1/-1}
+  .filters .ctl.wide,.filters .ctl.date-ctl{grid-column:1/-1}
+  .filters .ctl.date-ctl select{min-height:48px;font-size:17px}
   .filters select,.filters .ctl.wide select{width:100%;min-width:0;min-height:42px}
   .filters .btn{min-height:42px}
   nav.tabs{margin:10px -12px 0;padding:0 8px;scrollbar-width:thin;scroll-behavior:smooth;scroll-snap-type:x proximity;touch-action:pan-x}
@@ -216,7 +221,7 @@ header nav.tabs button.on{color:#fff;border-bottom:3px solid #71C5E8}
    </div>
   </div>
   <div class="filters">
-   <div class="ctl"><label>Tanggal Posisi</label><select id="fDate"></select></div>
+   <div class="ctl date-ctl"><label for="fDate">Tanggal Posisi</label><select id="fDate"></select></div>
    <div class="ctl"><label>Target RKA</label><select id="fRka"></select></div>
    <div class="ctl"><label>Area</label><select id="fArea"></select></div>
    <div class="ctl"><label>Cabang (Kanca)</label><select id="fCab"></select></div>
