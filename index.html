@@ -992,11 +992,11 @@ function renderRegionCharts(){
 /* ================= TABEL PRODUK (Pinjaman / Simpanan / Profil) ================= */
 function prodTable(elId, cats, ek, withRank, kindOv){
   const qN = kindOv==='rp' && cats.length===1 && (cats[0]==='SML'||cats[0]==='NPL');
-  const [m0,m1]=rkaMonths();
+  const [m0,m1]=rkaMonths(), nom = elId==='profTbl';   // Kinerja Uker: delta dalam nominal
   const R0=cats.includes('Simpanan')&&cats.length===1?RES.s:RES.p;
-  let t=`<thead><tr><th>Segmen / Produk</th><th>${fD(R0.ytd)}</th><th>${fD(R0.mtd)}</th><th>${fD(R0.cur)}</th><th>RKA ${mLbl(m0)}</th><th>Penc. ${mLbl(m0)}</th><th>Gap ${mLbl(m0)}</th><th>RKA Des</th><th>Penc. Des</th><th>MtD %</th><th>YtD %</th><th>YoY %</th><th>Porsi</th>`+
+  let t=`<thead><tr><th>Segmen / Produk</th><th>${fD(R0.ytd)}</th><th>${fD(R0.mtd)}</th><th>${fD(R0.cur)}</th><th>RKA ${mLbl(m0)}</th><th>Penc. ${mLbl(m0)}</th><th>Gap ${mLbl(m0)}</th><th>RKA Des</th><th>Penc. Des</th>`+(nom?'<th>DtD</th><th>MtD</th><th>YtD</th><th>YoY</th>':'<th>MtD %</th><th>YtD %</th><th>YoY %</th>')+`<th>Porsi</th>`+
     (cats.length===1&&cats[0]==='Pinjaman'?'<th>SML %</th><th>NPL %</th><th>Debitur</th>':'')+(cats.length===1&&cats[0]==='Simpanan'?'<th>Rekening</th>':'')+(qN?'<th>Rasio %</th><th>Target Rasio</th><th>Debitur</th>':'')+(withRank?'<th>Peringkat</th>':'')+'</tr></thead><tbody>';
-  const ncol=13+(cats.length===1&&cats[0]==='Pinjaman'?3:0)+(cats.length===1&&cats[0]==='Simpanan'?1:0)+(qN?3:0)+(withRank?1:0);
+  const ncol=13+(nom?1:0)+(cats.length===1&&cats[0]==='Pinjaman'?3:0)+(cats.length===1&&cats[0]==='Simpanan'?1:0)+(qN?3:0)+(withRank?1:0);
   cats.forEach(cat=>{
     if(cats.length>1) t+=`<tr class="catttl"><td colspan="${ncol}">${cat}</td></tr>`;
     const kind = qN? 'rp' : cat==='SML'||cat==='NPL'||cat==='LDR' ? 'pct' : 'rp', inv=LOWGOOD[cat];
@@ -1011,7 +1011,7 @@ function prodTable(elId, cats, ek, withRank, kindOv){
         <td class="num">${fmtV(k,o.v.ytd)}</td><td class="num">${fmtV(k,o.v.mtd)}</td><td class="num"><b>${fmtV(k,o.v.cur)}</b></td>
         <td class="num">${fmtV(k,o.tgt[0])}</td><td>${pill(o.penc[0])}</td><td class="num ${growthCls(o.gap[0],inv)}">${fmtG(k,o.gap[0])}</td>
         <td class="num">${fmtV(k,o.tgt[1])}</td><td>${pill(o.penc[1])}</td>
-        <td class="num">${gSpan(o,'mtd',inv)}</td><td class="num">${gSpan(o,'ytd',inv)}</td><td class="num">${gSpan(o,'yoy',inv)}</td>
+        ${nom? ['dtd','mtd','ytd','yoy'].map(w=>`<td class="num">${gAbs(o,w,inv)}</td>`).join('') : `<td class="num">${gSpan(o,'mtd',inv)}</td><td class="num">${gSpan(o,'ytd',inv)}</td><td class="num">${gSpan(o,'yoy',inv)}</td>`}
         <td class="num">${por==null?'':fPct(por)}</td>`+
         (cats.length===1&&cats[0]==='Pinjaman'?`<td class="num">${fPct(val('SML',b,'pct',ek,cur))}</td><td class="num">${fPct(val('NPL',b,'pct',ek,cur))}</td><td class="num">${fRp(val('Pinjaman',b,'cnt',ek,cur))}</td>`:'')+
         (cats.length===1&&cats[0]==='Simpanan'?`<td class="num">${fRp(val('Simpanan',b,'cnt',ek,cur))}</td>`:'')+
