@@ -1,0 +1,1736 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<link rel="icon" type="image/png" href="img/icon.png">
+<link rel="apple-touch-icon" href="img/icon.png">
+<title>Analisa RSF · Region 16 Manado</title>
+<style>
+:root{
+  --bg:#f3f7fc; --surface:#ffffff; --surface-2:#eef3fa; --border:#dce5f1;
+  --text:#13233d; --muted:#52627a; --faint:#8593a8;
+  --accent:#0857C3; --accent-soft:#e3eefb; --on-accent:#ffffff;
+  --brand-grad:linear-gradient(120deg,#0857C3 0%,#307FE2 65%,#71C5E8 130%);
+  --good:#1e7a46; --good-bg:#dcf1e4; --warn:#9a6300; --warn-bg:#fcefd2; --bad:#b3261e; --bad-bg:#fbe0dd;
+  --area-bg:#eaf2fc; --total-bg:#d6e6fa;
+  --c1:#0857C3; --c2:#71C5E8; --c3:#307FE2; --grid:#e3eaf4;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#0a1526; --surface:#0f1f38; --surface-2:#152a4a; --border:#23395c;
+    --text:#e6eef9; --muted:#a4b4cb; --faint:#7487a3;
+    --accent:#71C5E8; --accent-soft:#16345c; --on-accent:#0a1526;
+    --brand-grad:linear-gradient(120deg,#06408f 0%,#0857C3 60%,#307FE2 130%);
+    --good:#6fd39a; --good-bg:#173a27; --warn:#f0c064; --warn-bg:#3d3017; --bad:#ff8f86; --bad-bg:#44201d;
+    --area-bg:#132b4f; --total-bg:#1a3763;
+    --c1:#71C5E8; --c2:#4f95ec; --c3:#a9dcf2; --grid:#1d3354;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0a1526; --surface:#0f1f38; --surface-2:#152a4a; --border:#23395c;
+  --text:#e6eef9; --muted:#a4b4cb; --faint:#7487a3;
+  --accent:#71C5E8; --accent-soft:#16345c; --on-accent:#0a1526;
+  --brand-grad:linear-gradient(120deg,#06408f 0%,#0857C3 60%,#307FE2 130%);
+  --good:#6fd39a; --good-bg:#173a27; --warn:#f0c064; --warn-bg:#3d3017; --bad:#ff8f86; --bad-bg:#44201d;
+  --area-bg:#132b4f; --total-bg:#1a3763;
+  --c1:#71C5E8; --c2:#4f95ec; --c3:#a9dcf2; --grid:#1d3354;
+}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:var(--bg);color:var(--text);font:14px/1.45 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;-webkit-font-smoothing:antialiased}
+.num{font-variant-numeric:tabular-nums}
+/* ---------- header (gaya sama dengan dashboard) ---------- */
+header{background:var(--brand-grad);color:#fff}
+.hwrap{max-width:1320px;margin:0 auto;padding:14px 20px 0}
+.htop{display:flex;align-items:flex-end;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.hbtns{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+h1{font-size:20px;margin:0;letter-spacing:-.01em;color:#fff}
+h1 small{font-size:14px;font-weight:600;opacity:.8}
+.sub{color:rgba(255,255,255,.85);font-size:13px;margin-top:2px}
+.theme-btn{border:1px solid rgba(255,255,255,.35);background:rgba(255,255,255,.14);color:#fff;border-radius:8px;padding:6px 10px;cursor:pointer;font:inherit;font-size:12px;text-decoration:none;line-height:1.3}
+.theme-btn:hover{background:rgba(255,255,255,.24);border-color:#fff}
+.chip{display:none;align-items:center;gap:6px;font-size:12px;color:#fff;background:rgba(255,255,255,.18);border-radius:999px;padding:4px 10px;font-weight:600}
+.chip.on{display:inline-flex}
+.filters{display:flex;flex-wrap:wrap;gap:10px;align-items:flex-end;margin-top:12px}
+.ctl{display:flex;flex-direction:column;gap:4px}
+.ctl label{font-size:11px;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:.04em}
+header .ctl label{color:rgba(255,255,255,.85)}
+select,input[type=search]{font:inherit;padding:7px 10px;border-radius:8px;border:1px solid var(--border);background:var(--surface);color:var(--text);min-width:150px;max-width:100%}
+header select{border-color:rgba(255,255,255,.4)}
+.filters .ctl.date-ctl label{color:#fff;font-size:12px;letter-spacing:.06em}
+.filters .ctl.date-ctl select{min-width:200px;padding:8px 12px 8px 38px;font-size:16px;font-weight:700;color:#0857C3;background:#fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='18' height='18' viewBox='0 0 24 24' fill='none' stroke='%230857C3' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='3' y='5' width='18' height='16' rx='2'/%3E%3Cpath d='M16 3v4M8 3v4M3 10h18'/%3E%3C/svg%3E") no-repeat 12px center;border:2px solid #71C5E8;border-radius:10px;box-shadow:0 4px 14px rgba(4,30,70,.25);cursor:pointer}
+.filters .ctl.date-ctl select:focus{outline:none;box-shadow:0 0 0 3px rgba(113,197,232,.6),0 4px 14px rgba(4,30,70,.25)}
+.btn{border:1px solid var(--border);background:var(--surface-2);color:var(--text);border-radius:8px;padding:7px 12px;cursor:pointer;font:inherit;font-size:13px}
+.btn:hover{border-color:var(--accent)}
+header .btn{background:rgba(255,255,255,.14);border-color:rgba(255,255,255,.35);color:#fff}
+header .btn:hover{background:rgba(255,255,255,.24);border-color:#fff}
+nav.tabs{display:flex;flex-wrap:wrap;gap:2px 4px;margin-top:12px}
+nav.tabs button{border:0;background:none;color:rgba(255,255,255,.75);font:inherit;font-weight:600;padding:9px 12px;border-bottom:3px solid transparent;cursor:pointer;white-space:nowrap;display:inline-flex;align-items:center;gap:6px}
+nav.tabs button:hover{color:#fff}
+nav.tabs button.on{color:#fff;border-bottom-color:#71C5E8}
+nav.tabs button b{display:inline-flex;align-items:center;justify-content:center;min-width:20px;height:20px;padding:0 4px;border-radius:6px;background:rgba(255,255,255,.18);font-size:11px}
+nav.tabs button.on b{background:#fff;color:#0857C3}
+/* ---------- konten ---------- */
+main{max-width:1320px;margin:0 auto;padding:20px}
+section.page{display:none}
+section.page.on{display:block}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:16px}
+.card h2{font-size:15px;margin:0 0 4px}
+.card .hint{color:var(--muted);font-size:12px;margin:0 0 12px}
+.grid{display:grid;gap:14px}
+.grid>*{min-width:0}
+.two{grid-template-columns:1fr 1fr}
+@media (max-width:980px){.two{grid-template-columns:1fr}}
+.mt{margin-top:14px}
+.intro{display:flex;gap:14px;align-items:flex-start;margin-bottom:14px;border-left:4px solid var(--accent)}
+.intro .no{flex:none;width:36px;height:36px;border-radius:10px;background:var(--brand-grad);color:#fff;font-weight:800;font-size:16px;display:flex;align-items:center;justify-content:center}
+.intro h2{font-size:17px;margin:0 0 4px}
+.intro p{margin:0;color:var(--muted);font-size:13px;line-height:1.55}
+.intro p.how{margin-top:6px;font-size:12.5px}
+.intro p.how b{color:var(--text)}
+.ins{font-size:13.5px;line-height:1.65;margin-bottom:14px}
+.ins h3{font-size:11.5px;text-transform:uppercase;letter-spacing:.06em;color:var(--accent);margin:0 0 6px}
+.ins ul{margin:0;padding-left:18px}
+.ins li{margin:3px 0}
+.ins .pill{font-size:11.5px}
+.pill{display:inline-block;padding:1px 8px;border-radius:999px;font-weight:700;font-size:12px;white-space:nowrap}
+.p-good{background:var(--good-bg);color:var(--good)} .p-warn{background:var(--warn-bg);color:var(--warn)} .p-bad{background:var(--bad-bg);color:var(--bad)} .p-na{background:var(--surface-2);color:var(--faint)}
+.up{color:var(--good)} .down{color:var(--bad)}
+.muted{color:var(--muted)}
+.controls{display:flex;flex-wrap:wrap;gap:10px;align-items:flex-end;margin-bottom:14px}
+.ctl.grow{flex:1;min-width:220px}
+.ctl.grow select{width:100%}
+.seg{display:inline-flex;border:1px solid var(--border);border-radius:8px;overflow:hidden;background:var(--surface)}
+.seg button{border:0;background:none;padding:7px 12px;font:inherit;color:var(--muted);cursor:pointer;border-right:1px solid var(--border)}
+.seg button:last-child{border-right:0}
+.seg button.on{background:var(--accent);color:var(--on-accent)}
+.strip{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px;margin-bottom:14px}
+.strip .s{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:10px 12px}
+.strip .s span{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.04em;font-weight:600}
+.strip .s b{display:block;font-size:17px;margin-top:2px}
+.strip .s b small{font-size:12px;font-weight:600;color:var(--muted)}
+.strip .s b .pill{font-size:15px;padding:1px 10px}
+.chartbox{position:relative;height:400px}
+.tblwrap{overflow:auto;border:1px solid var(--border);border-radius:10px;max-height:72vh}
+table{border-collapse:collapse;width:100%;font-size:12.5px}
+th,td{padding:7px 10px;border-bottom:1px solid var(--border);white-space:nowrap;text-align:right}
+th{background:var(--surface-2);color:var(--muted);font-weight:600;position:sticky;top:0;z-index:2;cursor:pointer;user-select:none}
+th.ns{cursor:default}
+th:first-child,td:first-child{text-align:left;position:sticky;left:0;background:var(--surface);z-index:1}
+th:first-child{background:var(--surface-2);z-index:3}
+td.l{text-align:left}
+td.c{text-align:center}
+tbody tr:hover td{background:var(--accent-soft)}
+tr.area td{background:var(--area-bg);font-weight:700}
+tr.total td{background:var(--total-bg);font-weight:700}
+tr.oth td{color:var(--muted);font-style:italic}
+th.sorted::after{content:" ▾"} th.sorted.asc::after{content:" ▴"}
+td.h-good{background:var(--good-bg);color:var(--good);font-weight:600}
+td.h-warn{background:var(--warn-bg);color:var(--warn);font-weight:600}
+td.h-bad{background:var(--bad-bg);color:var(--bad);font-weight:600}
+.empty{padding:28px;text-align:center;color:var(--muted)}
+.cardhead{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;flex-wrap:wrap}
+.tact{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.tact input{min-width:220px}
+.errbox{display:none;border-color:var(--bad);color:var(--bad);margin-bottom:14px}
+.errbox.on{display:block}
+.note{font-size:12px;color:var(--muted);margin-top:10px}
+.qgrid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.qbox{border:1px solid var(--border);border-radius:10px;padding:10px 12px;background:var(--surface-2)}
+.qbox .qh{display:flex;justify-content:space-between;align-items:center;gap:6px}
+.qbox .qh b{font-size:18px}
+.qbox .qd{font-size:12px;color:var(--muted);margin:4px 0 6px}
+.qbox .qn{display:flex;flex-wrap:wrap;gap:4px}
+.qbox .qn span{font-size:11.5px;background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:1px 6px}
+.qbox .qn small{color:var(--muted)}
+@media (max-width:640px){
+  .hwrap{padding:12px 12px 0}
+  .htop{align-items:flex-start}
+  h1{font-size:18px}
+  .filters{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+  .filters .ctl{min-width:0}
+  .filters .ctl.date-ctl{grid-column:1/-1}
+  .filters .ctl.date-ctl select{min-height:48px;font-size:17px}
+  .filters select{width:100%;min-width:0;min-height:42px}
+  .filters .btn{min-height:42px}
+  nav.tabs{flex-wrap:nowrap;overflow-x:auto;margin:10px -12px 0;padding:0 8px;scrollbar-width:thin;touch-action:pan-x}
+  nav.tabs button{min-height:44px}
+  main{padding:12px}
+  .card{padding:12px;border-radius:8px}
+  .intro{flex-direction:column;gap:8px}
+  .strip{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .controls{align-items:stretch}
+  .controls>.ctl{width:100%;min-width:0}
+  .controls select{width:100%;min-width:0}
+  .seg{max-width:100%;overflow-x:auto}
+  .seg button{min-height:40px;white-space:nowrap}
+  .chartbox{height:340px}
+  .tact,.tact input{width:100%;min-width:0}
+  .tblwrap{max-height:65vh}
+  .qgrid{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+<header>
+ <div class="hwrap">
+  <div class="htop">
+   <div>
+    <h1>Analisa RSF <small>· Regional Strategy &amp; Finance</small></h1>
+    <div class="sub" id="sub">Memuat data…</div>
+   </div>
+   <div class="hbtns">
+    <span class="chip" id="loading">⏳ Memuat data…</span>
+    <a class="theme-btn" id="backBtn" href="index.html" title="Kembali ke dashboard Keragaan">← Dashboard</a>
+    <button class="theme-btn" id="themeBtn" type="button">Tema: Otomatis</button>
+    <button class="theme-btn" id="logoutBtn" type="button" title="Keluar dan kunci dashboard">🔒 Keluar</button>
+   </div>
+  </div>
+  <div class="filters">
+   <div class="ctl date-ctl"><label for="fDate">Tanggal Posisi</label><select id="fDate"></select></div>
+   <div class="ctl"><label for="fRka">Target RKA</label><select id="fRka"></select></div>
+   <div class="ctl"><label for="fArea">Area</label><select id="fArea"></select></div>
+   <div class="ctl"><label for="fCab">Cabang (Kanca)</label><select id="fCab"></select></div>
+   <div class="ctl"><label for="fType">Jenis Uker</label><select id="fType"></select></div>
+   <div class="ctl"><label for="fLvl">Bandingkan per</label><select id="fLvl"></select></div>
+   <div class="ctl"><label for="fPer">Periode Pembanding</label><select id="fPer"><option value="mtd">MtD (akhir bulan lalu)</option><option value="ytd">YtD (akhir tahun lalu)</option><option value="yoy">YoY (tahun lalu)</option></select></div>
+   <div class="ctl"><label>&nbsp;</label><button class="btn" id="fReset" type="button">Reset</button></div>
+  </div>
+  <nav class="tabs" id="tabs">
+   <button data-p="gap"><b>1</b>Achievement / Gap</button>
+   <button data-p="growth"><b>2</b>Growth</button>
+   <button data-p="trend"><b>3</b>Trend Achievement</button>
+   <button data-p="mix"><b>4</b>Product Mix Simpanan</button>
+   <button data-p="contrib"><b>5</b>Contribution</button>
+   <button data-p="quality"><b>6</b>Portfolio Quality</button>
+   <button data-p="pl"><b>7</b>PL vs Problem Loan</button>
+   <button data-p="migration"><b>8</b>Migration</button>
+   <button data-p="gq"><b>9</b>Growth vs Quality</button>
+   <button data-p="fl"><b>10</b>Funding vs Lending</button>
+   <button data-p="bg"><b>11</b>Balance Growth</button>
+  </nav>
+ </div>
+</header>
+<main>
+ <div class="card errbox" id="err"></div>
+
+ <!-- 1. ACHIEVEMENT / GAP -->
+ <section class="page" id="p-gap">
+  <div class="card intro"><span class="no">1</span><div>
+   <h2>Achievement / Gap Analysis</h2>
+   <p>Seberapa jauh realisasi terhadap RKA, siapa penyumbang gap terbesar, dan apakah laju saat ini cukup untuk mengejar RKA Desember.</p>
+   <p class="how"><b>Metode:</b> Pencapaian = Realisasi ÷ RKA (SML/NPL: RKA ÷ Realisasi), maks. 110%. Gap = Realisasi − RKA. Kebutuhan/bln = (RKA Desember − Realisasi) ÷ sisa bulan, dibandingkan dengan realisasi rata-rata per bulan sejak awal tahun. Status RKA Des: <i>On track</i> (laju saat ini cukup), <i>Perlu akselerasi</i> (butuh ≤ 1,5× laju saat ini), <i>Berat</i> (&gt; 1,5×), <i>Perlu balik arah</i> (tren berlawanan arah target).</p>
+  </div></div>
+  <div class="controls">
+   <div class="ctl"><label>Kategori</label><div class="seg" id="gapCat"><button data-v="Simpanan">Simpanan</button><button data-v="Pinjaman">Pinjaman</button><button data-v="SML">SML</button><button data-v="NPL">NPL</button></div></div>
+   <div class="ctl grow"><label for="gapBlk">Produk / Segmen</label><select id="gapBlk"></select></div>
+  </div>
+  <div class="strip" id="gapStrip"></div>
+  <div class="card ins" id="gapIns"></div>
+  <div class="grid two"><div class="ccard" data-c="gapBar"></div><div class="ccard" data-c="gapPar"></div></div>
+  <div class="tcard" data-t="gapTbl"></div>
+ </section>
+
+ <!-- 2. GROWTH -->
+ <section class="page" id="p-growth">
+  <div class="card intro"><span class="no">2</span><div>
+   <h2>Growth Analysis</h2>
+   <p>Besaran dan kecepatan pertumbuhan tiap unit untuk berbagai periode, serta apakah pertumbuhannya sedang mempercepat atau melambat.</p>
+   <p class="how"><b>Metode:</b> Δ nominal dan % untuk DtD, MtD, YtD dan YoY. Rata-rata/bln YtD = (posisi akhir bulan lengkap terakhir − Desember tahun lalu) ÷ jumlah bulan. Momentum membandingkan rata-rata 3 bulan lengkap terakhir dengan rata-rata YtD: <i>Akselerasi</i> (lebih tinggi &gt; 10%), <i>Melambat</i> (lebih rendah &gt; 10%), <i>Stabil</i>.</p>
+  </div></div>
+  <div class="controls">
+   <div class="ctl"><label>Kategori</label><div class="seg" id="groCat"><button data-v="Simpanan">Simpanan</button><button data-v="Pinjaman">Pinjaman</button></div></div>
+   <div class="ctl grow"><label for="groBlk">Produk / Segmen</label><select id="groBlk"></select></div>
+  </div>
+  <div class="strip" id="groStrip"></div>
+  <div class="card ins" id="groIns"></div>
+  <div class="grid two"><div class="ccard" data-c="groTrend"></div><div class="ccard" data-c="groBar"></div></div>
+  <div class="tcard" data-t="groTbl"></div>
+ </section>
+
+ <!-- 3. TREND / DELTA ACHIEVEMENT -->
+ <section class="page" id="p-trend">
+  <div class="card intro"><span class="no">3</span><div>
+   <h2>Trend / Delta Achievement Analysis</h2>
+   <p>Arah pergerakan pencapaian RKA dari bulan ke bulan — unit yang membaik, memburuk, atau konsisten di bawah target.</p>
+   <p class="how"><b>Metode:</b> Pencapaian tiap akhir bulan dihitung terhadap RKA bulan yang sama (tahun RKA, maks. 110%). Δ pencapaian = pencapaian sekarang − pencapaian bulan lalu / 3 bulan lalu (selisih dalam %). Pola = gabungan posisi (sudah / belum capai) dan arah (naik / turun).</p>
+  </div></div>
+  <div class="controls">
+   <div class="ctl"><label>Kategori</label><div class="seg" id="trCat"><button data-v="Simpanan">Simpanan</button><button data-v="Pinjaman">Pinjaman</button><button data-v="SML">SML</button><button data-v="NPL">NPL</button></div></div>
+   <div class="ctl grow"><label for="trBlk">Produk / Segmen</label><select id="trBlk"></select></div>
+   <div class="ctl"><label>Bandingkan dengan</label><div class="seg" id="trCmp"><button data-v="1">Bulan lalu</button><button data-v="3">3 bulan lalu</button></div></div>
+  </div>
+  <div class="strip" id="trStrip"></div>
+  <div class="card ins" id="trIns"></div>
+  <div class="grid two"><div class="ccard" data-c="trLine"></div><div class="ccard" data-c="trDumb"></div></div>
+  <div class="tcard" data-t="trTbl"></div>
+ </section>
+
+ <!-- 4. PRODUCT MIX SIMPANAN -->
+ <section class="page" id="p-mix">
+  <div class="card intro"><span class="no">4</span><div>
+   <h2>Product Mix Analysis — Simpanan</h2>
+   <p>Komposisi Giro, Tabungan dan Deposito, rasio CASA, dan pergeseran porsi yang memengaruhi biaya dana.</p>
+   <p class="how"><b>Metode:</b> Porsi = saldo produk ÷ total simpanan. CASA = (Giro + Tabungan) ÷ total simpanan. Δ porsi / Δ CASA = selisih (dalam %) dengan periode pembanding. Saldo rata-rata/rek = total saldo ÷ jumlah rekening.</p>
+  </div></div>
+  <div class="controls">
+   <div class="ctl"><label for="mixSeg">Segmen Simpanan</label><select id="mixSeg"></select></div>
+  </div>
+  <div class="strip" id="mixStrip"></div>
+  <div class="card ins" id="mixIns"></div>
+  <div class="grid two"><div class="ccard" data-c="mixTrend"></div><div class="ccard" data-c="mixBar"></div></div>
+  <div class="tcard" data-t="mixTbl"></div>
+ </section>
+
+ <!-- 5. CONTRIBUTION -->
+ <section class="page" id="p-contrib">
+  <div class="card intro"><span class="no">5</span><div>
+   <h2>Contribution Analysis</h2>
+   <p>Siapa — unit kerja atau segmen/produk — yang menyumbang perubahan total, dan siapa yang tumbuh melebihi atau di bawah bobotnya.</p>
+   <p class="how"><b>Metode:</b> Kontribusi = Δ komponen ÷ Δ total. Indeks = porsi pertumbuhan ÷ porsi saldo awal (&gt; 1 = tumbuh melebihi bobotnya). Waterfall menguraikan perubahan dari posisi awal ke posisi akhir periode pembanding.</p>
+  </div></div>
+  <div class="controls">
+   <div class="ctl"><label>Kategori</label><div class="seg" id="conCat"><button data-v="Simpanan">Simpanan</button><button data-v="Pinjaman">Pinjaman</button><button data-v="SML">SML</button><button data-v="NPL">NPL</button></div></div>
+   <div class="ctl"><label>Uraikan menurut</label><div class="seg" id="conDim"><button data-v="ent">Wilayah / Unit</button><button data-v="prod">Segmen / Produk</button></div></div>
+  </div>
+  <div class="strip" id="conStrip"></div>
+  <div class="card ins" id="conIns"></div>
+  <div class="grid two"><div class="ccard" data-c="conWf"></div><div class="ccard" data-c="conShare"></div></div>
+  <div class="tcard" data-t="conTbl"></div>
+ </section>
+
+ <!-- 6. PORTFOLIO QUALITY -->
+ <section class="page" id="p-quality">
+  <div class="card intro"><span class="no">6</span><div>
+   <h2>Portfolio Quality Analysis</h2>
+   <p>Kualitas kredit per segmen/produk dan per unit — rasio SML dan NPL dibanding target RKA dan tren-nya.</p>
+   <p class="how"><b>Metode:</b> SML % = Kol 2 ÷ baki debet; NPL % = Kol 3–5 ÷ baki debet. Target rasio = target SML / NPL ÷ target Pinjaman (RKA). Δ = selisih rasio (dalam %) dengan periode pembanding. Tanpa target, unit dibandingkan dengan rasio total wilayah.</p>
+  </div></div>
+  <div class="controls">
+   <div class="ctl grow"><label for="qBlk">Segmen</label><select id="qBlk"></select></div>
+  </div>
+  <div class="strip" id="qStrip"></div>
+  <div class="card ins" id="qIns"></div>
+  <div class="grid two"><div class="ccard" data-c="qTrend"></div><div class="ccard" data-c="qSeg"></div></div>
+  <div class="tcard" data-t="qSegTbl"></div>
+  <div class="tcard" data-t="qTbl"></div>
+ </section>
+
+ <!-- 7. PL vs PROBLEM LOAN -->
+ <section class="page" id="p-pl">
+  <div class="card intro"><span class="no">7</span><div>
+   <h2>Performing Loan vs Problem Loan</h2>
+   <p>Memisahkan pertumbuhan kredit menjadi pertumbuhan kredit lancar dan pertumbuhan kredit bermasalah.</p>
+   <p class="how"><b>Metode:</b> Performing Loan (PL) = Kol 1 (Lancar). Problem Loan = Kol 2 (SML) + Kol 3–5 (NPL). Pembentukan problem loan = Δ Problem Loan ÷ baki debet awal. Status: <i>Tumbuh berkualitas</i> (kredit naik, problem loan turun), <i>Problem tumbuh lebih cepat</i> (problem loan tumbuh lebih cepat dari total kredit), dll.</p>
+  </div></div>
+  <div class="controls">
+   <div class="ctl grow"><label for="plBlk">Segmen / Produk</label><select id="plBlk"></select></div>
+  </div>
+  <div class="strip" id="plStrip"></div>
+  <div class="card ins" id="plIns"></div>
+  <div class="grid two"><div class="ccard" data-c="plTrend"></div><div class="ccard" data-c="plBar"></div></div>
+  <div class="tcard" data-t="plTbl"></div>
+ </section>
+
+ <!-- 8. MIGRATION / DETERIORATION -->
+ <section class="page" id="p-migration">
+  <div class="card intro"><span class="no">8</span><div>
+   <h2>Migration / Deterioration Analysis</h2>
+   <p>Laju pemburukan kualitas kredit — berapa besar kredit yang bergeser ke SML dan NPL setiap bulan, dan unit mana yang memburuk terus-menerus.</p>
+   <p class="how"><b>Metode:</b> Data berisi saldo per kolektibilitas (bukan per rekening), sehingga migrasi diukur dari <b>perubahan saldo bersih</b>: Δ SML dan Δ NPL. Laju pemburukan = (Δ SML + Δ NPL) ÷ Kol 1 awal. Proksi roll-rate SML→NPL = kenaikan NPL ÷ SML awal. Angka bersih sudah termasuk pelunasan, recovery, restrukturisasi dan hapus buku, jadi bukan matriks migrasi per debitur.</p>
+  </div></div>
+  <div class="controls">
+   <div class="ctl grow"><label for="migBlk">Segmen / Produk</label><select id="migBlk"></select></div>
+  </div>
+  <div class="strip" id="migStrip"></div>
+  <div class="card ins" id="migIns"></div>
+  <div class="grid two"><div class="ccard" data-c="migTrend"></div><div class="ccard" data-c="migBar"></div></div>
+  <div class="tcard" data-t="migTbl"></div>
+ </section>
+
+ <!-- 9. GROWTH vs QUALITY -->
+ <section class="page" id="p-gq">
+  <div class="card intro"><span class="no">9</span><div>
+   <h2>Growth vs Quality Matrix</h2>
+   <p>Memetakan unit berdasarkan kecepatan pertumbuhan kredit dan kualitasnya, untuk memisahkan pertumbuhan sehat dari ekspansi berisiko.</p>
+   <p class="how"><b>Metode:</b> Sumbu X = pertumbuhan pinjaman (periode pembanding), sumbu Y = rasio kualitas (dibalik: makin ke atas makin sehat). Garis putus = nilai total wilayah sebagai pembatas kuadran. Ukuran gelembung = baki debet; segitiga = nilai di luar skala grafik.</p>
+  </div></div>
+  <div class="controls">
+   <div class="ctl grow"><label for="gqBlk">Segmen</label><select id="gqBlk"></select></div>
+   <div class="ctl"><label>Ukuran kualitas</label><div class="seg" id="gqQ"><button data-v="NPL">NPL %</button><button data-v="SML">SML %</button><button data-v="PROB">SML + NPL %</button></div></div>
+  </div>
+  <div class="strip" id="gqStrip"></div>
+  <div class="card ins" id="gqIns"></div>
+  <div class="grid two"><div class="ccard" data-c="gqChart"></div><div class="card"><h2 id="gqListT">Isi Kuadran</h2><p class="hint" id="gqListH"></p><div id="gqList"></div></div></div>
+  <div class="tcard" data-t="gqTbl"></div>
+ </section>
+
+ <!-- 10. FUNDING vs LENDING -->
+ <section class="page" id="p-fl">
+  <div class="card intro"><span class="no">10</span><div>
+   <h2>Funding vs Lending Balance</h2>
+   <p>Keseimbangan dana dan kredit tiap unit: penyedia likuiditas (surplus dana) atau pengguna likuiditas (defisit dana).</p>
+   <p class="how"><b>Metode:</b> LDR = Pinjaman ÷ Simpanan. Surplus/defisit dana = Simpanan − Pinjaman. LDR marjinal = Δ Pinjaman ÷ Δ Simpanan pada periode pembanding (kredit yang tumbuh untuk setiap tambahan dana). Sama seperti dashboard, pinjaman Medium dibukukan di Kanwil.</p>
+  </div></div>
+  <div class="controls">
+   <div class="ctl grow"><label for="flBlk">Cakupan LDR</label><select id="flBlk"></select></div>
+  </div>
+  <div class="strip" id="flStrip"></div>
+  <div class="card ins" id="flIns"></div>
+  <div class="grid two"><div class="ccard" data-c="flTrend"></div><div class="ccard" data-c="flBar"></div></div>
+  <div class="tcard" data-t="flTbl"></div>
+ </section>
+
+ <!-- 11. BALANCE GROWTH MATRIX -->
+ <section class="page" id="p-bg">
+  <div class="card intro"><span class="no">11</span><div>
+   <h2>Balance Growth Matrix</h2>
+   <p>Membandingkan pertumbuhan simpanan dan pinjaman tiap unit untuk melihat apakah ekspansinya seimbang.</p>
+   <p class="how"><b>Metode:</b> Sumbu X = pertumbuhan Simpanan %, sumbu Y = pertumbuhan Pinjaman % (periode pembanding). Garis diagonal = pertumbuhan seimbang; titik di atas diagonal berarti LDR naik. Ukuran gelembung = Simpanan + Pinjaman; segitiga = nilai di luar skala grafik.</p>
+  </div></div>
+  <div class="strip" id="bgStrip"></div>
+  <div class="card ins" id="bgIns"></div>
+  <div class="grid two"><div class="ccard" data-c="bgChart"></div><div class="card"><h2 id="bgListT">Isi Kuadran</h2><p class="hint" id="bgListH"></p><div id="bgList"></div></div></div>
+  <div class="tcard" data-t="bgTbl"></div>
+ </section>
+
+ <p class="note" id="foot"></p>
+</main>
+
+<script src="lib/chart.umd.min.js"></script>
+<script src="lib/crypto-fallback.js"></script>
+<script src="lib/auth.js"></script>
+<script>
+/* ================= AKSES (PIN) ================= */
+const KR_KEY = KRA.guard();          // tanpa PIN -> diarahkan ke login.html (kembali ke halaman ini setelah masuk)
+window.KR_ENC = (id, iv, ct) => {
+  KRA.decryptText(KR_KEY, iv, ct).then(t => KR_LOAD(JSON.parse(t)))
+     .catch(() => { alert('Data tidak dapat dibuka dengan PIN ini (data mungkin sudah diperbarui). Silakan masuk lagi.'); KRA.logout(); });
+};
+/* ================= DATA STORE (sama dengan index.html) ================= */
+const DB = {meta:null, p:new Map(), s:new Map(), files:new Set(), waiters:{}};
+function KR_LOAD(o){
+  if(o.id==='core') DB.meta=o;
+  ['p','s'].forEach(ds=>{
+    const a=o[ds]; if(!a) return; const M=DB[ds];
+    for(let i=0;i<a.length;i+=6){
+      let r=M.get(a[i]); if(!r){r=[];M.set(a[i],r);}
+      r.push(a[i+1],a[i+2],a[i+3],a[i+4],a[i+5]);
+    }
+  });
+  DB.files.add(o.id);
+  if(DB.waiters[o.id]){ DB.waiters[o.id].forEach(f=>f()); delete DB.waiters[o.id]; }
+}
+function loadFile(id){
+  if(DB.files.has(id)) return Promise.resolve();
+  return new Promise((res,rej)=>{
+    const first=!DB.waiters[id]; (DB.waiters[id]=DB.waiters[id]||[]).push(res);
+    if(!first) return;
+    const s=document.createElement('script'); s.src='data/'+(id==='core'?'core':'m_'+id)+'.js?v='+(DB.meta?encodeURIComponent(DB.meta.generated):Date.now());
+    s.onerror=()=>{alert('Gagal memuat data/'+id+'.js');rej()}; document.head.appendChild(s);
+  });
+}
+/* ================= TEMA & TOMBOL (aktif sebelum data selesai dimuat) ================= */
+const $ = id => document.getElementById(id);
+const themeBtn=$('themeBtn');
+let themeMode='auto';
+try{themeMode=localStorage.getItem('kr-theme')||'auto'}catch(e){}
+function applyTheme(){
+  if(themeMode==='auto') document.documentElement.removeAttribute('data-theme');
+  else document.documentElement.setAttribute('data-theme',themeMode);
+  themeBtn.textContent='Tema: '+({auto:'Otomatis',light:'Terang',dark:'Gelap'})[themeMode];
+}
+themeBtn.onclick=()=>{themeMode={auto:'light',light:'dark',dark:'auto'}[themeMode];try{localStorage.setItem('kr-theme',themeMode)}catch(e){};applyTheme();if(window.RSF_RENDER)window.RSF_RENDER();};
+applyTheme();
+window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change',()=>{if(themeMode==='auto'&&window.RSF_RENDER)window.RSF_RENDER();});
+$('logoutBtn').onclick=()=>KRA.logout();
+</script>
+<script>
+if(KR_KEY) loadFile('core').then(()=>{
+/* =====================================================================
+   MODEL DATA — disalin dari index.html agar angka di halaman ini sama
+   persis dengan dashboard. Jika aturan agregasi/target diubah di
+   index.html (mis. EXCL, KE_KANWIL, PENC_CAP), ubah juga di sini.
+   ===================================================================== */
+/* ================= META ================= */
+const M = DB.meta;
+const BLN = ['Jan','Feb','Mar','Apr','Mei','Jun','Jul','Agu','Sep','Okt','Nov','Des'];
+const BLNL = ['Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember'];
+const DT = M.dates.map(([iso,f],i)=>({i,iso,f,y:+iso.slice(0,4),m:+iso.slice(5,7),d:+iso.slice(8,10),mk:iso.slice(0,7)}));
+const CABS = M.cabs, UKS = M.ukers, PC = M.pcells, SC = M.scells, RK = M.rka;
+const AREAS = [...new Set(CABS.slice(1).map(c=>c.a))];
+const has = (ds,i) => i!=null && i>=0 && !!(DT[i].f & (ds==='p'?1:2));
+const isME = (ds,i) => !!(DT[i].f & (ds==='p'?4:8));
+const fD  = i => i==null?'–':`${DT[i].d} ${BLN[DT[i].m-1]} ${String(DT[i].y).slice(2)}`;
+const fDL = i => i==null?'–':`${DT[i].d} ${BLNL[DT[i].m-1]} ${DT[i].y}`;
+function atOrBefore(ds, iso, sameMonthAs){
+  for(let j=DT.length-1;j>=0;j--){
+    if(DT[j].iso>iso) continue;
+    if(sameMonthAs && DT[j].mk!==sameMonthAs) break;
+    if(has(ds,j)) return j;
+  }
+  if(sameMonthAs){ for(let j=0;j<DT.length;j++) if(DT[j].mk===sameMonthAs && has(ds,j)) return j; }
+  return null;
+}
+const pad = n => String(n).padStart(2,'0');
+function prevMonthEnd(i){ const {y,m}=DT[i]; const py=m===1?y-1:y, pm=m===1?12:m-1; return {iso:`${py}-${pad(pm)}-31`, mk:`${py}-${pad(pm)}`}; }
+const ME = {p:new Map(), s:new Map()};
+DT.forEach(d=>{ if(isME('p',d.i)) ME.p.set(d.mk,d.i); if(isME('s',d.i)) ME.s.set(d.mk,d.i); });
+const MONTHS = [...new Set(DT.map(d=>d.mk))];
+
+/* ================= STATE ================= */
+const S = {date:null, rkaM:'auto', area:'', cab:0, type:'', lvl:'', per:'ytd'};
+
+/* ================= HIRARKI (sheet Pola) ================= */
+const EXCL = new Set(['Commercial']);          // segmen di luar Total Pinjaman
+const EXCL_PROD = new Set(['Consumer|Lainnya']); // produk (Segmen|Produk) di luar total segmen & Total Pinjaman
+const isExP = i => EXCL.has(PC[i][2]) || EXCL_PROD.has(PC[i][2]+'|'+PC[i][1]);
+const RKIDX = RK ? Object.fromEntries(RK.keys.map((k,i)=>[k,i])) : {};
+function rkKeys(cells, all, bis){
+  if(!RK) return null;
+  const set=new Set(); cells.forEach(i=>(all[i][4][bis]||[]).forEach(k=>set.add(k)));
+  if(!set.size) return null;
+  const inEx = cells.length && all===PC && cells.every(isExP);
+  for(const k of set) for(let j=0;j<all.length;j++)
+    if(all[j][5] && (all[j][4][bis]||[]).includes(k) && !cells.includes(j)
+       && !(all===PC && !inEx && isExP(j))) return null;  // target tidak bisa dipisah (produk di luar total diabaikan)
+  return [...set].map(k=>RKIDX[k]).filter(x=>x!=null);
+}
+const order = arr => [...new Set(arr)];
+function mkP(title,cells,lvl,extra){ return {title,name:title.replace(/ \(\d+\)$/,''),cells,lvl,...extra,
+  rk:{Pinjaman:rkKeys(cells,PC,'Pinjaman'),SML:rkKeys(cells,PC,'SML'),NPL:rkKeys(cells,PC,'NPL')}}; }
+function mkS(title,cells,lvl,extra){ return {title,name:title,cells,lvl,...extra, rk:{D:rkKeys(cells,SC,'D')}}; }
+const PBLK = (()=>{
+  const B=[mkP('Total',PC.map((_,i)=>i).filter(i=>!isExP(i)),0,{tot:1})];
+  const seen={}, uniq=t=>{ seen[t]=(seen[t]||0)+1; return seen[t]>1? t+' ('+seen[t]+')':t; };
+  const multiSeg={}; PC.forEach(c=>{(multiSeg[c[1]]=multiSeg[c[1]]||new Set()).add(c[2])});
+  order(PC.map(c=>c[2])).forEach(sg=>{
+    const ci=PC.map((_,i)=>i).filter(i=>PC[i][2]===sg), ex=EXCL.has(sg);
+    const inc = ex? ci : ci.filter(i=>!isExP(i));           // isi total segmen
+    B.push(mkP(uniq(sg),inc,0,{seg:sg,excl:ex,exclTop:ex}));
+    const p1s=order(ci.map(i=>PC[i][3]));
+    p1s.forEach(p1=>{
+      const pi=ci.filter(i=>PC[i][3]===p1);
+      const pn=i=>PC[i][1]+(multiSeg[PC[i][1]].size>1?' ('+sg+')':'');
+      const px=i=>({excl:ex||isExP(i), exclTop:!ex&&isExP(i)});
+      if(p1s.length===1 && p1===sg){ pi.forEach(i=>B.push(mkP(uniq(pn(i)),[i],1,px(i)))); return; }
+      const allEx=pi.every(isExP), pin=pi.filter(i=>ex||!isExP(i));
+      B.push(mkP(uniq(p1),allEx?pi:pin,1,{excl:ex||allEx, exclTop:!ex&&allEx}));
+      if(pi.length>1) pi.forEach(i=>B.push(mkP(uniq(pn(i)),[i],2,{excl:ex||isExP(i), exclTop:!ex&&!allEx&&isExP(i)})));
+    });
+  });
+  return B;
+})();
+const SBLK = (()=>{
+  const all=SC.map((_,i)=>i);
+  const B=[mkS('Simpanan Total',all,0,{tot:1})];
+  order(SC.map(c=>c[1])).forEach(p=>B.push(mkS(p+' Total',all.filter(i=>SC[i][1]===p),1,{prodTot:p})));   // Giro/Tabungan/Deposito Total (semua segmen)
+  B.push(mkS('CASA Total (Giro + Tabungan)',all.filter(i=>SC[i][1]!=='Deposito'),0,{casa:1}));
+  order(SC.map(c=>c[2])).forEach(sg=>{
+    const ci=all.filter(i=>SC[i][2]===sg); B.push(mkS('Simpanan '+sg,ci,0,{seg:sg}));
+    const p1s=order(ci.map(i=>SC[i][3]));
+    if(p1s.length>1){
+      order(ci.map(i=>SC[i][1])).forEach(p=>B.push(mkS(p+' '+sg,ci.filter(i=>SC[i][1]===p),1,{prod:p})));
+      B.push(mkS('CASA '+sg,ci.filter(i=>SC[i][1]!=='Deposito'),1,{casa:1}));
+      p1s.forEach(p1=>{ const pi=ci.filter(i=>SC[i][3]===p1);
+        B.push(mkS('Simpanan '+p1,pi,1,{}));
+        pi.forEach(i=>B.push(mkS(SC[i][1]+' '+p1,[i],2,{}))); });
+    } else ci.forEach(i=>B.push(mkS(SC[i][1]+' '+sg,[i],1,{prod:SC[i][1]})));
+  });
+  return B;
+})();
+const PMIK = PC.map((_,i)=>i).filter(i=>/^mikro$/i.test(PC[i][2])), SMIK = SC.map((_,i)=>i).filter(i=>/^micro$/i.test(SC[i][0]));
+const LBLK = [
+  {title:'LDR Total',pc:PBLK[0].cells,sc:SBLK[0].cells,lvl:0},
+  {title:'LDR Mikro',pc:PMIK,sc:SMIK,lvl:0},
+  {title:'LDR Non Mikro',pc:PBLK[0].cells.filter(i=>!PMIK.includes(i)),sc:SC.map((_,i)=>i).filter(i=>!SMIK.includes(i)),lvl:0},
+].map(b=>({...b,rk:{Pinjaman:rkKeys(b.pc,PC,'Pinjaman'),D:rkKeys(b.sc,SC,'D')}}));
+const BLOCKS = {Pinjaman:PBLK, SML:PBLK, NPL:PBLK, Simpanan:SBLK, LDR:LBLK};
+const INVERSE = {SML:1,NPL:1,LDR:1};
+const LOWGOOD = {SML:1,NPL:1,LDR:1};   // makin rendah makin baik (penurunan = hijau)
+const blkTitle = (cat,b) => {
+  if(cat==='Simpanan'||cat==='LDR') return b.name||b.title;
+  const t = b.tot? cat+' Total' : (b.lvl===0? cat+' '+b.name : b.name);
+  return t+(b.exclTop?' (di luar total)':'');
+};
+
+/* ================= AGGREGATION ================= */
+const AGG = new Map();
+/* Segmen yang dibukukan di KANWIL (target RKA hanya di Kanwil): baki debet dari cabang dipindah ke Kanwil.
+   Total Region tetap konsolidasi (segmen ini tetap dihitung), tetapi tidak masuk ke angka cabang/uker/area. */
+const KE_KANWIL = new Set(['Medium']);
+const KW_CI = CABS.findIndex(c=>c.k===254), KW_UI = UKS.findIndex(u=>u.k===254);
+const PC_KW = PC.map(c=>KE_KANWIL.has(c[2]));
+function agg(ds,i){
+  if(i==null || !has(ds,i)) return null;
+  const key=ds+i+'|'+S.type; if(AGG.has(key)) return AGG.get(key);
+  const rows=DB[ds].get(i); if(!rows) return null;
+  const nc=(ds==='p'?PC.length*3:SC.length)*2, E=new Map(), t=S.type;
+  const add=(k,c,v,n)=>{let a=E.get(k); if(!a){a=new Float64Array(nc);E.set(k,a);} a[c]+=v; a[c+1]+=n;};
+  const moveKW = ds==='p' && KW_CI>0 && KW_UI>0;
+  for(let r=0;r<rows.length;r+=5){
+    let ci=rows[r], ui=rows[r+1]; const c=rows[r+2]*2, v=rows[r+3]/100, n=rows[r+4];
+    if(moveKW && PC_KW[(rows[r+2]/3)|0]){ ci=KW_CI; ui=KW_UI; }
+    if(t && UKS[ui].t!==t) continue;
+    add('T',c,v,n); const a=CABS[ci].a; if(a) add('A|'+a,c,v,n);
+    add('C|'+ci,c,v,n); if(ui>0) add('U|'+ui,c,v,n);
+  }
+  if(AGG.size>400) AGG.delete(AGG.keys().next().value);
+  AGG.set(key,E); return E;
+}
+const RAGG = new Map();
+function ragg(m){
+  if(!RK || m==null) return null;
+  const key=m+'|'+S.type; if(RAGG.has(key)) return RAGG.get(key);
+  const E=new Map(), nk=RK.keys.length, t=S.type, R=RK.rows, W=15;
+  const add=(k,ki,v)=>{let a=E.get(k); if(!a){a=new Float64Array(nk);E.set(k,a);} a[ki]+=v;};
+  for(let r=0;r<R.length;r+=W){
+    const ci=R[r], ui=R[r+1], ki=R[r+2], v=R[r+3+m]/100; if(!v) continue;
+    if(t && UKS[ui].t!==t) continue;
+    add('T',ki,v); const a=CABS[ci].a; if(a) add('A|'+a,ki,v); add('C|'+ci,ki,v); if(ui>0) add('U|'+ui,ki,v);
+  }
+  RAGG.set(key,E); return E;
+}
+function sumP(arr,cells,kgs,w){ let s=0; for(const c of cells) for(const k of kgs) s+=arr[(c*3+k)*2+w]; return s; }
+function sumS(arr,cells,w){ let s=0; for(const c of cells) s+=arr[c*2+w]; return s; }
+const KG = {Pinjaman:[0,1,2], SML:[1], NPL:[2]};
+function val(cat,b,kind,key,pt){
+  if(cat==='LDR'){
+    const A=agg('p',pt.p), B=agg('s',pt.s); if(!A||!B) return null;
+    const a=A.get(key), c=B.get(key); if(!a||!c) return null;
+    const d=sumS(c,b.sc,0); return d? sumP(a,b.pc,[0,1,2],0)/d : null;
+  }
+  if(cat==='Simpanan'){
+    const A=agg('s',pt.s); if(!A) return null; const a=A.get(key); if(!a) return null;
+    if(kind==='cnt') return sumS(a,b.cells,1);
+    const v=sumS(a,b.cells,0);
+    if(kind==='pct'){ const t=sumS(a,SBLK[0].cells,0); return t? v/t : null; }
+    return v;
+  }
+  const A=agg('p',pt.p); if(!A) return null; const a=A.get(key); if(!a) return null;
+  if(kind==='cnt') return sumP(a,b.cells,KG[cat],1);
+  const v=sumP(a,b.cells,KG[cat],0);
+  if(kind==='pct'){
+    const base = cat==='Pinjaman' ? sumP(a,PBLK[0].cells,[0,1,2],0) : sumP(a,b.cells,[0,1,2],0);
+    return base? v/base : null;
+  }
+  return v;
+}
+/* target RKA: m = bulan 0..11 */
+function tgt(cat,b,kind,key,m){
+  const E=ragg(m); if(!E) return null; const e=E.get(key); if(!e) return null;
+  const sk=ks=>{ if(!ks) return null; let s=0; for(const k of ks) s+=e[k]; return s||null; };
+  if(cat==='LDR'){ const p=sk(b.rk.Pinjaman), d=sk(b.rk.D); return p&&d? p/d : null; }
+  if(kind==='cnt') return null;
+  if(cat==='Simpanan') return kind==='rp'? sk(b.rk.D) : null;
+  if(cat==='Pinjaman') return kind==='rp'? sk(b.rk.Pinjaman) : null;
+  const x=sk(b.rk[cat]); if(kind==='rp') return x;
+  const p=sk(b.rk.Pinjaman); return x!=null&&p? x/p : null;
+}
+const PENC_CAP = 1.1;   // pencapaian RKA dibatasi maksimal 110%
+function pencOf(cat,act,t){
+  if(act==null||t==null) return null;
+  if(INVERSE[cat]) return act>0? Math.min(t/act,PENC_CAP) : PENC_CAP;
+  return t? Math.min(act/t,PENC_CAP) : null;
+}
+
+/* ================= DATE RESOLUTION ================= */
+function resolveDs(ds){
+  const i=S.date, R={cur:has(ds,i)?i:null};
+  let j=null; for(let k=i-1;k>=0;k--) if(has(ds,k)){j=k;break;} R.dtd=j;
+  const pm=prevMonthEnd(i); R.mtd=atOrBefore(ds,pm.iso,pm.mk);
+  R.ytd=atOrBefore(ds,`${DT[i].y-1}-12-31`,`${DT[i].y-1}-12`);
+  R.yoy=atOrBefore(ds,`${DT[i].y-1}-${pad(DT[i].m)}-${pad(DT[i].d)}`,`${DT[i].y-1}-${pad(DT[i].m)}`);
+  return R;
+}
+let RES = null;
+function resolveAll(){ RES={p:resolveDs('p'), s:resolveDs('s')}; }
+const PT = w => ({p:RES.p[w], s:RES.s[w]});
+const PTS = ['yoy','ytd','mtd','dtd','cur'];
+const GR = ['dtd','mtd','ytd','yoy'];
+function ptDate(cat,w){ return cat==='Simpanan'?RES.s[w]:RES.p[w]; }
+function rkaMonths(){   // [bulan target terpilih, Desember] atau null bila tahun posisi ≠ tahun RKA
+  if(!RK || DT[S.date].y!==RK.year) return [null,null];
+  return [S.rkaM==='auto'? DT[S.date].m-1 : +S.rkaM, 11];
+}
+const mLbl = m => m==null?'–':BLN[m];
+function neededFiles(extra){
+  const need=new Set(), chk=i=>{ if(i==null) return; const f=DT[i].f; if(((f&1)&&!(f&4))||((f&2)&&!(f&8))) need.add(DT[i].mk); };
+  ['p','s'].forEach(ds=>PTS.forEach(w=>chk(RES[ds][w])));
+  (extra||[]).forEach(chk);
+  return [...need].filter(m=>M.months.includes(m) && !DB.files.has(m));
+}
+async function ensure(extra){
+  const need=neededFiles(extra); if(!need.length) return;
+  $('loading').classList.add('on');
+  await Promise.all(need.map(loadFile));
+  $('loading').classList.remove('on');
+}
+
+/* ================= HELPERS ================= */
+const nf0 = new Intl.NumberFormat('id-ID',{maximumFractionDigits:0});
+const nf1 = new Intl.NumberFormat('id-ID',{maximumFractionDigits:1});
+const nf2 = new Intl.NumberFormat('id-ID',{minimumFractionDigits:2,maximumFractionDigits:2});
+const nf1f = new Intl.NumberFormat('id-ID',{minimumFractionDigits:1,maximumFractionDigits:1});
+const fRp = v => v==null? '–' : nf0.format(v);
+const fPct = v => v==null||!isFinite(v)? '–' : nf2.format(v*100)+'%';
+const fPP = v => v==null? '–' : (v>0?'+':'')+nf2.format(v*100)+'%';   // selisih rasio (poin persentase), ditampilkan dengan %
+const fSigned = v => v==null? '–' : (v>0?'+':'')+nf0.format(v);
+const fSPct = v => v==null||!isFinite(v)? '–' : (v>0?'+':'')+nf2.format(v*100)+'%';
+const cls = p => p==null? 'na' : p>=1? 'good' : p>=.95? 'warn':'bad';
+const pill = p => `<span class="pill p-${cls(p)}">${fPct(p)}</span>`;
+const css = n => getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+const growthCls = (v,inv) => v==null||v===0? '' : ((v>0)!==!!inv ? 'up':'down');
+const esc = s => String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+function view(cat,b,kind,key){
+  const k = cat==='LDR' ? 'pct' : kind;
+  const o={kind:k, v:{}};
+  PTS.forEach(w=>o.v[w]=val(cat,b,k,key,PT(w)));
+  const cur=o.v.cur, d=x=> (cur==null||x==null)?null:cur-x, r=x=> (cur==null||!x)?null:cur/x-1;
+  o.g={}; GR.forEach(w=>{ o.g[w]=[d(o.v[w]), k==='pct'?null:r(o.v[w])]; });
+  const [m0,m1]=rkaMonths();
+  o.tgt=[tgt(cat,b,k,key,m0), tgt(cat,b,k,key,m1)];
+  o.penc=o.tgt.map(t=>pencOf(cat,cur,t));
+  o.gap=o.tgt.map(t=> t==null||cur==null? null : cur-t);
+  return o;
+}
+/* titik tren akhir bulan (month = bulan titik, untuk target RKA bulanan) */
+function monthPoints(n){
+  const lim=DT[S.date].mk, pts=[];
+  MONTHS.filter(m=>m<=lim).forEach(m=>{
+    let p=ME.p.get(m)??null, s=ME.s.get(m)??null;
+    if(m===lim){ p=has('p',S.date)?S.date:(p!=null&&p<=S.date?p:null); s=has('s',S.date)?S.date:(s!=null&&s<=S.date?s:null); }
+    if(p==null&&s==null) return;
+    const lab = m===lim && !(isME('p',S.date)||isME('s',S.date)) ? fD(S.date) : `${BLN[+m.slice(5)-1]} ${m.slice(2,4)}`;
+    pts.push({p,s,label:lab,y:+m.slice(0,4),m:+m.slice(5)-1});
+  });
+  return n? pts.slice(-n) : pts;
+}
+const tgtAt = (cat,b,kind,key,p) => RK && p.y===RK.year ? tgt(cat,b,kind,key,p.m) : null;
+function defaultDate(){ for(let i=DT.length-1;i>=0;i--) if((DT[i].f&3)===3) return i; return DT.length-1; }
+
+/* =====================================================================
+   ANALISA RSF
+   ===================================================================== */
+/* ================= ENTITAS & PERIODE ================= */
+const LVL = {area:'Area', cab:'Kanca', uk:'Unit Kerja'};
+const SUBH = {area:'', cab:'Area', uk:'Kanca'};
+const PER_LBL = {mtd:'MtD', ytd:'YtD', yoy:'YoY'};
+const PER_TXT = {mtd:'sejak akhir bulan lalu', ytd:'sejak akhir tahun lalu', yoy:'dibanding tahun lalu'};
+const cabsIn = a => CABS.map((c,i)=>i).filter(i=>i>0 && CABS[i].a===a);
+const uksIn = ci => UKS.map((u,i)=>i).filter(i=>i>0 && UKS[i].c.includes(ci) && (!S.type||UKS[i].t===S.type));
+const typeSfx = () => S.type? ` (${S.type})` : '';
+const scopeKey = () => S.cab? 'C|'+S.cab : S.area? 'A|'+S.area : 'T';
+function entityName(key){ const [t,v]=key.split('|'); if(t==='T') return 'Region 16 Manado'; if(t==='A') return v; if(t==='C') return 'Kanca '+CABS[+v].n; return UKS[+v].n; }
+const scopeName = () => entityName(scopeKey())+typeSfx();
+const lvlOpts = () => S.cab? ['uk'] : S.area? ['cab','uk'] : ['area','cab','uk'];
+const curLvl = () => { const o=lvlOpts(); return o.includes(S.lvl)? S.lvl : (S.cab?'uk':'cab'); };
+const lvName = () => LVL[curLvl()].toLowerCase();
+/* unit yang dibandingkan (anak dari cakupan filter, sesuai "Bandingkan per") */
+function ents(){
+  const L=curLvl();
+  if(L==='area') return AREAS.filter(a=>a&&a.startsWith('Area')).map(a=>({key:'A|'+a,label:a,sub:''}));
+  const cs = S.cab? [S.cab] : S.area? cabsIn(S.area) : CABS.map((_,i)=>i).filter(i=>i>0);
+  if(L==='cab') return cs.map(c=>({key:'C|'+c,label:CABS[c].n,sub:CABS[c].a}));
+  const m=new Map(); cs.forEach(c=>uksIn(c).forEach(u=>{ if(!m.has(u)) m.set(u,c); }));
+  return [...m].map(([u,c])=>({key:'U|'+u,label:UKS[u].n,sub:CABS[c].n}));
+}
+const curPt = () => PT('cur'), basePt = () => PT(S.per);
+/* jumlah bulan berjalan sejak akhir tahun lalu (pecahan untuk posisi tengah bulan) */
+function monthsElapsed(ci){ if(ci==null) return null; const d=DT[ci], dim=new Date(d.y,d.m,0).getDate(); return (d.m-1)+Math.min(1,d.d/dim); }
+/* titik akhir bulan (m = 1..12, boleh di luar rentang) */
+function meAt(y,m){ while(m<1){m+=12;y--;} while(m>12){m-=12;y++;} const k=`${y}-${pad(m)}`;
+  return {p:ME.p.get(k)??null, s:ME.s.get(k)??null, y, m:m-1, label:`${BLN[m-1]} ${String(y).slice(2)}`}; }
+/* akhir bulan lengkap terakhir sampai posisi */
+function lastFull(ds){ const ci=RES[ds].cur; if(ci==null) return null; const d=DT[ci];
+  return isME(ds,ci)? {y:d.y,m:d.m} : d.m===1? {y:d.y-1,m:12} : {y:d.y,m:d.m-1}; }
+
+/* ================= UTIL ================= */
+const nn = x => x!=null && isFinite(x);
+const sum = a => a.reduce((s,x)=>s+(nn(x)?x:0),0);
+const ratio = (a,b) => nn(a)&&nn(b)&&b? a/b : null;
+const delta = (a,b) => nn(a)&&nn(b)? a-b : null;
+const grw = (a,b) => nn(a)&&nn(b)&&b? a/b-1 : null;
+const clsCol = c => css('--'+({good:'good',warn:'warn',bad:'bad',na:'faint'}[c]||'faint'));
+const gTxt = (v,inv) => `<span class="${growthCls(v,inv)}">${fSigned(v)}</span>`;
+const gPct = (v,inv) => `<span class="${growthCls(v,inv)}">${fSPct(v)}</span>`;
+const gPP = (v,inv) => `<span class="${growthCls(v,inv)}">${fPP(v)}</span>`;
+const tag = (t,c) => `<span class="pill p-${c||'na'}">${t}</span>`;
+const nms = (arr,f) => arr.map(r=>`<b>${esc(r.label)}</b>${f?` (${f(r)})`:''}`).join(', ');
+const hasTgt = cat => b => cat==='Simpanan'? !!b.rk.D : !!b.rk[cat];
+const TOPN = 40;
+const topBottom = (arr,n) => arr.length>n? [...arr.slice(0,n/2),...arr.slice(-n/2)] : arr;
+function pearson(xs,ys){ const n=xs.length; if(n<5) return null; const mx=sum(xs)/n, my=sum(ys)/n; let a=0,b=0,c=0;
+  for(let i=0;i<n;i++){ const dx=xs[i]-mx, dy=ys[i]-my; a+=dx*dy; b+=dx*dx; c+=dy*dy; } return b&&c? a/Math.sqrt(b*c) : null; }
+/* saldo per kolektibilitas: k = [Kol 1, Kol 2, Kol 3–5] nominal, n = jumlah debitur */
+function kolV(b,key,pt){ if(!pt||pt.p==null) return null; const A=agg('p',pt.p); if(!A) return null; const a=A.get(key); if(!a) return null;
+  const k=[0,1,2].map(g=>sumP(a,b.cells,[g],0)), n=[0,1,2].map(g=>sumP(a,b.cells,[g],1));
+  return {k,n,tot:k[0]+k[1]+k[2],pl:k[0],pr:k[1]+k[2],npr:n[1]+n[2]}; }
+
+/* ================= UI UMUM ================= */
+document.querySelectorAll('.tcard').forEach(d=>{ const t=d.dataset.t; d.className='card mt';
+  d.innerHTML=`<div class="cardhead"><div><h2 id="${t}T"></h2><p class="hint" id="${t}H"></p></div><div class="tact"><input type="search" class="q" data-t="${t}" placeholder="🔍 Cari nama…" aria-label="Cari di tabel" autocomplete="off"><button class="btn csv" data-t="${t}" type="button" title="Unduh tabel sebagai CSV (bisa dibuka di Excel)">⬇ CSV</button></div></div><div class="tblwrap"><table id="${t}"></table></div>`; });
+document.querySelectorAll('.ccard').forEach(d=>{ const c=d.dataset.c; d.className='card';
+  d.innerHTML=`<h2 id="${c}T"></h2><p class="hint" id="${c}H"></p><div class="chartbox"><canvas id="${c}"></canvas></div>`; });
+function strip(id, items){ $(id).innerHTML=items.filter(Boolean).map(([l,v,c])=>`<div class="s"><span>${l}</span><b class="num ${c||''}">${v}</b></div>`).join(''); }
+function insight(id, arr){ const li=arr.filter(Boolean);
+  $(id).innerHTML='<h3>Temuan Utama</h3>'+(li.length?'<ul>'+li.map(x=>`<li>${x}</li>`).join('')+'</ul>':'<p class="muted" style="margin:0">Data belum cukup untuk dianalisis pada pilihan ini.</p>'); }
+function ttl(id, t, h){ if(t!=null) $(id+'T').textContent=t; if(h!=null) $(id+'H').innerHTML=h; }
+function segSync(id, v){ $(id).querySelectorAll('button').forEach(b=>b.classList.toggle('on',b.dataset.v===String(v))); }
+function bindSeg(id, obj, key, after){ $(id).querySelectorAll('button').forEach(b=>b.onclick=()=>{ obj[key]=b.dataset.v; if(after) after(); renderCur(); }); }
+/* isi pilihan produk/segmen; mengembalikan indeks blok yang valid */
+function fillBlk(id, cat, cur, ok){
+  const list=BLOCKS[cat].map((b,i)=>({b,i})).filter(x=>!ok||ok(x.b));
+  if(!list.some(x=>x.i===cur)) cur=list.length? list[0].i : 0;
+  const el=$(id), k=cat+'|'+list.map(x=>x.i).join(',');
+  if(el._k!==k){ el.innerHTML=list.map(x=>`<option value="${x.i}">${x.b.lvl===2?'      · ':x.b.lvl?'   · ':''}${esc(blkTitle(cat,x.b))}</option>`).join(''); el._k=k; }
+  el.value=cur; return cur;
+}
+/* tabel generik: urut per kolom, cari, baris total di bawah, unduh CSV */
+const TB={}, TS={}, QS={};
+function table(id, cols, rows, opt={}){
+  cols.forEach(c=>{ if(!c.k) c.k=c.h; });
+  TB[id]={cols,rows,opt};
+  let st=TS[id]; if(!st || (st.k!=null && !cols.some(c=>c.k===st.k))) st=TS[id]={k:opt.sortKey??null, asc:!!opt.asc};
+  const q=(QS[id]||'').trim().toLowerCase();
+  const body=(q? rows.filter(r=>String(r.label||'').toLowerCase().includes(q)||String(r.sub||'').toLowerCase().includes(q)) : rows).slice();
+  const sc=cols.find(c=>c.k===st.k&&c.v);
+  if(sc) body.sort((a,b)=>{ const A=sc.v(a), B=sc.v(b);
+    if(typeof A==='string'||typeof B==='string') return st.asc? String(A??'').localeCompare(String(B??''),'id') : String(B??'').localeCompare(String(A??''),'id');
+    if(!nn(A)&&!nn(B)) return 0; if(!nn(A)) return 1; if(!nn(B)) return -1; return st.asc? A-B : B-A; });
+  const foot=(opt.foot||[]).filter(Boolean);
+  TB[id].shown=[...body,...foot];
+  const tr=r=>`<tr class="${r._cls||''}">`+cols.map(c=>`<td class="${c.c||'num'}${c.cc?' '+(c.cc(r)||''):''}">${c.f(r)}</td>`).join('')+'</tr>';
+  let h='<thead><tr>'+cols.map((c,i)=>`<th data-i="${i}"${c.t?` title="${esc(c.t)}"`:''} class="${c.v?'':'ns'}${st.k===c.k?' sorted'+(st.asc?' asc':''):''}">${c.h}</th>`).join('')+'</tr></thead><tbody>';
+  h+=body.map(tr).join('');
+  if(!body.length) h+=`<tr><td class="empty" colspan="${cols.length}">${q?`Tidak ada yang cocok dengan "${esc(QS[id].trim())}"`:(opt.empty||'Tidak ada data untuk pilihan ini')}</td></tr>`;
+  h+=foot.map(tr).join('');
+  const el=$(id); el.innerHTML=h+'</tbody>';
+  el.querySelectorAll('th').forEach(th=>{ const c=cols[+th.dataset.i]; if(!c.v) return;
+    th.onclick=()=>{ if(st.k===c.k) st.asc=!st.asc; else { st.k=c.k; st.asc=rows.length>0 && typeof c.v(rows[0])==='string'; } table(id,cols,rows,opt); }; });
+}
+document.querySelectorAll('input.q').forEach(inp=>inp.oninput=()=>{ const t=inp.dataset.t; QS[t]=inp.value; const a=TB[t]; if(a) table(t,a.cols,a.rows,a.opt); });
+document.querySelectorAll('button.csv').forEach(btn=>btn.onclick=()=>csvDownload(btn.dataset.t));
+function csvDownload(id){
+  const a=TB[id]; if(!a) return;
+  const txt=h=>new DOMParser().parseFromString('<body>'+h+'</body>','text/html').body.textContent.replace(/\s+/g,' ').trim();
+  const q=s=>{ s=String(s??''); return /[;"\r\n]/.test(s)? '"'+s.replace(/"/g,'""')+'"' : s; };
+  const lines=[a.cols.map(c=>q(txt(c.h))).join(';'), ...a.shown.map(r=>a.cols.map(c=>q(txt(c.f(r)))).join(';'))];
+  const blob=new Blob(['﻿'+lines.join('\r\n')],{type:'text/csv;charset=utf-8'});
+  const u=URL.createObjectURL(blob), l=document.createElement('a');
+  l.href=u; l.download=`analisa-rsf-${CUR}-${id}-${DT[S.date].iso}.csv`; document.body.appendChild(l); l.click(); l.remove();
+  setTimeout(()=>URL.revokeObjectURL(u),2000);
+}
+/* kolom nama + kolom induk (Area / Kanca) */
+function nameCols(){ const L=curLvl(); return [
+  {h:LVL[L],v:r=>r.label,f:r=>esc(r.label),c:'l'},
+  ...(SUBH[L]?[{h:SUBH[L],v:r=>r.sub||'',f:r=>esc(r.sub||''),c:'l muted'}]:[])]; }
+
+/* ================= GRAFIK ================= */
+function chartBase(){
+  Chart.defaults.color=css('--muted'); Chart.defaults.borderColor=css('--grid');
+  Chart.defaults.font.family='system-ui,-apple-system,"Segoe UI",Roboto,sans-serif'; Chart.defaults.font.size=11; Chart.defaults.animation=false;
+}
+const charts={};
+function mk(id,cfg){ if(charts[id]) charts[id].destroy(); charts[id]=new Chart($(id),cfg); return charts[id]; }
+function killChart(id){ if(charts[id]){ charts[id].destroy(); delete charts[id]; } }
+const PAL = () => [css('--c1'),css('--c2'),css('--c3'),css('--good'),css('--warn'),css('--bad'),css('--faint')];
+function scaleFmt(max){ const [d,sfx]= max>=1e6?[1e6,' T']:max>=1e3?[1e3,' M']:[1,' Jt']; return v=>nf1.format(v/d)+sfx; }
+/* seperti scaleFmt, tetapi jumlah desimal menyesuaikan rentang sumbu (agar label tidak kembar, mis. sumbu waterfall) */
+function scaleFmtR(max, span){ const [d,sfx]= max>=1e6?[1e6,' T']:max>=1e3?[1e3,' M']:[1,' Jt'], r=span/d;
+  const nf=new Intl.NumberFormat('id-ID',{maximumFractionDigits:r<.5?3:r<5?2:r<50?1:0}); return v=>nf.format(v/d)+sfx; }
+const pctTick = v => nf1.format(v*100)+'%';
+function truncTick(v){ const s=String(this.getLabelForValue(v)); return s.length>24? s.slice(0,23)+'…' : s; }
+let RLN=0;
+/* garis referensi putus-putus pada nilai tertentu */
+const refLine = (axis, value) => ({id:'ref'+(++RLN), afterDatasetsDraw(ch){
+  const sc=ch.scales[axis]; if(!sc) return; const p=sc.getPixelForValue(value), {left,right,top,bottom}=ch.chartArea, c=ch.ctx, hz=sc.isHorizontal();
+  if(hz? (p<left||p>right) : (p<top||p>bottom)) return;
+  c.save(); c.strokeStyle=css('--text'); c.globalAlpha=.55; c.setLineDash([4,4]); c.beginPath();
+  if(hz){ c.moveTo(p,top); c.lineTo(p,bottom); } else { c.moveTo(left,p); c.lineTo(right,p); } c.stroke(); c.restore(); }});
+/* batang horizontal per unit (tinggi menyesuaikan jumlah baris) */
+function hbar(id, rows, o){
+  $(id).parentElement.style.height=Math.max(320, rows.length*22+70)+'px';
+  mk(id,{type:'bar',data:{labels:rows.map(r=>r.label),datasets:[{data:rows.map(r=>r.v),backgroundColor:rows.map(r=>r.color),borderRadius:3,barPercentage:.82,categoryPercentage:.9}]},
+    options:{indexAxis:'y',maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>o.fmt(c.raw)}}},
+      scales:{x:{ticks:{callback:o.tick||o.fmt}},y:{grid:{display:false},ticks:{autoSkip:false,callback:truncTick}}}},plugins:o.plugins||[]});
+}
+/* batas sumbu tahan pencilan (persentil 3–97) */
+function bounds(vals, refs){
+  const v=vals.filter(nn).sort((a,b)=>a-b); if(!v.length) return [-1,1];
+  const q=p=>v[Math.min(v.length-1,Math.max(0,Math.round(p*(v.length-1))))];
+  let lo=v.length>=12? q(.03):v[0], hi=v.length>=12? q(.97):v[v.length-1];
+  refs.filter(nn).forEach(r=>{ lo=Math.min(lo,r); hi=Math.max(hi,r); });
+  const span=(hi-lo)||Math.abs(hi)*.2||.01; return [lo-span*.12, hi+span*.12];
+}
+/* matriks kuadran (bubble): garis referensi, arsir kuadran terburuk, label kuadran */
+function quadChart(id, pts, o){
+  const [x0,x1]=bounds(pts.map(p=>p.x),[o.xRef]), [y0,y1]=bounds(pts.map(p=>p.y),[o.yRef]);
+  const clamp=(v,a,b)=>Math.min(b,Math.max(a,v));
+  const data=pts.map(p=>{ const x=clamp(p.x,x0,x1), y=clamp(p.y,y0,y1); return {x,y,r:p.r,p,cl:x!==p.x||y!==p.y}; });
+  const plug={id:'quad'+(++RLN),beforeDatasetsDraw(ch){
+    const {left,right,top,bottom}=ch.chartArea, c=ch.ctx, X=ch.scales.x, Y=ch.scales.y, px=v=>X.getPixelForValue(v), py=v=>Y.getPixelForValue(v);
+    c.save();
+    if(o.shade){ const xa=o.shade.x==='lt'?[x0,o.xRef]:[o.xRef,x1], ya=o.shade.y==='gt'?[o.yRef,y1]:[y0,o.yRef];
+      const ax=[px(xa[0]),px(xa[1])].sort((a,b)=>a-b), ay=[py(ya[0]),py(ya[1])].sort((a,b)=>a-b);
+      c.fillStyle=css('--bad-bg'); c.globalAlpha=.55; c.fillRect(ax[0],ay[0],ax[1]-ax[0],ay[1]-ay[0]); c.globalAlpha=1; }
+    c.strokeStyle=css('--text'); c.globalAlpha=.5; c.setLineDash([4,4]); c.beginPath();
+    const xr=px(o.xRef), yr=py(o.yRef);
+    if(xr>=left&&xr<=right){ c.moveTo(xr,top); c.lineTo(xr,bottom); }
+    if(yr>=top&&yr<=bottom){ c.moveTo(left,yr); c.lineTo(right,yr); }
+    c.stroke();
+    if(o.diag){ const a=Math.max(x0,y0), b=Math.min(x1,y1); if(b>a){ c.setLineDash([2,5]); c.beginPath(); c.moveTo(px(a),py(a)); c.lineTo(px(b),py(b)); c.stroke(); } }
+    c.globalAlpha=1; c.setLineDash([]); c.fillStyle=css('--faint'); c.font='600 11px system-ui,sans-serif';
+    c.textAlign='left'; c.fillText(o.labels.tl,left+6,top+14); c.fillText(o.labels.bl,left+6,bottom-6);
+    c.textAlign='right'; c.fillText(o.labels.tr,right-6,top+14); c.fillText(o.labels.br,right-6,bottom-6);
+    c.restore(); }};
+  mk(id,{type:'bubble',data:{datasets:[{data,backgroundColor:data.map(d=>d.p.c+'8c'),borderColor:data.map(d=>d.p.c),borderWidth:1.2,pointStyle:data.map(d=>d.cl?'triangle':'circle')}]},
+    options:{maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>o.tip(c.raw.p)}}},
+      scales:{x:{min:x0,max:x1,title:{display:true,text:o.xLbl},ticks:{callback:o.xTick,includeBounds:false}},
+              y:{min:y0,max:y1,reverse:!!o.yRev,title:{display:true,text:o.yLbl},ticks:{callback:o.yTick,includeBounds:false}}}},plugins:[plug]});
+}
+/* daftar unit per kuadran (urutan kotak = posisi kuadran di grafik: kiri atas, kanan atas, kiri bawah, kanan bawah) */
+function quadLists(id, rows, defs, fmt){
+  $(id).innerHTML='<div class="qgrid">'+defs.map(d=>{ const rs=rows.filter(r=>r.qd&&r.qd.k===d.k).sort((a,b)=>(b.size||0)-(a.size||0));
+    return `<div class="qbox"><div class="qh">${tag(d.t,d.c)}<b>${rs.length}</b></div><p class="qd">${d.desc}</p><div class="qn">${rs.slice(0,10).map(r=>`<span>${esc(r.label)}${fmt?` <small>${fmt(r)}</small>`:''}</span>`).join('')}${rs.length>10?`<span class="muted">+${rs.length-10} lainnya</span>`:''}</div></div>`; }).join('')+'</div>';
+}
+/* waterfall: posisi awal → kontribusi tiap komponen → posisi akhir */
+function waterfall(id, start, items, end, o){
+  const labels=[o.startLbl,...items.map(i=>i.label),o.endLbl];
+  let run=start; const bars=[[start,start]], vals=[start,end];
+  items.forEach(i=>{ bars.push([run,run+i.v]); run+=i.v; vals.push(run); });
+  bars.push([end,end]);
+  const mn=Math.min(...vals), mx=Math.max(...vals), span=(mx-mn)||Math.abs(mx)*.05||1, lo=mn-span*.3;
+  bars[0][0]=lo; bars[bars.length-1][0]=lo;
+  const up=o.inv? css('--bad') : css('--good'), dn=o.inv? css('--good') : css('--bad');
+  const colors=bars.map((_,i)=> i===0||i===bars.length-1? css('--c1') : (items[i-1].v>=0? up : dn));
+  mk(id,{type:'bar',data:{labels,datasets:[{data:bars,backgroundColor:colors.map(c=>c+'d9'),borderRadius:3,barPercentage:.85}]},
+    options:{maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>{ const i=c.dataIndex;
+        return i===0? `Posisi ${o.startLbl}: ${fRp(start)}` : i===bars.length-1? `Posisi ${o.endLbl}: ${fRp(end)}` : `Δ ${fSigned(items[i-1].v)}`; }}}},
+      scales:{y:{min:lo,ticks:{callback:scaleFmtR(Math.max(Math.abs(mx),Math.abs(lo)),mx-lo)}},x:{grid:{display:false},ticks:{autoSkip:false,maxRotation:60,minRotation:0,callback:truncTick}}}}});
+}
+const legendBottom = () => ({position:'bottom',labels:{boxWidth:10}});
+
+/* ================= STATE PER ANALISIS ================= */
+const ST = {gap:{cat:'Simpanan',bi:0}, gro:{cat:'Simpanan',bi:0}, tr:{cat:'Simpanan',bi:0,cmp:'1'}, mix:{seg:''},
+  con:{cat:'Simpanan',dim:'ent'}, q:{bi:0}, pl:{bi:0}, mig:{bi:0}, gq:{bi:0,q:'NPL'}, fl:{li:0}};
+bindSeg('gapCat',ST.gap,'cat'); $('gapBlk').onchange=e=>{ST.gap.bi=+e.target.value; renderCur();};
+bindSeg('groCat',ST.gro,'cat'); $('groBlk').onchange=e=>{ST.gro.bi=+e.target.value; renderCur();};
+bindSeg('trCat',ST.tr,'cat'); bindSeg('trCmp',ST.tr,'cmp'); $('trBlk').onchange=e=>{ST.tr.bi=+e.target.value; renderCur();};
+$('mixSeg').innerHTML='<option value="">Semua segmen</option>'+order(SC.map(c=>c[0])).map(s=>`<option value="${esc(s)}">${esc(s)}</option>`).join('');
+$('mixSeg').onchange=e=>{ST.mix.seg=e.target.value; renderCur();};
+bindSeg('conCat',ST.con,'cat'); bindSeg('conDim',ST.con,'dim');
+$('qBlk').onchange=e=>{ST.q.bi=+e.target.value; renderCur();};
+$('plBlk').onchange=e=>{ST.pl.bi=+e.target.value; renderCur();};
+$('migBlk').onchange=e=>{ST.mig.bi=+e.target.value; renderCur();};
+$('gqBlk').onchange=e=>{ST.gq.bi=+e.target.value; renderCur();}; bindSeg('gqQ',ST.gq,'q');
+$('flBlk').innerHTML=LBLK.map((b,i)=>`<option value="${i}">${esc(b.title)}</option>`).join('');
+$('flBlk').onchange=e=>{ST.fl.li=+e.target.value; renderCur();};
+
+/* ================= 1. ACHIEVEMENT / GAP ================= */
+function feasOf(inv,cur,tD,need,run){
+  if(!nn(tD)||!nn(cur)) return null;
+  if(inv? cur<=tD : cur>=tD) return {t:'Sudah capai RKA Des',c:'good',k:4};
+  if(!nn(need)) return null;
+  if(!nn(run) || (inv? run>=0 : run<=0)) return {t:'Perlu balik arah',c:'bad',k:0};
+  const x=Math.abs(need)/Math.abs(run);
+  return x<=1? {t:'On track',c:'good',k:3,x} : x<=1.5? {t:'Perlu akselerasi',c:'warn',k:2,x} : {t:'Berat',c:'bad',k:1,x};
+}
+function gapOne(cat,b,key,mE,mL){
+  const inv=!!INVERSE[cat], o=view(cat,b,'rp',key), cur=o.v.cur, g=o.gap[0];
+  const run = nn(cur)&&nn(o.v.ytd)&&mE>0? (cur-o.v.ytd)/mE : null;          // realisasi rata-rata per bulan sejak akhir tahun lalu
+  const need = nn(o.tgt[1])&&nn(cur)&&mL>.05? (o.tgt[1]-cur)/mL : null;     // kebutuhan per bulan sampai Desember
+  return {o,cur,run,need, sf:g==null?null:Math.max(0,inv?g:-g), sp:g==null?null:Math.max(0,inv?-g:g), fe:feasOf(inv,cur,o.tgt[1],need,run)};
+}
+function renderGap(){
+  const A=ST.gap; segSync('gapCat',A.cat); A.bi=fillBlk('gapBlk',A.cat,A.bi,hasTgt(A.cat));
+  const cat=A.cat, b=BLOCKS[cat][A.bi], inv=!!INVERSE[cat], [m0]=rkaMonths(), ci=ptDate(cat,'cur');
+  const mE=monthsElapsed(ci), mL=mE==null?null:12-mE, lv=lvName(), title=blkTitle(cat,b), sk=scopeKey();
+  const rows=ents().map(e=>({...e,...gapOne(cat,b,e.key,mE,mL)})).filter(r=>nn(r.cur)||nn(r.o.tgt[0]));
+  const sc={key:sk,label:'Total '+scopeName(),_cls:'total',...gapOne(cat,b,sk,mE,mL)};
+  const wt=rows.filter(r=>r.o.penc[0]!=null), un=wt.filter(r=>r.o.penc[0]<1), ov=wt.filter(r=>r.o.penc[0]>=1);
+  const sfT=sum(un.map(r=>r.sf)), spT=sum(ov.map(r=>r.sp)), sfWord=inv?'kelebihan di atas RKA':'kekurangan terhadap RKA';
+  strip('gapStrip',[
+    [`Realisasi ${fD(ci)}`, fRp(sc.cur)],
+    [`RKA ${mLbl(m0)}`, fRp(sc.o.tgt[0])],
+    [`Pencapaian ${mLbl(m0)}`, pill(sc.o.penc[0])],
+    [`Gap ${mLbl(m0)}`, fSigned(sc.o.gap[0]), growthCls(sc.o.gap[0],inv)],
+    ['Pencapaian RKA Des', pill(sc.o.penc[1])],
+    [`${LVL[curLvl()]} belum capai`, `${un.length} / ${wt.length}`],
+    ['Kebutuhan / bln', sc.fe&&sc.fe.k===4? '✓ tercapai' : fSigned(sc.need)],
+    ['Realisasi rata² / bln', fSigned(sc.run)],
+  ]);
+  const B=[];
+  if(m0==null) B.push(`Tidak ada target RKA untuk posisi ${fDL(S.date)}${RK?` (RKA tersedia untuk tahun ${RK.year})`:''}.`);
+  else if(!wt.length) B.push(`Tidak ada ${lv} dengan target RKA <b>${esc(title)}</b> di ${esc(scopeName())}. Target mungkin hanya tersedia di level yang lebih tinggi — coba ubah <i>Bandingkan per</i>.`);
+  else {
+    B.push(`<b>${un.length} dari ${wt.length} ${lv}</b> (${fPct(un.length/wt.length)}) belum mencapai RKA ${BLNL[m0]} <b>${esc(title)}</b>, dengan total ${sfWord} <b class="num">${fRp(sfT)}</b> Rp Jt`+
+      (ov.length?`; ${ov.length} ${lv} yang sudah capai ${inv?'berada di bawah batas RKA sebesar':'mencatat kelebihan'} <b class="num">${fRp(spT)}</b> Rp Jt`:'')+'.');
+    if(un.length){ const srt=un.slice().sort((a,c)=>c.sf-a.sf); let acc=0,k=0; for(const r of srt){ acc+=r.sf; k++; if(acc>=.8*sfT) break; }
+      B.push(`Konsentrasi gap: <b>${k} ${lv}</b> menyumbang 80% dari total ${sfWord}. Terbesar: ${nms(srt.slice(0,3),r=>fRp(r.sf)+' · '+fPct(r.o.penc[0]))}.`); }
+  }
+  if(sc.fe) B.push(sc.fe.k===4? `<b>${esc(scopeName())}</b> sudah mencapai RKA Desember (${fPct(sc.o.penc[1])}).`
+    : `<b>${esc(scopeName())}</b> membutuhkan rata-rata <b class="num">${fSigned(sc.need)}</b> Rp Jt/bln selama ${nf1.format(mL)} bulan tersisa untuk mencapai RKA Desember, sedangkan realisasi rata-rata sejak awal tahun <b class="num">${fSigned(sc.run)}</b> Rp Jt/bln → ${tag(sc.fe.t,sc.fe.c)}${sc.fe.x&&sc.fe.k<3?` (perlu ${nf1f.format(sc.fe.x)}× laju saat ini)`:''}.`);
+  const hard=rows.filter(r=>r.fe&&r.fe.k<=1).sort((a,c)=>(c.sf||0)-(a.sf||0));
+  if(hard.length) B.push(`<b>${hard.length} ${lv}</b> berstatus <i>Berat</i> atau <i>Perlu balik arah</i> untuk RKA Desember: ${nms(hard.slice(0,5))}${hard.length>5?', dll':''}.`);
+  insight('gapIns',B);
+  const gs=wt.slice().sort((a,c)=>inv? c.o.gap[0]-a.o.gap[0] : a.o.gap[0]-c.o.gap[0]), gl=gs.slice(0,TOPN);
+  ttl('gapBar',`Gap ${mLbl(m0)} per ${lv}`,`${esc(title)} · Rp Jt · terburuk di atas${gs.length>gl.length?` · ${gl.length} dari ${gs.length} ${lv}`:''}`);
+  hbar('gapBar',gl.map(r=>({label:r.label,v:r.o.gap[0],color:clsCol(r.sf>0?'bad':'good')})),{fmt:fSigned,tick:scaleFmt(Math.max(1,...gl.map(r=>Math.abs(r.o.gap[0])))),plugins:[refLine('x',0)]});
+  const pr=un.slice().sort((a,c)=>c.sf-a.sf).slice(0,25); let cum=0; const cp=pr.map(r=>(cum+=r.sf)/(sfT||1));
+  ttl('gapPar','Pareto Gap',`${LVL[curLvl()]} dengan ${sfWord}, dari terbesar; garis = kumulatif % dari total (garis putus = 80%)${un.length>pr.length?` · ${pr.length} dari ${un.length}`:''}`);
+  mk('gapPar',{type:'bar',data:{labels:pr.map(r=>r.label),datasets:[
+      {type:'bar',label:inv?'Kelebihan (Rp Jt)':'Kekurangan (Rp Jt)',data:pr.map(r=>r.sf),backgroundColor:css('--bad')+'cc',borderRadius:3,yAxisID:'y',order:2},
+      {type:'line',label:'Kumulatif %',data:cp,borderColor:css('--c1'),backgroundColor:css('--c1'),yAxisID:'y2',pointRadius:3,tension:.2,order:1}]},
+    options:{maintainAspectRatio:false,interaction:{mode:'index',intersect:false},plugins:{legend:legendBottom(),tooltip:{callbacks:{label:c=>c.dataset.yAxisID==='y2'?`Kumulatif: ${fPct(c.raw)}`:`${c.dataset.label}: ${fRp(c.raw)}`}}},
+      scales:{y:{ticks:{callback:scaleFmt(Math.max(1,...pr.map(r=>r.sf)))}},y2:{position:'right',min:0,max:1,grid:{display:false},ticks:{callback:v=>nf0.format(v*100)+'%'}},x:{grid:{display:false},ticks:{autoSkip:false,maxRotation:60,minRotation:40,callback:truncTick}}}},
+    plugins:[refLine('y2',.8)]});
+  ttl('gapTbl',`Detail Pencapaian per ${LVL[curLvl()]} · ${title}`,`Nominal Rp Jt. Default diurutkan dari pencapaian terendah. Baris terakhir = total ${esc(scopeName())}.`);
+  table('gapTbl',[...nameCols(),
+    {h:'Realisasi',v:r=>r.cur,f:r=>`<b>${fRp(r.cur)}</b>`},
+    {h:`RKA ${mLbl(m0)}`,v:r=>r.o.tgt[0],f:r=>fRp(r.o.tgt[0])},
+    {h:`Penc. ${mLbl(m0)}`,k:'penc',v:r=>r.o.penc[0],f:r=>pill(r.o.penc[0])},
+    {h:`Gap ${mLbl(m0)}`,v:r=>r.o.gap[0],f:r=>gTxt(r.o.gap[0],inv)},
+    {h:'RKA Des',v:r=>r.o.tgt[1],f:r=>fRp(r.o.tgt[1])},
+    {h:'Penc. Des',v:r=>r.o.penc[1],f:r=>pill(r.o.penc[1])},
+    {h:'Gap Des',v:r=>r.o.gap[1],f:r=>gTxt(r.o.gap[1],inv)},
+    {h:'Realisasi rata²/bln',t:'Rata-rata perubahan per bulan sejak akhir tahun lalu',v:r=>r.run,f:r=>gTxt(r.run,inv)},
+    {h:'Kebutuhan/bln',t:'Perubahan per bulan yang dibutuhkan untuk mencapai RKA Desember',v:r=>r.fe&&r.fe.k===4?null:r.need,f:r=>r.fe&&r.fe.k===4?'<span class="up">✓</span>':fSigned(r.need)},
+    {h:'Status RKA Des',v:r=>r.fe?r.fe.k:null,f:r=>r.fe?tag(r.fe.t+(r.fe.x&&r.fe.k>0&&r.fe.k<4?` · ${nf1f.format(r.fe.x)}×`:''),r.fe.c):'–',c:'l'},
+  ],rows,{sortKey:'penc',asc:true,foot:[sc]});
+}
+
+/* ================= 2. GROWTH ================= */
+function momentum(a3,aY){ if(!nn(a3)||!nn(aY)) return null; const tol=.1*Math.max(Math.abs(a3),Math.abs(aY)), d=a3-aY;
+  if(Math.abs(d)<=tol) return {t:'Stabil',c:'na',k:1}; return d>0? {t:'Akselerasi',c:'good',k:2} : {t:'Melambat',c:'bad',k:0}; }
+function renderGrowth(){
+  const A=ST.gro; segSync('groCat',A.cat); A.bi=fillBlk('groBlk',A.cat,A.bi);
+  const cat=A.cat, b=BLOCKS[cat][A.bi], ds=cat==='Simpanan'?'s':'p', lv=lvName(), title=blkTitle(cat,b), sk=scopeKey(), w=S.per;
+  const lf=lastFull(ds), pLF=lf&&meAt(lf.y,lf.m), pL3=lf&&meAt(lf.y,lf.m-3), pDc=lf&&meAt(lf.y-1,12), nY=lf?lf.m:0;
+  const one=key=>{ const o=view(cat,b,'rp',key);
+    const vlf=pLF?val(cat,b,'rp',key,pLF):null, vl3=pL3?val(cat,b,'rp',key,pL3):null, vdc=pDc?val(cat,b,'rp',key,pDc):null;
+    const a3=nn(vlf)&&nn(vl3)?(vlf-vl3)/3:null, aY=nn(vlf)&&nn(vdc)&&nY?(vlf-vdc)/nY:null;
+    return {o,cur:o.v.cur,a3,aY,mo:momentum(a3,aY)}; };
+  const rows=ents().map(e=>({...e,...one(e.key)})).filter(r=>PTS.some(x=>nn(r.o.v[x])&&r.o.v[x]!==0));
+  const sc={key:sk,label:'Total '+scopeName(),_cls:'total',...one(sk)};
+  const g=r=>r.o.g[w], gp=x=>`${fSigned(sc.o.g[x][0])} <small>(${fSPct(sc.o.g[x][1])})</small>`;
+  strip('groStrip',[
+    [`Posisi ${fD(ptDate(cat,'cur'))}`, fRp(sc.cur)],
+    ['Δ DtD', fSigned(sc.o.g.dtd[0]), growthCls(sc.o.g.dtd[0])],
+    ['Δ MtD', gp('mtd'), growthCls(sc.o.g.mtd[0])],
+    ['Δ YtD', gp('ytd'), growthCls(sc.o.g.ytd[0])],
+    ['Δ YoY', gp('yoy'), growthCls(sc.o.g.yoy[0])],
+    ['Rata² / bln (YtD)', fSigned(sc.aY), growthCls(sc.aY)],
+    ['Rata² / bln (3 bln)', fSigned(sc.a3), growthCls(sc.a3)],
+    ['Momentum', sc.mo? tag(sc.mo.t,sc.mo.c) : '–'],
+  ]);
+  const B=[];
+  B.push(`${esc(title)} <b>${esc(scopeName())}</b> posisi ${fDL(ptDate(cat,'cur'))}: <b class="num">${fRp(sc.cur)}</b> Rp Jt — MtD ${gTxt(sc.o.g.mtd[0])} (${gPct(sc.o.g.mtd[1])}), YtD ${gTxt(sc.o.g.ytd[0])} (${gPct(sc.o.g.ytd[1])}), YoY ${gTxt(sc.o.g.yoy[0])} (${gPct(sc.o.g.yoy[1])}).`);
+  const gr=rows.filter(r=>nn(g(r)[0])), neg=gr.filter(r=>g(r)[0]<0).sort((a,c)=>g(a)[0]-g(c)[0]);
+  if(gr.length) B.push(`<b>${gr.length-neg.length} dari ${gr.length} ${lv}</b> tumbuh positif ${PER_LBL[w]}; <b>${neg.length}</b> turun${neg.length?` — terdalam: ${nms(neg.slice(0,3),r=>fSigned(g(r)[0])+' · '+fSPct(g(r)[1]))}`:''}.`);
+  const top=gr.filter(r=>g(r)[0]>0).sort((a,c)=>g(c)[0]-g(a)[0]);
+  if(top.length) B.push(`Pertumbuhan nominal ${PER_LBL[w]} terbesar: ${nms(top.slice(0,3),r=>fSigned(g(r)[0]))} — ${fPct(sum(top.slice(0,3).map(r=>g(r)[0]))/sum(top.map(r=>g(r)[0])))} dari total pertumbuhan positif.`);
+  if(sc.mo) B.push(`Momentum ${esc(scopeName())}: rata-rata 3 bulan terakhir <b class="num">${fSigned(sc.a3)}</b> Rp Jt/bln dibanding rata-rata sejak awal tahun <b class="num">${fSigned(sc.aY)}</b> Rp Jt/bln → ${tag(sc.mo.t,sc.mo.c)}.`);
+  const acc=rows.filter(r=>r.mo&&r.mo.k===2), slw=rows.filter(r=>r.mo&&r.mo.k===0).sort((a,c)=>(a.a3-a.aY)-(c.a3-c.aY));
+  if(acc.length||slw.length) B.push(`<b>${acc.length}</b> ${lv} mengalami akselerasi dan <b>${slw.length}</b> melambat${slw.length?` (perlambatan terbesar: ${nms(slw.slice(0,3))})`:''}.`);
+  insight('groIns',B);
+  const pts=monthPoints(14), vs=pts.map(p=>val(cat,b,'rp',sk,p)), dv=vs.slice(1).map((v,i)=>delta(v,vs[i]));
+  const ma=dv.map((_,i)=>{ if(i<2) return null; const s=dv.slice(i-2,i+1); return s.every(nn)? sum(s)/3 : null; });
+  ttl('groTrend',`Perubahan Bulanan · ${scopeName()}`,`${esc(title)} · Δ posisi akhir bulan terhadap bulan sebelumnya (Rp Jt); garis putus = rata-rata 3 bulan. Titik terakhir = posisi ${fD(ptDate(cat,'cur'))}.`);
+  mk('groTrend',{type:'bar',data:{labels:pts.slice(1).map(p=>p.label),datasets:[
+      {type:'bar',label:'Δ bulanan',data:dv,backgroundColor:dv.map(v=>clsCol(v==null?'na':v>=0?'good':'bad')+'cc'),borderRadius:3,order:2},
+      {type:'line',label:'Rata-rata 3 bulan',data:ma,borderColor:css('--c1'),backgroundColor:css('--c1'),borderDash:[5,4],pointRadius:2,tension:.25,spanGaps:true,order:1}]},
+    options:{maintainAspectRatio:false,interaction:{mode:'index',intersect:false},plugins:{legend:legendBottom(),tooltip:{callbacks:{label:c=>c.raw==null?null:`${c.dataset.label}: ${fSigned(c.raw)}`}}},
+      scales:{y:{ticks:{callback:scaleFmt(Math.max(1,...dv.filter(nn).map(Math.abs)))}},x:{grid:{display:false}}}},plugins:[refLine('y',0)]});
+  const gb=rows.filter(r=>nn(g(r)[1])).sort((a,c)=>g(c)[1]-g(a)[1]), gbl=topBottom(gb,TOPN);
+  ttl('groBar',`Pertumbuhan ${PER_LBL[w]} % per ${lv}`,`${esc(title)} · ${PER_TXT[w]} (${fD(ptDate(cat,w))} → ${fD(ptDate(cat,'cur'))})${gb.length>gbl.length?` · ${TOPN/2} tertinggi & ${TOPN/2} terendah dari ${gb.length}`:''}`);
+  hbar('groBar',gbl.map(r=>({label:r.label,v:g(r)[1],color:clsCol(g(r)[1]>=0?'good':'bad')})),{fmt:fSPct,tick:pctTick,plugins:[refLine('x',0)]});
+  ttl('groTbl',`Detail Pertumbuhan per ${LVL[curLvl()]} · ${title}`,`Nominal Rp Jt. Default diurutkan dari pertumbuhan ${PER_LBL[w]} % tertinggi.`);
+  table('groTbl',[...nameCols(),
+    {h:'Posisi',v:r=>r.cur,f:r=>`<b>${fRp(r.cur)}</b>`},
+    {h:'Δ DtD',v:r=>r.o.g.dtd[0],f:r=>gTxt(r.o.g.dtd[0])},
+    {h:'Δ MtD',v:r=>r.o.g.mtd[0],f:r=>gTxt(r.o.g.mtd[0])},
+    {h:'MtD %',v:r=>r.o.g.mtd[1],f:r=>gPct(r.o.g.mtd[1])},
+    {h:'Δ YtD',v:r=>r.o.g.ytd[0],f:r=>gTxt(r.o.g.ytd[0])},
+    {h:'YtD %',v:r=>r.o.g.ytd[1],f:r=>gPct(r.o.g.ytd[1])},
+    {h:'Δ YoY',v:r=>r.o.g.yoy[0],f:r=>gTxt(r.o.g.yoy[0])},
+    {h:'YoY %',v:r=>r.o.g.yoy[1],f:r=>gPct(r.o.g.yoy[1])},
+    {h:'Rata²/bln YtD',t:'Rata-rata perubahan per bulan sejak Desember tahun lalu (sampai akhir bulan lengkap terakhir)',v:r=>r.aY,f:r=>gTxt(r.aY)},
+    {h:'Rata²/bln 3 bln',t:'Rata-rata perubahan per bulan dalam 3 bulan lengkap terakhir',v:r=>r.a3,f:r=>gTxt(r.a3)},
+    {h:'Momentum',v:r=>r.mo?r.mo.k:null,f:r=>r.mo?tag(r.mo.t,r.mo.c):'–',c:'l'},
+    {h:'Porsi',t:`Porsi terhadap total ${scopeName()}`,v:r=>ratio(r.cur,sc.cur),f:r=>fPct(ratio(r.cur,sc.cur))},
+  ],rows,{sortKey:PER_LBL[w]+' %',asc:false,foot:[sc]});
+}
+
+/* ================= 3. TREND / DELTA ACHIEVEMENT ================= */
+function pattern(p,d){ if(p==null) return null;
+  if(d==null) return p>=1? {t:'Capai',c:'good',k:3} : {t:'Di bawah RKA',c:'bad',k:1};
+  if(p>=1) return d>=0? {t:'Capai & menguat',c:'good',k:4} : {t:'Capai, melemah',c:'warn',k:3};
+  return d>=0? {t:'Di bawah, membaik',c:'warn',k:2} : {t:'Di bawah, memburuk',c:'bad',k:0}; }
+function renderTrend(){
+  const A=ST.tr; segSync('trCat',A.cat); segSync('trCmp',A.cmp); A.bi=fillBlk('trBlk',A.cat,A.bi,hasTgt(A.cat));
+  const cat=A.cat, b=BLOCKS[cat][A.bi], k=+A.cmp, lv=lvName(), title=blkTitle(cat,b), sk=scopeKey();
+  const pts=RK? monthPoints(0).filter(p=>p.y===RK.year) : [], n=pts.length, cmpTxt=k===1?'bulan lalu':'3 bulan lalu';
+  const one=key=>{ const pc=pts.map(p=>pencOf(cat,val(cat,b,'rp',key,p),tgt(cat,b,'rp',key,p.m)));
+    const now=n?pc[n-1]:null, prev=n>k?pc[n-1-k]:null, p1=n>1?pc[n-2]:null, d=delta(now,prev), ok=pc.filter(nn);
+    return {pc,now,prev,p1,d,nOk:ok.filter(x=>x>=1).length,nAll:ok.length,pat:pattern(now,d)}; };
+  const rows=ents().map(e=>({...e,...one(e.key)})).filter(r=>r.nAll>0);
+  const sc={key:sk,label:'Total '+scopeName(),_cls:'total',...one(sk)};
+  const upN=rows.filter(r=>nn(r.d)&&r.d>0), dnN=rows.filter(r=>nn(r.d)&&r.d<0);
+  const newOk=rows.filter(r=>nn(r.now)&&nn(r.p1)&&r.now>=1&&r.p1<1), newMiss=rows.filter(r=>nn(r.now)&&nn(r.p1)&&r.now<1&&r.p1>=1);
+  strip('trStrip',[
+    [`Pencapaian ${n?pts[n-1].label:'–'}`, pill(sc.now)],
+    [`Pencapaian ${cmpTxt}`, pill(sc.prev)],
+    [`Δ vs ${cmpTxt}`, fPP(sc.d), growthCls(sc.d)],
+    ['Bulan ≥ 100% (tahun ini)', n? `${sc.nOk} / ${sc.nAll}` : '–'],
+    [`${LVL[curLvl()]} membaik`, String(upN.length), 'up'],
+    [`${LVL[curLvl()]} memburuk`, String(dnN.length), 'down'],
+    ['Baru capai RKA', String(newOk.length)],
+    ['Lepas dari RKA', String(newMiss.length)],
+  ]);
+  const B=[];
+  if(!n) B.push(`Tidak ada data akhir bulan pada tahun RKA${RK?` ${RK.year}`:''} sampai posisi ${fDL(S.date)}.`);
+  else {
+    const first=sc.pc.findIndex(nn);
+    if(first>=0) B.push(`Pencapaian ${esc(title)} <b>${esc(scopeName())}</b> bergerak dari ${pill(sc.pc[first])} (${pts[first].label}) ke ${pill(sc.now)} (${pts[n-1].label}); Δ vs ${cmpTxt} ${gPP(sc.d)}. Tahun ini ${sc.nOk} dari ${sc.nAll} bulan mencapai ≥ 100%.`);
+    if(n>1) B.push(`Dibanding bulan lalu: <b>${newOk.length} ${lv}</b> baru mencapai RKA${newOk.length?` (${nms(newOk.slice(0,4))})`:''}, dan <b>${newMiss.length} ${lv}</b> turun di bawah RKA${newMiss.length?` (${nms(newMiss.slice(0,4))})`:''}.`);
+    const imp=upN.slice().sort((a,c)=>c.d-a.d), dec=dnN.slice().sort((a,c)=>a.d-c.d);
+    if(imp.length) B.push(`Perbaikan pencapaian terbesar vs ${cmpTxt}: ${nms(imp.slice(0,3),r=>fPP(r.d))}.`);
+    if(dec.length) B.push(`Penurunan pencapaian terbesar vs ${cmpTxt}: ${nms(dec.slice(0,3),r=>fPP(r.d))}.`);
+    const cons=rows.filter(r=>r.nAll>=3&&r.nOk===0).sort((a,c)=>a.now-c.now);
+    if(cons.length) B.push(`<b>${cons.length} ${lv}</b> tidak pernah mencapai RKA sepanjang tahun ini: ${nms(cons.slice(0,5),r=>fPct(r.now))}${cons.length>5?', dll':''}.`);
+  }
+  insight('trIns',B);
+  const scp=sc.pc, dm=scp.map((v,i)=>i? delta(v,scp[i-1]) : null), sv=scp.filter(nn);
+  const ylo=Math.min(1,...sv), yhi=Math.max(1,...sv), yp=(yhi-ylo)*.15||.02;   // sumbu mengikuti rentang data (bukan dari 0%)
+  ttl('trLine',`Tren Pencapaian · ${scopeName()}`,`${esc(title)} · garis = pencapaian akhir bulan terhadap RKA bulan yang sama; batang = Δ vs bulan sebelumnya (sumbu kanan); garis putus = 100%`);
+  mk('trLine',{type:'bar',data:{labels:pts.map(p=>p.label),datasets:[
+      {type:'line',label:'Pencapaian',data:scp,borderColor:css('--c1'),backgroundColor:css('--c1'),yAxisID:'y',tension:.25,pointRadius:3,spanGaps:true,order:1},
+      {type:'bar',label:'Δ vs bulan lalu',data:dm,backgroundColor:dm.map(v=>clsCol(v==null?'na':v>=0?'good':'bad')+'aa'),yAxisID:'y2',borderRadius:3,order:2}]},
+    options:{maintainAspectRatio:false,interaction:{mode:'index',intersect:false},plugins:{legend:legendBottom(),tooltip:{callbacks:{label:c=>c.raw==null?null:c.dataset.yAxisID==='y2'?`${c.dataset.label}: ${fPP(c.raw)}`:`${c.dataset.label}: ${fPct(c.raw)}`}}},
+      scales:{y:{min:Math.max(0,ylo-yp),max:yhi+yp,ticks:{callback:v=>nf1.format(v*100)+'%',includeBounds:false}},y2:{position:'right',grid:{display:false},ticks:{callback:pctTick}},x:{grid:{display:false}}}},plugins:[refLine('y',1)]});
+  const dd=rows.filter(r=>nn(r.now)&&nn(r.prev)).sort((a,c)=>a.d-c.d), dl=topBottom(dd,TOPN);
+  ttl('trDumb',`Perubahan Pencapaian vs ${cmpTxt}`,`Batang = rentang pencapaian ${cmpTxt} → sekarang (titik = sekarang); merah = turun, hijau = naik${dd.length>dl.length?` · ${TOPN/2} penurunan & ${TOPN/2} kenaikan terbesar dari ${dd.length}`:''}`);
+  $('trDumb').parentElement.style.height=Math.max(320,dl.length*22+70)+'px';
+  const dx=dl.flatMap(r=>[r.prev,r.now]), xlo=Math.min(1,...dx), xhi=Math.max(1,...dx), xp=(xhi-xlo)*.08||.02;
+  const dot={id:'dot'+(++RLN),afterDatasetsDraw(ch){ const meta=ch.getDatasetMeta(0), X=ch.scales.x, c=ch.ctx; c.save(); c.fillStyle=css('--text');
+    meta.data.forEach((el,i)=>{ c.beginPath(); c.arc(X.getPixelForValue(dl[i].now),el.y,3.5,0,Math.PI*2); c.fill(); }); c.restore(); }};
+  mk('trDumb',{type:'bar',data:{labels:dl.map(r=>r.label),datasets:[{data:dl.map(r=>[r.prev,r.now]),backgroundColor:dl.map(r=>clsCol(r.d>=0?'good':'bad')+'bb'),borderRadius:3,barPercentage:.6}]},
+    options:{indexAxis:'y',maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>{ const r=dl[c.dataIndex]; return `${fPct(r.prev)} → ${fPct(r.now)} (${fPP(r.d)})`; }}}},
+      scales:{x:{min:Math.max(0,xlo-xp),max:xhi+xp,ticks:{callback:v=>nf1.format(v*100)+'%',includeBounds:false}},y:{grid:{display:false},ticks:{autoSkip:false,callback:truncTick}}}},plugins:[dot,refLine('x',1)]});
+  ttl('trTbl',`Peta Pencapaian Bulanan per ${LVL[curLvl()]} · ${title}`,'Angka = pencapaian (%) tiap akhir bulan terhadap RKA bulan yang sama. Hijau ≥ 100%, kuning 95–99,99%, merah &lt; 95%.');
+  table('trTbl',[...nameCols(),
+    ...pts.map((p,i)=>({h:p.label,k:'m'+i,v:r=>r.pc[i],f:r=>r.pc[i]==null?'–':nf1.format(r.pc[i]*100),cc:r=>r.pc[i]==null?'':'h-'+cls(r.pc[i])})),
+    {h:`Δ vs ${cmpTxt}`,v:r=>r.d,f:r=>gPP(r.d)},
+    {h:'Bulan ≥ 100%',v:r=>r.nAll?r.nOk/r.nAll:null,f:r=>r.nAll?`${r.nOk} / ${r.nAll}`:'–',c:'c'},
+    {h:'Pola',k:'pola',v:r=>r.pat?r.pat.k:null,f:r=>r.pat?tag(r.pat.t,r.pat.c):'–',c:'l'},
+  ],rows,{sortKey:'pola',asc:true,foot:[sc]});
+}
+
+/* ================= 4. PRODUCT MIX SIMPANAN ================= */
+const SPROD = order(SC.map(c=>c[1]));
+const isCasa = p => !/deposito/i.test(p);
+const prodCol = (p,i) => isCasa(p)? [css('--c1'),css('--c3'),css('--c2')][i%3] : css('--warn');
+function renderMix(){
+  const A=ST.mix; $('mixSeg').value=A.seg;
+  const cellsOf=p=>SC.map((_,i)=>i).filter(i=>(p==null||SC[i][1]===p)&&(!A.seg||SC[i][0]===A.seg));
+  const PB=SPROD.map(p=>({p,b:{cells:cellsOf(p)}})), ALL={cells:cellsOf(null)}, lv=lvName(), sk=scopeKey(), w=S.per;
+  const ci=PB.map((x,i)=>isCasa(x.p)?i:-1).filter(i=>i>=0), di=PB.findIndex(x=>!isCasa(x.p));
+  const one=key=>{ const c=curPt(), bs=basePt();
+    const now=PB.map(x=>val('Simpanan',x.b,'rp',key,c)), was=PB.map(x=>val('Simpanan',x.b,'rp',key,bs));
+    const tot=now.some(nn)?sum(now):null, tot0=was.some(nn)?sum(was):null;
+    const casa=ratio(sum(ci.map(i=>now[i])),tot), casa0=ratio(sum(ci.map(i=>was[i])),tot0), nrek=val('Simpanan',ALL,'cnt',key,c);
+    return {now,was,tot,tot0,casa,casa0,dCasa:delta(casa,casa0),sh:now.map(v=>ratio(v,tot)),sh0:was.map(v=>ratio(v,tot0)),dv:now.map((v,i)=>delta(v,was[i])),dT:delta(tot,tot0),nrek,avg:ratio(tot,nrek)}; };
+  const rows=ents().map(e=>({...e,...one(e.key)})).filter(r=>nn(r.tot)&&r.tot);
+  const sc={key:sk,label:'Total '+scopeName(),_cls:'total',...one(sk)};
+  strip('mixStrip',[
+    ['Total Simpanan', fRp(sc.tot)],
+    ['CASA', fPct(sc.casa)],
+    [`Δ CASA ${PER_LBL[w]}`, fPP(sc.dCasa), growthCls(sc.dCasa)],
+    ...SPROD.map((p,i)=>[`Porsi ${esc(p)}`, `${fPct(sc.sh[i])} <small>(${fPP(delta(sc.sh[i],sc.sh0[i]))})</small>`]),
+    [`Δ Total ${PER_LBL[w]}`, fSigned(sc.dT), growthCls(sc.dT)],
+    ['Saldo rata² / rek', fRp(sc.avg)],
+  ]);
+  const B=[], seg=A.seg?' '+esc(A.seg):'';
+  if(nn(sc.tot)) B.push(`Simpanan${seg} <b>${esc(scopeName())}</b>: <b class="num">${fRp(sc.tot)}</b> Rp Jt dengan CASA <b>${fPct(sc.casa)}</b> (${gPP(sc.dCasa)} ${PER_TXT[w]}).`);
+  if(nn(sc.dT)){ const drv=SPROD.map((p,i)=>({p,v:sc.dv[i]})).filter(x=>nn(x.v)).sort((a,c)=>Math.abs(c.v)-Math.abs(a.v))[0];
+    B.push(`Perubahan total ${PER_LBL[w]} ${gTxt(sc.dT)} Rp Jt: ${SPROD.map((p,i)=>`${esc(p)} ${gTxt(sc.dv[i])}`).join(', ')}.${drv?` Penggerak utama: <b>${esc(drv.p)}</b>.`:''}`); }
+  const shf=SPROD.map((p,i)=>({p,d:delta(sc.sh[i],sc.sh0[i])})).filter(x=>nn(x.d)).sort((a,c)=>Math.abs(c.d)-Math.abs(a.d))[0];
+  if(shf) B.push(`Pergeseran porsi terbesar: <b>${esc(shf.p)}</b> ${gPP(shf.d,!isCasa(shf.p))}${!isCasa(shf.p)&&shf.d>0?' — porsi dana mahal naik, biaya dana berpotensi meningkat':isCasa(shf.p)&&shf.d>0?' — porsi dana murah meningkat':''}.`);
+  const byC=rows.filter(r=>nn(r.casa)).sort((a,c)=>a.casa-c.casa);
+  if(byC.length>1) B.push(`CASA terendah: ${nms(byC.slice(0,3),r=>fPct(r.casa))}; tertinggi: ${nms(byC.slice(-3).reverse(),r=>fPct(r.casa))}.`);
+  const byD=rows.filter(r=>nn(r.dCasa)).sort((a,c)=>a.dCasa-c.dCasa);
+  if(byD.length>1) B.push(`Perubahan CASA ${PER_LBL[w]} terburuk: ${nms(byD.slice(0,3),r=>fPP(r.dCasa))}; terbaik: ${nms(byD.slice(-3).reverse(),r=>fPP(r.dCasa))}.`);
+  if(di>=0){ const hiD=rows.filter(r=>nn(r.sh[di])&&r.sh[di]>.5).sort((a,c)=>c.sh[di]-a.sh[di]);
+    if(hiD.length) B.push(`<b>${hiD.length} ${lv}</b> memiliki porsi ${esc(SPROD[di])} di atas 50% (ketergantungan pada dana mahal): ${nms(hiD.slice(0,4),r=>fPct(r.sh[di]))}${hiD.length>4?', dll':''}.`); }
+  insight('mixIns',B);
+  const pts=monthPoints(13), ser=PB.map(x=>pts.map(p=>val('Simpanan',x.b,'rp',sk,p)));
+  const casaS=pts.map((_,j)=>{ const t=sum(ser.map(s=>s[j])); return t? sum(ci.map(i=>ser[i][j]))/t : null; });
+  ttl('mixTrend',`Komposisi & CASA · ${scopeName()}`,`Posisi akhir bulan per produk (batang, Rp Jt) dan rasio CASA (garis, sumbu kanan)`);
+  mk('mixTrend',{type:'bar',data:{labels:pts.map(p=>p.label),datasets:[
+      ...PB.map((x,i)=>({type:'bar',label:x.p,data:ser[i],backgroundColor:prodCol(x.p,i),stack:'s',order:2})),
+      {type:'line',label:'CASA %',data:casaS,borderColor:css('--text'),backgroundColor:css('--text'),yAxisID:'y2',tension:.25,pointRadius:2.5,order:1}]},
+    options:{maintainAspectRatio:false,interaction:{mode:'index',intersect:false},plugins:{legend:legendBottom(),tooltip:{callbacks:{label:c=>c.raw==null?null:c.dataset.yAxisID==='y2'?`CASA: ${fPct(c.raw)}`:`${c.dataset.label}: ${fRp(c.raw)}`}}},
+      scales:{x:{stacked:true,grid:{display:false}},y:{stacked:true,ticks:{callback:scaleFmt(Math.max(1,...pts.map((_,j)=>sum(ser.map(s=>s[j])))))}},y2:{position:'right',beginAtZero:false,grace:'10%',grid:{display:false},ticks:{callback:v=>nf1.format(v*100)+'%'}}}}});
+  const mb=topBottom(rows.filter(r=>nn(r.casa)).sort((a,c)=>a.casa-c.casa),TOPN);
+  ttl('mixBar',`Komposisi per ${lv}`,`Porsi tiap produk, diurutkan dari CASA terendah${byC.length>mb.length?` · ${TOPN/2} terendah & ${TOPN/2} tertinggi dari ${byC.length}`:''}`);
+  $('mixBar').parentElement.style.height=Math.max(320,mb.length*22+90)+'px';
+  mk('mixBar',{type:'bar',data:{labels:mb.map(r=>r.label),datasets:PB.map((x,i)=>({label:x.p,data:mb.map(r=>r.sh[i]),backgroundColor:prodCol(x.p,i),barPercentage:.82}))},
+    options:{indexAxis:'y',maintainAspectRatio:false,plugins:{legend:legendBottom(),tooltip:{callbacks:{label:c=>`${c.dataset.label}: ${fPct(c.raw)}`}}},
+      scales:{x:{stacked:true,min:0,max:1,ticks:{callback:v=>nf0.format(v*100)+'%'}},y:{stacked:true,grid:{display:false},ticks:{autoSkip:false,callback:truncTick}}}}});
+  ttl('mixTbl',`Detail Komposisi Simpanan per ${LVL[curLvl()]}`,`Nominal Rp Jt; Δ = perubahan ${PER_TXT[w]}. Default diurutkan dari CASA terendah.`);
+  table('mixTbl',[...nameCols(),
+    ...SPROD.map((p,i)=>({h:esc(p),v:r=>r.now[i],f:r=>fRp(r.now[i])})),
+    {h:'Total',v:r=>r.tot,f:r=>`<b>${fRp(r.tot)}</b>`},
+    ...SPROD.map((p,i)=>({h:'Porsi '+esc(p),v:r=>r.sh[i],f:r=>fPct(r.sh[i])})),
+    {h:'CASA',k:'casa',v:r=>r.casa,f:r=>`<b>${fPct(r.casa)}</b>`},
+    {h:`Δ CASA ${PER_LBL[w]}`,v:r=>r.dCasa,f:r=>gPP(r.dCasa)},
+    ...SPROD.map((p,i)=>({h:`Δ ${esc(p)}`,v:r=>r.dv[i],f:r=>gTxt(r.dv[i])})),
+    {h:'Rekening',v:r=>r.nrek,f:r=>fRp(r.nrek)},
+    {h:'Saldo rata²/rek',v:r=>r.avg,f:r=>nf1.format(r.avg??0)},
+  ],rows,{sortKey:'casa',asc:true,foot:[sc]});
+}
+
+/* ================= 5. CONTRIBUTION ================= */
+function renderContrib(){
+  const A=ST.con; segSync('conCat',A.cat); segSync('conDim',A.dim);
+  const cat=A.cat, inv=!!LOWGOOD[cat], tb=cat==='Simpanan'?SBLK[0]:PBLK[0], sk=scopeKey(), c=curPt(), bs=basePt(), w=S.per, ent=A.dim==='ent';
+  const S0=val(cat,tb,'rp',sk,bs), S1=val(cat,tb,'rp',sk,c), SD=delta(S1,S0), d0=ptDate(cat,w), d1=ptDate(cat,'cur');
+  let comps;
+  if(ent) comps=ents().map(e=>({...e,v0:val(cat,tb,'rp',e.key,bs),v1:val(cat,tb,'rp',e.key,c)}));
+  else { const bl=cat==='Simpanan'? SBLK.filter(b=>b.prodTot) : PBLK.filter(b=>b.seg&&!b.excl);
+    comps=bl.map(b=>({key:'B|'+b.title,label:cat==='Simpanan'?b.prodTot:b.name,sub:'',v0:val(cat,b,'rp',sk,bs),v1:val(cat,b,'rp',sk,c)})); }
+  comps=comps.filter(r=>(nn(r.v0)&&r.v0)||(nn(r.v1)&&r.v1)).map(r=>({...r,d:(r.v1||0)-(r.v0||0)}));
+  const r0=nn(S0)?S0-sum(comps.map(r=>r.v0)):0, r1=nn(S1)?S1-sum(comps.map(r=>r.v1)):0;
+  const fin=r=>({...r,g:grw(r.v1,r.v0),con:nn(SD)&&SD?r.d/SD:null,sh0:ratio(r.v0,S0),sh1:ratio(r.v1,S1),dsh:delta(ratio(r.v1,S1),ratio(r.v0,S0)),idx:nn(SD)&&SD>0&&ratio(r.v0,S0)?(r.d/SD)/ratio(r.v0,S0):null});
+  const rows=comps.map(fin);
+  const oth=Math.abs(r0)+Math.abs(r1)>.5? fin({key:'oth',label:ent?'Lainnya / tanpa rincian':'Lainnya',sub:'',v0:r0,v1:r1,d:r1-r0,_cls:'oth'}) : null;
+  const tot={key:sk,label:'Total '+scopeName(),sub:'',v0:S0,v1:S1,d:SD,g:grw(S1,S0),con:nn(SD)&&SD?1:null,sh0:1,sh1:1,dsh:0,idx:null,_cls:'total'};
+  const word=inv?'kenaikan':'pertumbuhan', unit=ent?lvName():(cat==='Simpanan'?'produk':'segmen');
+  const pos=rows.filter(r=>r.d>0).sort((a,b)=>b.d-a.d), neg=rows.filter(r=>r.d<0).sort((a,b)=>a.d-b.d), posT=sum(pos.map(r=>r.d));
+  let k80=0; { let acc=0; for(const r of pos){ acc+=r.d; k80++; if(acc>=.8*posT) break; } }
+  strip('conStrip',[
+    [`Posisi ${fD(d0)}`, fRp(S0)],
+    [`Posisi ${fD(d1)}`, fRp(S1)],
+    [`Δ ${PER_LBL[w]}`, `${fSigned(SD)} <small>(${fSPct(grw(S1,S0))})</small>`, growthCls(SD,inv)],
+    ['Komponen naik', `${pos.length} / ${rows.length}`],
+    ['Komponen turun', String(neg.length)],
+    ['80% Δ positif dari', pos.length? `${k80} ${unit}` : '–'],
+  ]);
+  const B=[];
+  if(nn(SD)) B.push(`${cat} <b>${esc(scopeName())}</b> ${SD>=0?'naik':'turun'} <b class="num">${fSigned(SD)}</b> Rp Jt (${fSPct(grw(S1,S0))}) ${PER_TXT[w]} (${fD(d0)} → ${fD(d1)}).`);
+  if(pos.length) B.push(`Penyumbang ${word} terbesar: ${nms(pos.slice(0,3),r=>fSigned(r.d)+(nn(r.con)?' · '+fPct(r.con)+' dari Δ total':''))}. <b>${k80} dari ${rows.length} ${unit}</b> menghasilkan 80% dari total Δ positif.`);
+  if(neg.length) B.push(`${inv?'Penurunan (perbaikan) terbesar':'Penekan pertumbuhan terbesar'}: ${nms(neg.slice(0,3),r=>fSigned(r.d))}${neg.length>3?` — total ${neg.length} ${unit} turun ${fSigned(sum(neg.map(r=>r.d)))} Rp Jt`:''}.`);
+  const sh=rows.filter(r=>nn(r.dsh)).sort((a,b)=>b.dsh-a.dsh);
+  if(sh.length>1) B.push(`Porsi paling bertambah: ${nms(sh.slice(0,2),r=>fPP(r.dsh))}; paling berkurang: ${nms(sh.slice(-2).reverse(),r=>fPP(r.dsh))}.`);
+  const over=rows.filter(r=>nn(r.idx)&&r.idx>1.5&&r.sh0>=.02).sort((a,b)=>b.idx-a.idx);
+  if(over.length) B.push(`Tumbuh jauh melebihi bobotnya (indeks &gt; 1,5): ${nms(over.slice(0,4),r=>'indeks '+nf1.format(r.idx))}.`);
+  if(oth) B.push(`Komponen <i>${esc(oth.label)}</i> (${fSigned(oth.d)} Rp Jt) adalah selisih antara total dan jumlah rincian — misalnya data tanpa rincian unit atau segmen yang dibukukan di Kanwil.`);
+  insight('conIns',B);
+  const all=[...rows,...(oth?[oth]:[])].sort((a,b)=>b.d-a.d);
+  let items=all.map(r=>({label:r.label,v:r.d}));
+  if(items.length>16){ const mid=items.slice(8,items.length-7); items=[...items.slice(0,8),{label:`Lainnya (${mid.length})`,v:sum(mid.map(x=>x.v))},...items.slice(-7)]; }
+  ttl('conWf',`Waterfall ${PER_LBL[w]} · ${scopeName()}`,`${cat}: posisi ${fD(d0)} → ${fD(d1)} (Rp Jt), diurai per ${unit}. Sumbu tidak dimulai dari nol.`);
+  if(nn(S0)&&nn(S1)) waterfall('conWf',S0,items,S1,{inv,startLbl:fD(d0),endLbl:fD(d1)}); else killChart('conWf');
+  const top=rows.filter(r=>nn(r.con)).sort((a,b)=>Math.abs(b.d)-Math.abs(a.d)).slice(0,15);
+  ttl('conShare','Porsi Saldo vs Kontribusi Pertumbuhan',`${top.length} ${unit} dengan Δ terbesar. Kontribusi lebih panjang dari porsi saldo = tumbuh melebihi bobotnya.`);
+  $('conShare').parentElement.style.height=Math.max(320,top.length*34+90)+'px';
+  mk('conShare',{type:'bar',data:{labels:top.map(r=>r.label),datasets:[
+      {label:'Porsi saldo awal',data:top.map(r=>r.sh0),backgroundColor:css('--c2'),barPercentage:.85},
+      {label:'Kontribusi thd Δ total',data:top.map(r=>r.con),backgroundColor:top.map(r=>clsCol((r.d>=0)!==inv?'good':'bad')),barPercentage:.85}]},
+    options:{indexAxis:'y',maintainAspectRatio:false,plugins:{legend:legendBottom(),tooltip:{callbacks:{label:c=>`${c.dataset.label}: ${fPct(c.raw)}`}}},
+      scales:{x:{ticks:{callback:v=>nf0.format(v*100)+'%'}},y:{grid:{display:false},ticks:{autoSkip:false,callback:truncTick}}}},plugins:[refLine('x',0)]});
+  ttl('conTbl',`Detail Kontribusi per ${ent?LVL[curLvl()]:(cat==='Simpanan'?'Produk':'Segmen')} · ${cat}`,`Nominal Rp Jt, ${PER_TXT[w]}. Indeks = porsi pertumbuhan ÷ porsi saldo awal (hanya bila total tumbuh).`);
+  table('conTbl',[...(ent?nameCols():[{h:cat==='Simpanan'?'Produk':'Segmen',v:r=>r.label,f:r=>esc(r.label),c:'l'}]),
+    {h:`Posisi ${fD(d0)}`,v:r=>r.v0,f:r=>fRp(r.v0)},
+    {h:`Posisi ${fD(d1)}`,v:r=>r.v1,f:r=>`<b>${fRp(r.v1)}</b>`},
+    {h:'Δ',k:'d',v:r=>r.d,f:r=>gTxt(r.d,inv)},
+    {h:'Tumbuh %',v:r=>r.g,f:r=>gPct(r.g,inv)},
+    {h:'Kontribusi',t:'Δ komponen ÷ Δ total',v:r=>r.con,f:r=>fPct(r.con)},
+    {h:'Porsi awal',v:r=>r.sh0,f:r=>fPct(r.sh0)},
+    {h:'Porsi akhir',v:r=>r.sh1,f:r=>fPct(r.sh1)},
+    {h:'Δ Porsi',v:r=>r.dsh,f:r=>gPP(r.dsh,inv)},
+    {h:'Indeks',t:'Porsi pertumbuhan ÷ porsi saldo awal; > 1 = tumbuh melebihi bobotnya',v:r=>r.idx,f:r=>nn(r.idx)?nf2.format(r.idx):'–'},
+  ],rows,{sortKey:'d',asc:false,foot:[oth,tot]});
+}
+
+/* ================= 6. PORTFOLIO QUALITY ================= */
+function qOne(b,key){
+  const c=curPt(), bs=basePt(), [m0]=rkaMonths(), x=kolV(b,key,c);
+  const s=val('SML',b,'pct',key,c), n=val('NPL',b,'pct',key,c);
+  return {x,bal:x?x.tot:null,sR:x?x.k[1]:null,nR:x?x.k[2]:null,s,n,lan:x?ratio(x.k[0],x.tot):null,
+    ds:delta(s,val('SML',b,'pct',key,bs)),dn:delta(n,val('NPL',b,'pct',key,bs)),
+    ts:tgt('SML',b,'pct',key,m0),tn:tgt('NPL',b,'pct',key,m0),nDeb:x?x.n[2]:null,sDeb:x?x.n[1]:null};
+}
+function qStatus(r,ref){ if(!nn(r.n)) return null;
+  const nOver=nn(r.tn)? r.n>r.tn : nn(ref.n)&&r.n>ref.n, sOver=nn(r.ts)? r.s>r.ts : nn(ref.s)&&r.s>ref.s;
+  return nOver? {t:nn(r.tn)?'NPL di atas target':'NPL > rata-rata',c:'bad',k:0} : sOver? {t:nn(r.ts)?'SML di atas target':'SML > rata-rata',c:'warn',k:1} : {t:'Dalam batas',c:'good',k:2}; }
+function renderQuality(){
+  const A=ST.q; A.bi=fillBlk('qBlk','Pinjaman',A.bi,b=>b.lvl===0&&!b.excl);
+  const b=PBLK[A.bi], sk=scopeKey(), lv=lvName(), w=S.per, title=blkTitle('Pinjaman',b);
+  const sc={key:sk,label:'Total '+scopeName(),_cls:'total',...qOne(b,sk)};
+  const rows=ents().map(e=>({...e,...qOne(b,e.key)})).filter(r=>nn(r.bal)&&r.bal).map(r=>({...r,st:qStatus(r,sc)}));
+  strip('qStrip',[
+    ['SML %', `${fPct(sc.s)}${nn(sc.ts)?` <small>(target ${fPct(sc.ts)})</small>`:''}`, nn(sc.ts)?(sc.s>sc.ts?'down':'up'):''],
+    ['NPL %', `${fPct(sc.n)}${nn(sc.tn)?` <small>(target ${fPct(sc.tn)})</small>`:''}`, nn(sc.tn)?(sc.n>sc.tn?'down':'up'):''],
+    [`Δ SML ${PER_LBL[w]}`, fPP(sc.ds), growthCls(sc.ds,1)],
+    [`Δ NPL ${PER_LBL[w]}`, fPP(sc.dn), growthCls(sc.dn,1)],
+    ['SML (Rp Jt)', fRp(sc.sR)],
+    ['NPL (Rp Jt)', fRp(sc.nR)],
+    ['Debitur NPL', fRp(sc.nDeb)],
+    ['Kol 1 (Lancar)', fPct(sc.lan)],
+  ]);
+  const B=[], anyT=rows.some(r=>nn(r.tn));
+  if(sc.x) B.push(`<b>${esc(scopeName())}</b> · ${esc(title)}: SML <b>${fPct(sc.s)}</b>${nn(sc.ts)?` (target ${fPct(sc.ts)})`:''}, ${gPP(sc.ds,1)} ${PER_TXT[w]}; NPL <b>${fPct(sc.n)}</b>${nn(sc.tn)?` (target ${fPct(sc.tn)})`:''}, ${gPP(sc.dn,1)}.`);
+  const segs=PBLK.filter(x=>x.lvl===0&&x.seg&&!x.excl).map(x=>({label:x.name,...qOne(x,sk)})).filter(r=>nn(r.n)&&r.bal);
+  if(segs.length>1){ const hn=segs.slice().sort((a,c)=>c.n-a.n)[0], hs=segs.slice().sort((a,c)=>c.s-a.s)[0], wd=segs.filter(r=>nn(r.dn)).sort((a,c)=>c.dn-a.dn)[0];
+    B.push(`Per segmen: NPL tertinggi di <b>${esc(hn.label)}</b> (${fPct(hn.n)}), SML tertinggi di <b>${esc(hs.label)}</b> (${fPct(hs.s)})${wd&&wd.dn>0?`; pemburukan NPL terbesar ${PER_LBL[w]} di <b>${esc(wd.label)}</b> (${fPP(wd.dn)})`:''}.`); }
+  const over=rows.filter(r=>r.st&&r.st.k===0).sort((a,c)=>(c.n-(c.tn??sc.n))-(a.n-(a.tn??sc.n)));
+  if(rows.length) B.push(`<b>${over.length} dari ${rows.length} ${lv}</b> memiliki NPL di atas ${anyT?'target':'rata-rata '+esc(scopeName())}${over.length?`: ${nms(over.slice(0,4),r=>fPct(r.n))}${over.length>4?', dll':''}`:''}.`);
+  const byN=rows.filter(r=>nn(r.nR)&&r.nR>0).sort((a,c)=>c.nR-a.nR);
+  if(byN.length>3&&sc.nR) B.push(`Konsentrasi NPL: 3 ${lv} terbesar (${nms(byN.slice(0,3),r=>fRp(r.nR))}) memegang <b>${fPct(sum(byN.slice(0,3).map(r=>r.nR))/sc.nR)}</b> dari total NPL.`);
+  const wor=rows.filter(r=>nn(r.dn)&&r.dn>0); if(rows.length) B.push(`<b>${wor.length} ${lv}</b> mengalami kenaikan rasio NPL ${PER_TXT[w]}.`);
+  insight('qIns',B);
+  const pts=monthPoints(13);
+  ttl('qTrend',`Tren Rasio Kualitas · ${scopeName()}`,`${esc(title)} · SML % dan NPL % akhir bulan; garis putus = target rasio RKA`);
+  mk('qTrend',{type:'line',data:{labels:pts.map(p=>p.label),datasets:[
+      {label:'SML %',data:pts.map(p=>val('SML',b,'pct',sk,p)),borderColor:css('--warn'),backgroundColor:css('--warn'),tension:.25,pointRadius:2.5,spanGaps:true},
+      {label:'NPL %',data:pts.map(p=>val('NPL',b,'pct',sk,p)),borderColor:css('--bad'),backgroundColor:css('--bad'),tension:.25,pointRadius:2.5,spanGaps:true},
+      {label:'Target SML',data:pts.map(p=>tgtAt('SML',b,'pct',sk,p)),borderColor:css('--warn'),backgroundColor:css('--warn'),borderDash:[5,4],pointRadius:0,spanGaps:true},
+      {label:'Target NPL',data:pts.map(p=>tgtAt('NPL',b,'pct',sk,p)),borderColor:css('--bad'),backgroundColor:css('--bad'),borderDash:[5,4],pointRadius:0,spanGaps:true}]},
+    options:{maintainAspectRatio:false,interaction:{mode:'index',intersect:false},plugins:{legend:legendBottom(),tooltip:{callbacks:{label:c=>c.raw==null?null:`${c.dataset.label}: ${fPct(c.raw)}`}}},
+      scales:{y:{ticks:{callback:pctTick}},x:{grid:{display:false}}}}});
+  const segB=PBLK.filter(x=>x.lvl===0&&!x.excl).map(x=>({label:x.tot?'Total':x.name,...qOne(x,sk)})).filter(r=>nn(r.bal)&&r.bal);
+  ttl('qSeg',`Rasio per Segmen · ${scopeName()}`,`SML % dan NPL % posisi ${fD(RES.p.cur)}`);
+  mk('qSeg',{type:'bar',data:{labels:segB.map(r=>r.label),datasets:[
+      {label:'SML %',data:segB.map(r=>r.s),backgroundColor:css('--warn')+'cc',borderRadius:3},
+      {label:'NPL %',data:segB.map(r=>r.n),backgroundColor:css('--bad')+'cc',borderRadius:3}]},
+    options:{maintainAspectRatio:false,plugins:{legend:legendBottom(),tooltip:{callbacks:{label:c=>`${c.dataset.label}: ${fPct(c.raw)}`}}},scales:{y:{ticks:{callback:pctTick}},x:{grid:{display:false}}}}});
+  const segRows=PBLK.filter(x=>x.lvl<=1).map(x=>({key:'B|'+x.title,label:(x.lvl?'   · ':'')+blkTitle('Pinjaman',x),_cls:x.tot?'total':x.lvl===0?'area':'',...qOne(x,sk)})).filter(r=>nn(r.bal)&&r.bal);
+  ttl('qSegTbl',`Kualitas per Segmen & Produk · ${scopeName()}`,`Nominal Rp Jt; target rasio dari RKA ${mLbl(rkaMonths()[0])}; Δ = perubahan rasio ${PER_TXT[w]}. Merah = di atas target.`);
+  const qCols=[
+    {h:'Baki Debet',v:r=>r.bal,f:r=>`<b>${fRp(r.bal)}</b>`},
+    {h:'Lancar %',v:r=>r.lan,f:r=>fPct(r.lan)},
+    {h:'SML',v:r=>r.sR,f:r=>fRp(r.sR)},
+    {h:'SML %',v:r=>r.s,f:r=>fPct(r.s),cc:r=>nn(r.ts)&&nn(r.s)?(r.s>r.ts?'h-bad':'h-good'):''},
+    {h:'Target SML %',v:r=>r.ts,f:r=>fPct(r.ts)},
+    {h:`Δ SML ${PER_LBL[w]}`,v:r=>r.ds,f:r=>gPP(r.ds,1)},
+    {h:'NPL',v:r=>r.nR,f:r=>fRp(r.nR)},
+    {h:'NPL %',k:'npl',v:r=>r.n,f:r=>fPct(r.n),cc:r=>nn(r.tn)&&nn(r.n)?(r.n>r.tn?'h-bad':'h-good'):''},
+    {h:'Target NPL %',v:r=>r.tn,f:r=>fPct(r.tn)},
+    {h:`Δ NPL ${PER_LBL[w]}`,v:r=>r.dn,f:r=>gPP(r.dn,1)},
+    {h:'Debitur NPL',v:r=>r.nDeb,f:r=>fRp(r.nDeb)},
+  ];
+  table('qSegTbl',[{h:'Segmen / Produk',f:r=>esc(r.label),c:'l'},...qCols],segRows,{});
+  ttl('qTbl',`Kualitas per ${LVL[curLvl()]} · ${title}`,`Default diurutkan dari NPL % tertinggi. Status: dibanding target rasio; bila tidak ada target, dibanding rasio total ${esc(scopeName())}.`);
+  table('qTbl',[...nameCols(),...qCols,
+    {h:'Porsi NPL',t:`Porsi terhadap total NPL ${scopeName()}`,v:r=>ratio(r.nR,sc.nR),f:r=>fPct(ratio(r.nR,sc.nR))},
+    {h:'Status',v:r=>r.st?r.st.k:null,f:r=>r.st?tag(r.st.t,r.st.c):'–',c:'l'},
+  ],rows,{sortKey:'npl',asc:false,foot:[sc]});
+}
+
+/* ================= 7. PERFORMING LOAN vs PROBLEM LOAN ================= */
+function plStatus(dT,dPr,gT,gPr){ if(!nn(dT)||!nn(dPr)) return null;
+  if(dPr<=0 && dT>=0) return {t:'Tumbuh berkualitas',c:'good',k:3};
+  if(dPr<=0) return {t:'Menyusut, problem turun',c:'warn',k:2};
+  if(dT<0) return {t:'Menyusut, problem naik',c:'bad',k:0};
+  if(nn(gPr)&&nn(gT)&&gPr>gT) return {t:'Problem tumbuh lebih cepat',c:'bad',k:1};
+  return {t:'Tumbuh, problem naik',c:'warn',k:2}; }
+function renderPL(){
+  const A=ST.pl; A.bi=fillBlk('plBlk','Pinjaman',A.bi);
+  const b=PBLK[A.bi], sk=scopeKey(), lv=lvName(), w=S.per, title=blkTitle('Pinjaman',b);
+  const one=key=>{ const x=kolV(b,key,curPt()), y=kolV(b,key,basePt()); if(!x||!x.tot) return {x:null};
+    const yy=y&&y.tot?y:null, dT=yy?x.tot-yy.tot:null, dPL=yy?x.pl-yy.pl:null, dPr=yy?x.pr-yy.pr:null, gT=yy?grw(x.tot,yy.tot):null, gPr=yy?grw(x.pr,yy.pr):null;
+    return {x,y:yy,dT,dPL,dPr,gT,gPr,plR:ratio(x.pl,x.tot),prR:ratio(x.pr,x.tot),dPrR:yy?delta(ratio(x.pr,x.tot),ratio(yy.pr,yy.tot)):null,form:yy?ratio(dPr,yy.tot):null,st:plStatus(dT,dPr,gT,gPr)}; };
+  const rows=ents().map(e=>({...e,...one(e.key)})).filter(r=>r.x);
+  const sc={key:sk,label:'Total '+scopeName(),_cls:'total',...one(sk)};
+  strip('plStrip',[
+    ['Baki debet', fRp(sc.x&&sc.x.tot)],
+    ['Performing Loan', `${fRp(sc.x&&sc.x.pl)} <small>(${fPct(sc.plR)})</small>`],
+    ['Problem Loan', `${fRp(sc.x&&sc.x.pr)} <small>(${fPct(sc.prR)})</small>`],
+    [`Δ Total ${PER_LBL[w]}`, fSigned(sc.dT), growthCls(sc.dT)],
+    [`Δ Performing ${PER_LBL[w]}`, fSigned(sc.dPL), growthCls(sc.dPL)],
+    [`Δ Problem ${PER_LBL[w]}`, fSigned(sc.dPr), growthCls(sc.dPr,1)],
+    ['Pembentukan problem', fPct(sc.form), growthCls(sc.form,1)],
+    ['Debitur problem', fRp(sc.x&&sc.x.npr)],
+  ]);
+  const B=[];
+  if(sc.x){
+    B.push(`${esc(title)} <b>${esc(scopeName())}</b>: baki debet <b class="num">${fRp(sc.x.tot)}</b> Rp Jt — Performing Loan <b class="num">${fRp(sc.x.pl)}</b> (${fPct(sc.plR)}) dan Problem Loan <b class="num">${fRp(sc.x.pr)}</b> (${fPct(sc.prR)}: SML ${fPct(ratio(sc.x.k[1],sc.x.tot))} + NPL ${fPct(ratio(sc.x.k[2],sc.x.tot))}).`);
+    if(sc.y) B.push(sc.dPr<=0
+      ? `${PER_LBL[w]}: total ${gTxt(sc.dT)} Rp Jt dengan Performing Loan ${gTxt(sc.dPL)} dan Problem Loan ${gTxt(sc.dPr,1)} — ${sc.dT>=0?'pertumbuhan sepenuhnya dari kredit lancar dan kualitas membaik':'portofolio menyusut tetapi problem loan juga turun'}.`
+      : `${PER_LBL[w]}: total ${gTxt(sc.dT)} Rp Jt, Performing Loan ${gTxt(sc.dPL)}, Problem Loan ${gTxt(sc.dPr,1)} (${gPct(sc.gPr,1)}). Pembentukan problem loan ${fPct(sc.form)} dari baki debet awal${nn(sc.gT)&&nn(sc.gPr)&&sc.gPr>sc.gT?' — problem loan tumbuh lebih cepat dari total kredit':''}.`);
+  }
+  const bad=rows.filter(r=>r.st&&r.st.k<=1).sort((a,c)=>(c.dPr||0)-(a.dPr||0)), good=rows.filter(r=>r.st&&r.st.k===3);
+  if(rows.length) B.push(`<b>${good.length} dari ${rows.length} ${lv}</b> tumbuh berkualitas (kredit naik, problem loan turun); <b>${bad.length}</b> berstatus <i>Problem tumbuh lebih cepat</i> atau <i>Menyusut, problem naik</i>${bad.length?`: ${nms(bad.slice(0,4),r=>'Δ problem '+fSigned(r.dPr))}`:''}.`);
+  const hi=rows.filter(r=>nn(r.prR)).sort((a,c)=>c.prR-a.prR);
+  if(hi.length>1) B.push(`Rasio problem loan tertinggi: ${nms(hi.slice(0,3),r=>fPct(r.prR))}.`);
+  insight('plIns',B);
+  const pts=monthPoints(13), X=pts.map(p=>kolV(b,sk,p)), base=X.find(x=>x&&x.tot);
+  const idx=f=>X.map(x=>x&&base&&f(base)? f(x)/f(base)*100 : null);
+  ttl('plTrend',`Indeks Pertumbuhan · ${scopeName()}`,`${esc(title)} · posisi akhir bulan ÷ posisi ${base?pts[X.indexOf(base)].label:'awal'} × 100. Garis Problem Loan di atas Performing Loan = kredit bermasalah tumbuh lebih cepat.`);
+  mk('plTrend',{type:'line',data:{labels:pts.map(p=>p.label),datasets:[
+      {label:'Performing Loan',data:idx(x=>x.pl),borderColor:css('--c1'),backgroundColor:css('--c1'),tension:.25,pointRadius:2.5,spanGaps:true},
+      {label:'Problem Loan (SML + NPL)',data:idx(x=>x.pr),borderColor:css('--bad'),backgroundColor:css('--bad'),tension:.25,pointRadius:2.5,spanGaps:true},
+      {label:'Total kredit',data:idx(x=>x.tot),borderColor:css('--faint'),backgroundColor:css('--faint'),borderDash:[4,3],tension:.25,pointRadius:0,spanGaps:true}]},
+    options:{maintainAspectRatio:false,interaction:{mode:'index',intersect:false},plugins:{legend:legendBottom(),tooltip:{callbacks:{label:c=>c.raw==null?null:`${c.dataset.label}: ${nf1.format(c.raw)}`}}},
+      scales:{y:{ticks:{callback:v=>nf0.format(v)}},x:{grid:{display:false}}}},plugins:[refLine('y',100)]});
+  const pb=hi.slice(0,TOPN);
+  ttl('plBar',`Rasio Problem Loan per ${lv}`,`SML % + NPL % terhadap baki debet, tertinggi di atas${hi.length>pb.length?` · ${pb.length} dari ${hi.length}`:''}`);
+  $('plBar').parentElement.style.height=Math.max(320,pb.length*22+90)+'px';
+  mk('plBar',{type:'bar',data:{labels:pb.map(r=>r.label),datasets:[
+      {label:'SML %',data:pb.map(r=>ratio(r.x.k[1],r.x.tot)),backgroundColor:css('--warn')+'cc',barPercentage:.82},
+      {label:'NPL %',data:pb.map(r=>ratio(r.x.k[2],r.x.tot)),backgroundColor:css('--bad')+'cc',barPercentage:.82}]},
+    options:{indexAxis:'y',maintainAspectRatio:false,plugins:{legend:legendBottom(),tooltip:{callbacks:{label:c=>`${c.dataset.label}: ${fPct(c.raw)}`}}},
+      scales:{x:{stacked:true,ticks:{callback:pctTick}},y:{stacked:true,grid:{display:false},ticks:{autoSkip:false,callback:truncTick}}}}});
+  ttl('plTbl',`Performing vs Problem Loan per ${LVL[curLvl()]} · ${title}`,`Nominal Rp Jt; Δ = perubahan ${PER_TXT[w]}. Default diurutkan dari rasio problem loan tertinggi.`);
+  table('plTbl',[...nameCols(),
+    {h:'Baki Debet',v:r=>r.x.tot,f:r=>`<b>${fRp(r.x.tot)}</b>`},
+    {h:'PL (Kol 1)',v:r=>r.x.pl,f:r=>fRp(r.x.pl)},
+    {h:'SML (Kol 2)',v:r=>r.x.k[1],f:r=>fRp(r.x.k[1])},
+    {h:'NPL (Kol 3–5)',v:r=>r.x.k[2],f:r=>fRp(r.x.k[2])},
+    {h:'Problem Loan',v:r=>r.x.pr,f:r=>fRp(r.x.pr)},
+    {h:'% PL',v:r=>r.plR,f:r=>fPct(r.plR)},
+    {h:'% Problem',k:'prr',v:r=>r.prR,f:r=>`<b>${fPct(r.prR)}</b>`},
+    {h:'Δ % Problem',v:r=>r.dPrR,f:r=>gPP(r.dPrR,1)},
+    {h:'Δ Total',v:r=>r.dT,f:r=>gTxt(r.dT)},
+    {h:'Δ PL',v:r=>r.dPL,f:r=>gTxt(r.dPL)},
+    {h:'Δ Problem',v:r=>r.dPr,f:r=>gTxt(r.dPr,1)},
+    {h:'Pembentukan',t:'Δ Problem Loan ÷ baki debet awal',v:r=>r.form,f:r=>gPct(r.form,1)},
+    {h:'Debitur Problem',v:r=>r.x.npr,f:r=>fRp(r.x.npr)},
+    {h:'Status',v:r=>r.st?r.st.k:null,f:r=>r.st?tag(r.st.t,r.st.c):'–',c:'l'},
+  ],rows,{sortKey:'prr',asc:false,foot:sc.x?[sc]:[]});
+}
+
+/* ================= 8. MIGRATION / DETERIORATION ================= */
+function migStatus(net,streak){ if(!nn(net)) return null;
+  if(net>0) return streak>=3? {t:'Memburuk persisten',c:'bad',k:0} : {t:'Memburuk',c:'warn',k:1};
+  return net<0? {t:'Membaik',c:'good',k:3} : {t:'Stabil',c:'na',k:2}; }
+function renderMig(){
+  const A=ST.mig; A.bi=fillBlk('migBlk','Pinjaman',A.bi);
+  const b=PBLK[A.bi], sk=scopeKey(), lv=lvName(), w=S.per, title=blkTitle('Pinjaman',b);
+  /* titik terakhir bisa berupa bulan berjalan (posisi tengah bulan): ikut ditampilkan di grafik,
+     tetapi hitungan "bulan lengkap terakhir" dan "berturut-turut" hanya memakai akhir bulan */
+  const isPartial = p => !p || p.p==null || !isME('p',p.p);
+  const pts=monthPoints(14), X=pts.map(p=>kolV(b,sk,p)), partial=isPartial(pts[pts.length-1]);
+  const trA=pts.slice(1).map((p,i)=>{ const a=X[i], z=X[i+1]; if(!a||!z) return {label:p.label};
+    const dS=z.k[1]-a.k[1], dN=z.k[2]-a.k[2];
+    return {label:p.label,dS,dN,net:dS+dN,rate:ratio(dS+dN,a.k[0]),roll:a.k[1]?Math.max(0,dN)/a.k[1]:null}; });
+  const tr=trA.slice(-13), tvAll=(partial?trA.slice(0,-1):trA).filter(t=>nn(t.net)).slice(-12);
+  const p7=(()=>{ const a=monthPoints(8); return (isPartial(a[a.length-1])? a.slice(0,-1) : a).slice(-7); })(), mlab=p7.slice(1).map(p=>p.label);
+  const one=key=>{ const x=kolV(b,key,curPt()), y=kolV(b,key,basePt()); if(!x||!x.tot) return {x:null};
+    const XS=p7.map(p=>kolV(b,key,p)), nets=XS.slice(1).map((z,i)=>z&&XS[i]? (z.k[1]+z.k[2])-(XS[i].k[1]+XS[i].k[2]) : null);
+    let streak=0; for(let i=nets.length-1;i>=0;i--){ if(nn(nets[i])&&nets[i]>0) streak++; else break; }
+    const dS=y?x.k[1]-y.k[1]:null, dN=y?x.k[2]-y.k[2]:null, net=y?dS+dN:null;
+    return {x,y,dS,dN,net,dnS:y?x.n[1]-y.n[1]:null,dnN:y?x.n[2]-y.n[2]:null,rate:y?ratio(net,y.k[0]):null,roll:y&&y.k[1]?Math.max(0,dN)/y.k[1]:null,nets,streak,st:migStatus(net,streak)}; };
+  const rows=ents().map(e=>({...e,...one(e.key)})).filter(r=>r.x);
+  const sc={key:sk,label:'Total '+scopeName(),_cls:'total',...one(sk)};
+  const tv=tvAll, worse=tv.filter(t=>t.net>0), last=tv[tv.length-1], rolls=tv.map(t=>t.roll).filter(nn);
+  strip('migStrip',[
+    [`Net SML+NPL ${PER_LBL[w]}`, fSigned(sc.net), growthCls(sc.net,1)],
+    [`Δ SML ${PER_LBL[w]}`, fSigned(sc.dS), growthCls(sc.dS,1)],
+    [`Δ NPL ${PER_LBL[w]}`, fSigned(sc.dN), growthCls(sc.dN,1)],
+    ['Δ Debitur SML', fSigned(sc.dnS), growthCls(sc.dnS,1)],
+    ['Δ Debitur NPL', fSigned(sc.dnN), growthCls(sc.dnN,1)],
+    ['Laju pemburukan', fPct(sc.rate), growthCls(sc.rate,1)],
+    ['Proksi SML→NPL', fPct(sc.roll)],
+    ['Bulan memburuk', tv.length? `${worse.length} / ${tv.length}` : '–'],
+  ]);
+  const B=[];
+  if(tv.length) B.push(`Dalam ${tv.length} bulan lengkap terakhir, <b>${worse.length} bulan</b> mencatat kenaikan problem loan bersih (SML + NPL) di ${esc(scopeName())}. Bulan lengkap terakhir (${last.label}): Δ SML ${gTxt(last.dS,1)}, Δ NPL ${gTxt(last.dN,1)} Rp Jt — laju pemburukan ${fPct(last.rate)} dari kredit lancar.`);
+  if(rolls.length) B.push(`Proksi roll-rate SML→NPL rata-rata <b>${fPct(sum(rolls)/rolls.length)}</b> per bulan (tertinggi ${fPct(Math.max(...rolls))}).`);
+  if(sc.y) B.push(`${PER_LBL[w]} (${fD(ptDate('Pinjaman',w))} → ${fD(ptDate('Pinjaman','cur'))}): problem loan bersih ${gTxt(sc.net,1)} Rp Jt (SML ${gTxt(sc.dS,1)}, NPL ${gTxt(sc.dN,1)}); debitur SML ${gTxt(sc.dnS,1)}, debitur NPL ${gTxt(sc.dnN,1)}.`);
+  const wr=rows.filter(r=>nn(r.net)&&r.net>0).sort((a,c)=>c.net-a.net);
+  if(rows.length) B.push(`<b>${wr.length} dari ${rows.length} ${lv}</b> mengalami pemburukan bersih ${PER_LBL[w]}${wr.length?` — terbesar: ${nms(wr.slice(0,3),r=>fSigned(r.net))}`:''}.`);
+  const pers=rows.filter(r=>r.streak>=3).sort((a,c)=>c.streak-a.streak||c.net-a.net);
+  if(pers.length) B.push(`<b>${pers.length} ${lv}</b> memburuk ≥ 3 bulan berturut-turut: ${nms(pers.slice(0,5),r=>r.streak+' bln')}${pers.length>5?', dll':''}.`);
+  insight('migIns',B);
+  ttl('migTrend',`Pembentukan Problem Loan Bulanan · ${scopeName()}`,`${esc(title)} · Δ saldo SML dan NPL per bulan (Rp Jt); garis = laju pemburukan (sumbu kanan)${partial?`. Batang terakhir = bulan berjalan s.d. ${fD(RES.p.cur)}`:''}`);
+  mk('migTrend',{type:'bar',data:{labels:tr.map(t=>t.label),datasets:[
+      {type:'bar',label:'Δ SML',data:tr.map(t=>t.dS??null),backgroundColor:css('--warn')+'cc',borderRadius:3,order:2},
+      {type:'bar',label:'Δ NPL',data:tr.map(t=>t.dN??null),backgroundColor:css('--bad')+'cc',borderRadius:3,order:2},
+      {type:'line',label:'Laju pemburukan',data:tr.map(t=>t.rate??null),borderColor:css('--text'),backgroundColor:css('--text'),yAxisID:'y2',tension:.25,pointRadius:2.5,spanGaps:true,order:1}]},
+    options:{maintainAspectRatio:false,interaction:{mode:'index',intersect:false},plugins:{legend:legendBottom(),tooltip:{callbacks:{label:c=>c.raw==null?null:c.dataset.yAxisID==='y2'?`${c.dataset.label}: ${fPct(c.raw)}`:`${c.dataset.label}: ${fSigned(c.raw)}`}}},
+      scales:{y:{ticks:{callback:scaleFmt(Math.max(1,...tr.flatMap(t=>[t.dS,t.dN]).filter(nn).map(Math.abs)))}},y2:{position:'right',grid:{display:false},ticks:{callback:v=>nf2.format(v*100)+'%'}},x:{grid:{display:false}}}},plugins:[refLine('y',0)]});
+  const nb=rows.filter(r=>nn(r.net)).sort((a,c)=>c.net-a.net), nbl=topBottom(nb,TOPN);
+  ttl('migBar',`Problem Loan Bersih ${PER_LBL[w]} per ${lv}`,`Δ SML + Δ NPL (Rp Jt); merah = memburuk, hijau = membaik${nb.length>nbl.length?` · ${TOPN/2} terburuk & ${TOPN/2} terbaik dari ${nb.length}`:''}`);
+  hbar('migBar',nbl.map(r=>({label:r.label,v:r.net,color:clsCol(r.net>0?'bad':'good')})),{fmt:fSigned,tick:scaleFmt(Math.max(1,...nbl.map(r=>Math.abs(r.net)))),plugins:[refLine('x',0)]});
+  ttl('migTbl',`Pemburukan per ${LVL[curLvl()]} · ${title}`,`Nominal Rp Jt; Δ = perubahan ${PER_TXT[w]}. Kolom bulan = Δ (SML + NPL) per bulan; merah = naik (memburuk). Default diurutkan dari pemburukan terbesar.`);
+  table('migTbl',[...nameCols(),
+    {h:'Δ SML',v:r=>r.dS,f:r=>gTxt(r.dS,1)},
+    {h:'Δ NPL',v:r=>r.dN,f:r=>gTxt(r.dN,1)},
+    {h:'Net SML+NPL',k:'net',v:r=>r.net,f:r=>`<b>${gTxt(r.net,1)}</b>`},
+    {h:'Δ Deb SML',v:r=>r.dnS,f:r=>gTxt(r.dnS,1)},
+    {h:'Δ Deb NPL',v:r=>r.dnN,f:r=>gTxt(r.dnN,1)},
+    {h:'Laju pemburukan',t:'(Δ SML + Δ NPL) ÷ Kol 1 awal',v:r=>r.rate,f:r=>gPct(r.rate,1)},
+    {h:'Proksi SML→NPL',t:'Kenaikan NPL ÷ SML awal',v:r=>r.roll,f:r=>fPct(r.roll)},
+    ...mlab.map((l,i)=>({h:l,k:'n'+i,v:r=>r.nets[i],f:r=>nn(r.nets[i])?fSigned(r.nets[i]):'–',cc:r=>nn(r.nets[i])&&r.nets[i]!==0?(r.nets[i]>0?'h-bad':'h-good'):''})),
+    {h:'Berturut',t:'Jumlah bulan berturut-turut (sampai posisi) dengan kenaikan SML + NPL',v:r=>r.streak,f:r=>r.streak?`${r.streak} bln`:'–',c:'c'},
+    {h:'Status',v:r=>r.st?r.st.k:null,f:r=>r.st?tag(r.st.t,r.st.c):'–',c:'l'},
+  ],rows,{sortKey:'net',asc:false,foot:sc.x?[sc]:[]});
+}
+
+/* ================= 9. GROWTH vs QUALITY MATRIX ================= */
+function renderGQ(){
+  const A=ST.gq; A.bi=fillBlk('gqBlk','Pinjaman',A.bi,b=>b.lvl===0&&!b.excl); segSync('gqQ',A.q);
+  const b=PBLK[A.bi], sk=scopeKey(), lv=lvName(), w=S.per, qn={NPL:'NPL %',SML:'SML %',PROB:'SML + NPL %'}[A.q], title=blkTitle('Pinjaman',b);
+  const qv=(key,pt)=>{ if(A.q==='PROB'){ const s=val('SML',b,'pct',key,pt), n=val('NPL',b,'pct',key,pt); return nn(s)&&nn(n)?s+n:null; } return val(A.q,b,'pct',key,pt); };
+  const one=key=>{ const o=view('Pinjaman',b,'rp',key), q=qv(key,curPt()); return {o,bal:o.v.cur,size:o.v.cur,g:o.g[w][1],d:o.g[w][0],q,dq:delta(q,qv(key,basePt()))}; };
+  const sc={key:sk,label:'Total '+scopeName(),_cls:'total',...one(sk)};
+  const quadOf=r=>{ if(!nn(r.g)||!nn(r.q)||!nn(sc.g)||!nn(sc.q)) return null; const fast=r.g>=sc.g, ok=r.q<=sc.q;
+    return fast&&ok? {t:'Tumbuh & Sehat',c:'good',k:3} : ok? {t:'Lambat tapi Sehat',c:'na',k:2} : fast? {t:'Tumbuh tapi Berisiko',c:'warn',k:1} : {t:'Lambat & Berisiko',c:'bad',k:0}; };
+  const rows=ents().map(e=>({...e,...one(e.key)})).filter(r=>nn(r.g)&&nn(r.q)&&r.bal).map(r=>({...r,qd:quadOf(r)}));
+  const cnt=k=>rows.filter(r=>r.qd&&r.qd.k===k).length, rho=pearson(rows.map(r=>r.g),rows.map(r=>r.q));
+  strip('gqStrip',[
+    [`Pertumbuhan ${PER_LBL[w]} (acuan)`, fSPct(sc.g), growthCls(sc.g)],
+    [`${qn} (acuan)`, fPct(sc.q)],
+    ['Tumbuh & Sehat', String(cnt(3)), 'up'],
+    ['Tumbuh tapi Berisiko', String(cnt(1))],
+    ['Lambat tapi Sehat', String(cnt(2))],
+    ['Lambat & Berisiko', String(cnt(0)), 'down'],
+    ['Korelasi', nn(rho)? nf2.format(rho) : '–'],
+  ]);
+  const B=[];
+  if(nn(sc.g)&&nn(sc.q)) B.push(`Acuan kuadran = nilai <b>${esc(scopeName())}</b>: pertumbuhan ${esc(title)} ${PER_LBL[w]} <b>${fSPct(sc.g)}</b> dan ${qn} <b>${fPct(sc.q)}</b> (${gPP(sc.dq,1)} ${PER_TXT[w]}).`);
+  if(rows.length) B.push(`Dari ${rows.length} ${lv}: ${tag('Tumbuh & Sehat','good')} ${cnt(3)}, ${tag('Tumbuh tapi Berisiko','warn')} ${cnt(1)}, ${tag('Lambat tapi Sehat','na')} ${cnt(2)}, ${tag('Lambat & Berisiko','bad')} ${cnt(0)}.`);
+  const risky=rows.filter(r=>r.qd&&r.qd.k===1).sort((a,c)=>c.q-a.q), worst=rows.filter(r=>r.qd&&r.qd.k===0).sort((a,c)=>(c.q-sc.q)-(a.q-sc.q));
+  if(risky.length) B.push(`Perlu diawasi — tumbuh cepat tetapi ${qn} di atas acuan: ${nms(risky.slice(0,4),r=>fSPct(r.g)+' · '+fPct(r.q))}.`);
+  if(worst.length) B.push(`Prioritas perbaikan — tumbuh lambat dan ${qn} tinggi: ${nms(worst.slice(0,4),r=>fSPct(r.g)+' · '+fPct(r.q))}.`);
+  if(nn(rho)) B.push(`Korelasi pertumbuhan vs ${qn} = <b>${nf2.format(rho)}</b>: ${rho>.3?'unit yang tumbuh cepat cenderung memiliki rasio lebih tinggi — indikasi ekspansi berisiko':rho<-.3?'pertumbuhan cenderung diiringi kualitas yang lebih baik':'tidak ada hubungan yang kuat antara kecepatan tumbuh dan kualitas'}.`);
+  insight('gqIns',B);
+  const col={3:css('--good'),2:css('--c3'),1:css('--warn'),0:css('--bad')}, mx=Math.max(1,...rows.map(r=>r.bal||0));
+  ttl('gqChart',`Pertumbuhan vs ${qn} per ${lv}`,`${esc(title)} · garis putus = acuan ${esc(scopeName())}; kiri bawah (diarsir) = lambat & berisiko`);
+  quadChart('gqChart',rows.filter(r=>r.qd).map(r=>({x:r.g,y:r.q,r:5+13*Math.sqrt(Math.max(0,r.bal)/mx),c:col[r.qd.k],label:r.label,r0:r})),
+    {xRef:sc.g,yRef:sc.q,yRev:true,shade:{x:'lt',y:'gt'},xLbl:`Pertumbuhan ${PER_LBL[w]} %`,yLbl:`${qn} (makin atas makin sehat)`,xTick:pctTick,yTick:pctTick,
+     labels:{tl:'Lambat tapi Sehat',tr:'Tumbuh & Sehat',bl:'Lambat & Berisiko',br:'Tumbuh tapi Berisiko'},
+     tip:p=>[`${p.label}`,`Pertumbuhan ${fSPct(p.r0.g)} · ${qn} ${fPct(p.r0.q)}`,`Baki debet ${fRp(p.r0.bal)} · ${p.r0.qd.t}`]});
+  ttl('gqList','Isi Kuadran',`Unit terbesar (baki debet) di tiap kuadran`);
+  quadLists('gqList',rows,[
+    {k:2,t:'Lambat tapi Sehat',c:'na',desc:'Kualitas baik; dorong pertumbuhan.'},
+    {k:3,t:'Tumbuh & Sehat',c:'good',desc:'Ideal; pertahankan.'},
+    {k:0,t:'Lambat & Berisiko',c:'bad',desc:'Prioritas perbaikan kualitas dan bisnis.'},
+    {k:1,t:'Tumbuh tapi Berisiko',c:'warn',desc:'Awasi kualitas ekspansi.'}],r=>fPct(r.q));
+  ttl('gqTbl',`Growth vs Quality per ${LVL[curLvl()]} · ${title}`,`Nominal Rp Jt; pertumbuhan & Δ rasio ${PER_TXT[w]}.`);
+  table('gqTbl',[...nameCols(),
+    {h:'Baki Debet',v:r=>r.bal,f:r=>`<b>${fRp(r.bal)}</b>`},
+    {h:`Δ ${PER_LBL[w]}`,v:r=>r.d,f:r=>gTxt(r.d)},
+    {h:'Tumbuh %',v:r=>r.g,f:r=>gPct(r.g)},
+    {h:qn,v:r=>r.q,f:r=>fPct(r.q)},
+    {h:`Δ ${qn}`,v:r=>r.dq,f:r=>gPP(r.dq,1)},
+    {h:'Kuadran',k:'quad',v:r=>r.qd?r.qd.k:null,f:r=>r.qd?tag(r.qd.t,r.qd.c):'–',c:'l'},
+  ],rows,{sortKey:'quad',asc:true,foot:[sc]});
+}
+
+/* ================= 10. FUNDING vs LENDING ================= */
+function flVals(Lb,key){ const c=curPt(), bs=basePt(), [m0]=rkaMonths();
+  const F=pt=>val('Simpanan',{cells:Lb.sc},'rp',key,pt), Ld=pt=>val('Pinjaman',{cells:Lb.pc},'rp',key,pt);
+  const z=(a,b)=>nn(a)?a:(nn(b)?0:null);   // unit yang hanya punya salah satu (mis. Kanwil: pinjaman Medium tanpa simpanan) = 0
+  let f=F(c), l=Ld(c), f0=F(bs), l0=Ld(bs); [f,l]=[z(f,l),z(l,f)]; [f0,l0]=[z(f0,l0),z(l0,f0)];
+  const ldr=ratio(l,f), t=tgt('LDR',Lb,'pct',key,m0), df=delta(f,f0), dl=delta(l,l0), gap=nn(f)&&nn(l)?f-l:null;
+  return {f,l,f0,l0,df,dl,gf:grw(f,f0),gl:grw(l,l0),gap,ldr,t,penc:pencOf('LDR',ldr,t),dldr:delta(ldr,ratio(l0,f0)),
+    mldr:nn(df)&&df>0&&nn(dl)?dl/df:null,size:(f||0)+(l||0),pos:nn(gap)?(gap>=0?{t:'Surplus dana',c:'good',k:1}:{t:'Defisit dana',c:'warn',k:0}):null}; }
+function renderFL(){
+  const A=ST.fl; $('flBlk').value=A.li;
+  const Lb=LBLK[A.li], sk=scopeKey(), lv=lvName(), w=S.per;
+  const rows=ents().map(e=>({...e,...flVals(Lb,e.key)})).filter(r=>(nn(r.f)&&r.f)||(nn(r.l)&&r.l));
+  const sc={key:sk,label:'Total '+scopeName(),_cls:'total',...flVals(Lb,sk)};
+  const def=rows.filter(r=>nn(r.gap)&&r.gap<0).sort((a,c)=>a.gap-c.gap), sur=rows.filter(r=>nn(r.gap)&&r.gap>=0).sort((a,c)=>c.gap-a.gap);
+  strip('flStrip',[
+    ['Simpanan', fRp(sc.f)],
+    ['Pinjaman', fRp(sc.l)],
+    ['LDR', `${fPct(sc.ldr)}${nn(sc.t)?` <small>(target ${fPct(sc.t)})</small>`:''}`],
+    ['Pencapaian LDR', pill(sc.penc)],
+    [sc.gap>=0?'Surplus dana':'Defisit dana', fRp(nn(sc.gap)?Math.abs(sc.gap):null)],
+    [`Δ LDR ${PER_LBL[w]}`, fPP(sc.dldr), growthCls(sc.dldr,1)],
+    ['LDR marjinal', fPct(sc.mldr)],
+    [`${LVL[curLvl()]} defisit dana`, `${def.length} / ${rows.length}`],
+  ]);
+  const B=[];
+  if(nn(sc.ldr)) B.push(`${esc(Lb.title)} <b>${esc(scopeName())}</b> <b>${fPct(sc.ldr)}</b>${nn(sc.t)?` (target ${fPct(sc.t)}, pencapaian ${pill(sc.penc)})`:''}, ${gPP(sc.dldr,1)} ${PER_TXT[w]}. Simpanan ${sc.gap>=0?'melebihi':'lebih kecil dari'} pinjaman sebesar <b class="num">${fRp(Math.abs(sc.gap))}</b> Rp Jt (${sc.gap>=0?'surplus':'defisit'} dana).`);
+  if(nn(sc.df)&&nn(sc.dl)) B.push(nn(sc.mldr)
+    ? `${PER_LBL[w]}: simpanan ${gTxt(sc.df)} dan pinjaman ${gTxt(sc.dl)} Rp Jt — setiap tambahan Rp100 simpanan diikuti ${sc.dl>=0?'tambahan':'penurunan'} Rp${nf0.format(Math.abs(sc.mldr*100))} pinjaman (LDR marjinal ${fPct(sc.mldr)}).`
+    : `${PER_LBL[w]}: simpanan ${gTxt(sc.df)} sementara pinjaman ${gTxt(sc.dl)} Rp Jt — ${sc.dl>0?'kredit tumbuh tanpa didukung pertumbuhan dana':'dana dan kredit sama-sama turun'}.`);
+  if(rows.length) B.push(`<b>${def.length} dari ${rows.length} ${lv}</b> defisit dana (pinjaman &gt; simpanan)${def.length?` — terbesar: ${nms(def.slice(0,3),r=>fRp(-r.gap)+(nn(r.ldr)?' · LDR '+fPct(r.ldr):' · tanpa simpanan'))}`:''}.`);
+  if(sur.length) B.push(`Penyedia likuiditas terbesar: ${nms(sur.slice(0,3),r=>fRp(r.gap)+' · LDR '+fPct(r.ldr))}.`);
+  const upL=rows.filter(r=>nn(r.dldr)&&r.dldr>0); if(rows.length) B.push(`LDR naik di <b>${upL.length} ${lv}</b> ${PER_TXT[w]} (pinjaman tumbuh lebih cepat dari simpanan).`);
+  const rs=nn(sc.gap)? sc.gap-sum(rows.map(r=>r.gap)) : null;
+  if(nn(rs) && Math.abs(rs)>Math.max(1,Math.abs(sc.f||0)*.005)) B.push(`Selisih <b class="num">${fSigned(rs)}</b> Rp Jt antara surplus/defisit total dan jumlah per ${lv} berasal dari saldo yang tidak terbagi ke ${lv} (mis. data tanpa rincian unit).`);
+  insight('flIns',B);
+  const pts=monthPoints(13), F=p=>val('Simpanan',{cells:Lb.sc},'rp',sk,p), Ld=p=>val('Pinjaman',{cells:Lb.pc},'rp',sk,p);
+  const fs=pts.map(F), ls=pts.map(Ld);
+  ttl('flTrend',`Simpanan vs Pinjaman · ${scopeName()}`,`${esc(Lb.title)} · posisi akhir bulan (Rp Jt); garis = LDR (sumbu kanan), putus-putus = target LDR`);
+  mk('flTrend',{type:'bar',data:{labels:pts.map(p=>p.label),datasets:[
+      {type:'bar',label:'Simpanan',data:fs,backgroundColor:css('--c2'),borderRadius:2,order:2},
+      {type:'bar',label:'Pinjaman',data:ls,backgroundColor:css('--c1'),borderRadius:2,order:2},
+      {type:'line',label:'LDR',data:pts.map((_,i)=>ratio(ls[i],fs[i])),borderColor:css('--warn'),backgroundColor:css('--warn'),yAxisID:'y2',tension:.25,pointRadius:2.5,spanGaps:true,order:1},
+      {type:'line',label:'Target LDR',data:pts.map(p=>tgtAt('LDR',Lb,'pct',sk,p)),borderColor:css('--warn'),backgroundColor:css('--warn'),borderDash:[5,4],yAxisID:'y2',pointRadius:0,spanGaps:true,order:1}]},
+    options:{maintainAspectRatio:false,interaction:{mode:'index',intersect:false},plugins:{legend:legendBottom(),tooltip:{callbacks:{label:c=>c.raw==null?null:c.dataset.yAxisID==='y2'?`${c.dataset.label}: ${fPct(c.raw)}`:`${c.dataset.label}: ${fRp(c.raw)}`}}},
+      scales:{y:{ticks:{callback:scaleFmt(Math.max(1,...fs.filter(nn),...ls.filter(nn)))}},y2:{position:'right',beginAtZero:false,grace:'10%',grid:{display:false},ticks:{callback:v=>nf1.format(v*100)+'%'}},x:{grid:{display:false}}}}});
+  const gb=rows.filter(r=>nn(r.gap)).sort((a,c)=>a.gap-c.gap), gbl=topBottom(gb,TOPN);
+  ttl('flBar',`Surplus / Defisit Dana per ${lv}`,`Simpanan − Pinjaman (Rp Jt); oranye = defisit (LDR &gt; 100%), biru = surplus${gb.length>gbl.length?` · ${TOPN/2} defisit & ${TOPN/2} surplus terbesar dari ${gb.length}`:''}`);
+  hbar('flBar',gbl.map(r=>({label:r.label,v:r.gap,color:r.gap<0?css('--warn'):css('--c1')})),{fmt:fSigned,tick:scaleFmt(Math.max(1,...gbl.map(r=>Math.abs(r.gap)))),plugins:[refLine('x',0)]});
+  ttl('flTbl',`Funding vs Lending per ${LVL[curLvl()]} · ${Lb.title}`,`Nominal Rp Jt; Δ = perubahan ${PER_TXT[w]}. Default diurutkan dari LDR tertinggi.`);
+  table('flTbl',[...nameCols(),
+    {h:'Simpanan',v:r=>r.f,f:r=>fRp(r.f)},
+    {h:'Pinjaman',v:r=>r.l,f:r=>fRp(r.l)},
+    {h:'Surplus / Defisit',v:r=>r.gap,f:r=>`<span class="${nn(r.gap)&&r.gap<0?'down':''}">${fSigned(r.gap)}</span>`},
+    {h:'LDR',k:'ldr',v:r=>r.ldr,f:r=>`<b>${fPct(r.ldr)}</b>`},
+    {h:'Target LDR',v:r=>r.t,f:r=>fPct(r.t)},
+    {h:'Penc. LDR',v:r=>r.penc,f:r=>pill(r.penc)},
+    {h:`Δ LDR ${PER_LBL[w]}`,v:r=>r.dldr,f:r=>gPP(r.dldr,1)},
+    {h:'Δ Simpanan',v:r=>r.df,f:r=>gTxt(r.df)},
+    {h:'Δ Pinjaman',v:r=>r.dl,f:r=>gTxt(r.dl)},
+    {h:'LDR marjinal',t:'Δ Pinjaman ÷ Δ Simpanan (hanya bila simpanan naik)',v:r=>r.mldr,f:r=>fPct(r.mldr)},
+    {h:'Posisi',v:r=>r.pos?r.pos.k:null,f:r=>r.pos?tag(r.pos.t,r.pos.c):'–',c:'l'},
+  ],rows,{sortKey:'ldr',asc:false,foot:[sc]});
+}
+
+/* ================= 11. BALANCE GROWTH MATRIX ================= */
+function renderBG(){
+  const Lb=LBLK[0], sk=scopeKey(), lv=lvName(), w=S.per;
+  const qOf=r=>{ if(!nn(r.gf)||!nn(r.gl)) return null;
+    if(r.gf>=0&&r.gl>=0) return {t:'Ekspansi',c:'good',k:3,s:r.gl>r.gf?'kredit lebih cepat':'dana lebih cepat'};
+    if(r.gf>=0) return {t:'Funding-driven',c:'na',k:2}; if(r.gl>=0) return {t:'Lending-driven',c:'warn',k:1}; return {t:'Kontraksi',c:'bad',k:0}; };
+  const rows=ents().map(e=>({...e,...flVals(Lb,e.key)})).filter(r=>nn(r.gf)&&nn(r.gl)).map(r=>({...r,qd:qOf(r)}));
+  const sc={key:sk,label:'Total '+scopeName(),_cls:'total',...flVals(Lb,sk)}; sc.qd=qOf(sc);
+  const cnt=k=>rows.filter(r=>r.qd&&r.qd.k===k).length, faster=rows.filter(r=>r.gl>r.gf);
+  strip('bgStrip',[
+    [`Simpanan ${PER_LBL[w]}`, `${fSPct(sc.gf)} <small>(${fSigned(sc.df)})</small>`, growthCls(sc.gf)],
+    [`Pinjaman ${PER_LBL[w]}`, `${fSPct(sc.gl)} <small>(${fSigned(sc.dl)})</small>`, growthCls(sc.gl)],
+    [`Δ LDR ${PER_LBL[w]}`, fPP(sc.dldr), growthCls(sc.dldr,1)],
+    ['Ekspansi', String(cnt(3)), 'up'],
+    ['Funding-driven', String(cnt(2))],
+    ['Lending-driven', String(cnt(1))],
+    ['Kontraksi', String(cnt(0)), 'down'],
+    ['Kredit > dana', `${faster.length} / ${rows.length}`],
+  ]);
+  const B=[];
+  if(sc.qd) B.push(`<b>${esc(scopeName())}</b> ${PER_TXT[w]}: simpanan ${gPct(sc.gf)} (${gTxt(sc.df)} Rp Jt) dan pinjaman ${gPct(sc.gl)} (${gTxt(sc.dl)} Rp Jt) → ${tag(sc.qd.t+(sc.qd.s?' · '+sc.qd.s:''),sc.qd.c)}; LDR ${gPP(sc.dldr,1)}.`);
+  if(rows.length) B.push(`Dari ${rows.length} ${lv}: ${tag('Ekspansi','good')} ${cnt(3)}, ${tag('Funding-driven','na')} ${cnt(2)}, ${tag('Lending-driven','warn')} ${cnt(1)}, ${tag('Kontraksi','bad')} ${cnt(0)}. Pinjaman tumbuh lebih cepat dari simpanan (LDR naik) di <b>${faster.length} ${lv}</b>.`);
+  const ld=rows.filter(r=>r.qd&&r.qd.k===1).sort((a,c)=>(c.gl-c.gf)-(a.gl-a.gf)), ko=rows.filter(r=>r.qd&&r.qd.k===0).sort((a,c)=>(a.gf+a.gl)-(c.gf+c.gl));
+  if(ld.length) B.push(`Lending-driven (kredit naik, dana turun — perlu penguatan pendanaan): ${nms(ld.slice(0,4),r=>'dana '+fSPct(r.gf)+' · kredit '+fSPct(r.gl))}.`);
+  if(ko.length) B.push(`Kontraksi (dana dan kredit sama-sama turun): ${nms(ko.slice(0,4),r=>'dana '+fSPct(r.gf)+' · kredit '+fSPct(r.gl))}.`);
+  const fd=rows.filter(r=>r.qd&&r.qd.k===2).sort((a,c)=>c.df-a.df);
+  if(fd.length) B.push(`Funding-driven (dana naik, kredit turun — ruang ekspansi kredit): ${nms(fd.slice(0,4),r=>'dana '+fSPct(r.gf)+' · kredit '+fSPct(r.gl))}.`);
+  insight('bgIns',B);
+  const col={3:css('--good'),2:css('--c3'),1:css('--warn'),0:css('--bad')}, mx=Math.max(1,...rows.map(r=>r.size||0));
+  ttl('bgChart',`Pertumbuhan Simpanan vs Pinjaman per ${lv}`,`${PER_TXT[w]}; garis putus = 0%, garis titik diagonal = pertumbuhan seimbang (di atasnya LDR naik); kiri bawah (diarsir) = kontraksi`);
+  quadChart('bgChart',rows.filter(r=>r.qd).map(r=>({x:r.gf,y:r.gl,r:5+13*Math.sqrt(r.size/mx),c:col[r.qd.k],label:r.label,r0:r})),
+    {xRef:0,yRef:0,diag:true,shade:{x:'lt',y:'lt'},xLbl:`Pertumbuhan Simpanan ${PER_LBL[w]} %`,yLbl:`Pertumbuhan Pinjaman ${PER_LBL[w]} %`,xTick:pctTick,yTick:pctTick,
+     labels:{tl:'Lending-driven',tr:'Ekspansi',bl:'Kontraksi',br:'Funding-driven'},
+     tip:p=>[`${p.label}`,`Simpanan ${fSPct(p.r0.gf)} · Pinjaman ${fSPct(p.r0.gl)}`,`LDR ${fPct(p.r0.ldr)} (${fPP(p.r0.dldr)}) · ${p.r0.qd.t}`]});
+  ttl('bgList','Isi Kuadran','Unit terbesar (simpanan + pinjaman) di tiap kuadran');
+  quadLists('bgList',rows,[
+    {k:1,t:'Lending-driven',c:'warn',desc:'Kredit naik, dana turun — perlu pendanaan.'},
+    {k:3,t:'Ekspansi',c:'good',desc:'Dana dan kredit sama-sama tumbuh.'},
+    {k:0,t:'Kontraksi',c:'bad',desc:'Dana dan kredit sama-sama turun.'},
+    {k:2,t:'Funding-driven',c:'na',desc:'Dana naik, kredit turun — likuiditas menumpuk.'}],r=>`${fSPct(r.gf)} / ${fSPct(r.gl)}`);
+  ttl('bgTbl',`Balance Growth per ${LVL[curLvl()]}`,`Nominal Rp Jt; pertumbuhan ${PER_TXT[w]}. Selisih = pertumbuhan pinjaman − pertumbuhan simpanan (positif = LDR naik).`);
+  table('bgTbl',[...nameCols(),
+    {h:'Simpanan',v:r=>r.f,f:r=>fRp(r.f)},
+    {h:'Δ Simpanan',v:r=>r.df,f:r=>gTxt(r.df)},
+    {h:'Simpanan %',v:r=>r.gf,f:r=>gPct(r.gf)},
+    {h:'Pinjaman',v:r=>r.l,f:r=>fRp(r.l)},
+    {h:'Δ Pinjaman',v:r=>r.dl,f:r=>gTxt(r.dl)},
+    {h:'Pinjaman %',v:r=>r.gl,f:r=>gPct(r.gl)},
+    {h:'Selisih',t:'Pertumbuhan pinjaman − pertumbuhan simpanan',v:r=>delta(r.gl,r.gf),f:r=>fPP(delta(r.gl,r.gf))},
+    {h:'LDR',v:r=>r.ldr,f:r=>fPct(r.ldr)},
+    {h:`Δ LDR ${PER_LBL[w]}`,v:r=>r.dldr,f:r=>gPP(r.dldr,1)},
+    {h:'Kuadran',k:'quad',v:r=>r.qd?r.qd.k:null,f:r=>r.qd?tag(r.qd.t+(r.qd.s?' · '+r.qd.s:''),r.qd.c):'–',c:'l'},
+  ],rows,{sortKey:'quad',asc:true,foot:[sc]});
+}
+
+/* ================= FILTER / TAB / URL ================= */
+function fillDate(){   // hanya tanggal yang ada di sheet Pinjaman DAN Simpanan
+  const byM={}; DT.filter(d=>(d.f&3)===3).forEach(d=>{(byM[d.mk]=byM[d.mk]||[]).push(d.i)});
+  let h=''; Object.keys(byM).sort().reverse().forEach(mk=>{
+    const [y,m]=mk.split('-'); h+=`<optgroup label="${BLNL[+m-1]} ${y}">`+byM[mk].slice().reverse().map(i=>`<option value="${i}">${fDL(i)}</option>`).join('')+'</optgroup>';
+  });
+  $('fDate').innerHTML=h; $('fDate').value=S.date;
+}
+function fillRka(){
+  if(!RK){ $('fRka').innerHTML='<option value="auto">Tidak ada data RKA</option>'; $('fRka').disabled=true; return; }
+  $('fRka').innerHTML='<option value="auto">Otomatis (bulan posisi)</option>'+BLNL.map((b,i)=>`<option value="${i}">RKA ${b} ${RK.year}</option>`).join('');
+  $('fRka').value=S.rkaM;
+}
+function fillGeo(){
+  $('fArea').innerHTML='<option value="">Semua Area</option>'+AREAS.filter(Boolean).map(a=>`<option value="${esc(a)}">${esc(a)}</option>`).join(''); $('fArea').value=S.area;
+  const cs = S.area? cabsIn(S.area) : CABS.map((_,i)=>i).filter(i=>i>0);
+  $('fCab').innerHTML='<option value="0">Semua Cabang</option>'+cs.map(c=>`<option value="${c}">${esc(CABS[c].n)}</option>`).join(''); $('fCab').value=S.cab;
+  const types=[...new Set(UKS.slice(1).map(u=>u.t))].filter(Boolean);
+  $('fType').innerHTML='<option value="">Semua Jenis</option>'+types.map(t=>`<option value="${esc(t)}">${esc(t)}</option>`).join(''); $('fType').value=S.type;
+  $('fLvl').innerHTML=lvlOpts().map(l=>`<option value="${l}">${LVL[l]}</option>`).join(''); $('fLvl').value=curLvl();
+  $('fPer').value=S.per;
+}
+$('fDate').onchange=e=>{S.date=+e.target.value; refresh();};
+$('fRka').onchange=e=>{S.rkaM=e.target.value; refresh();};
+$('fArea').onchange=e=>{S.area=e.target.value; S.cab=0; refresh();};
+$('fCab').onchange=e=>{S.cab=+e.target.value; if(S.cab) S.area=CABS[S.cab].a; refresh();};
+$('fType').onchange=e=>{S.type=e.target.value; refresh();};
+$('fLvl').onchange=e=>{S.lvl=e.target.value; refresh();};
+$('fPer').onchange=e=>{S.per=e.target.value; refresh();};
+$('fReset').onclick=()=>{ Object.assign(S,{date:defaultDate(),rkaM:'auto',area:'',cab:0,type:'',lvl:'',per:'ytd'}); fillDate(); fillRka(); refresh(); };
+const TABS={gap:renderGap, growth:renderGrowth, trend:renderTrend, mix:renderMix, contrib:renderContrib, quality:renderQuality,
+  pl:renderPL, migration:renderMig, gq:renderGQ, fl:renderFL, bg:renderBG};
+let CUR='gap';
+function showTab(){
+  document.querySelectorAll('#tabs button').forEach(x=>x.classList.toggle('on',x.dataset.p===CUR));
+  document.querySelectorAll('section.page').forEach(s=>s.classList.toggle('on',s.id==='p-'+CUR));
+}
+document.querySelectorAll('#tabs button').forEach(b=>b.onclick=()=>{
+  CUR=b.dataset.p; showTab(); syncUrl(); window.scrollTo({top:0}); renderCur();
+  const tabs=$('tabs'); tabs.scrollBy({left:b.getBoundingClientRect().left-tabs.getBoundingClientRect().left-(tabs.clientWidth-b.offsetWidth)/2,behavior:'smooth'});
+});
+function header(){
+  const [m0]=rkaMonths(), bp=RES.p[S.per]??RES.s[S.per];
+  $('sub').textContent=`Posisi ${fDL(S.date)} · ${m0!=null?`target RKA ${BLNL[m0]} ${RK.year}`:'tanpa target RKA'} · pembanding ${PER_LBL[S.per]} (${fD(bp)}) · ${scopeName()} per ${LVL[curLvl()]} · nominal Rp Juta`;
+  $('foot').textContent=`Sumber: Olahan BRISIM · dikonversi ${M.generated} · © Regional Strategy & Finance - Region 16 Manado`+
+    (has('p',S.date)?'':' Catatan: tanggal ini tidak ada di data Pinjaman.')+(has('s',S.date)?'':' Catatan: tanggal ini tidak ada di data Simpanan.');
+  document.title='Analisa RSF · '+scopeName()+' · '+fD(S.date);
+}
+function renderCur(){
+  chartBase(); header();
+  try{ TABS[CUR](); $('err').classList.remove('on'); }
+  catch(e){ console.error(e); $('err').textContent='Terjadi kesalahan saat menghitung analisis ini: '+(e&&e.message||e); $('err').classList.add('on'); }
+}
+/* filter & tab disimpan di alamat halaman, sehingga bisa di-refresh atau dibagikan */
+function syncUrl(){
+  const q=new URLSearchParams();
+  if(S.date!==defaultDate()) q.set('d',DT[S.date].iso);
+  if(S.rkaM!=='auto') q.set('rka',S.rkaM);
+  if(S.area) q.set('area',S.area);
+  if(S.cab) q.set('cab',CABS[S.cab].k);
+  if(S.type) q.set('type',S.type);
+  if(S.lvl) q.set('lvl',S.lvl);
+  if(S.per!=='ytd') q.set('per',S.per);
+  const s=q.toString();
+  try{ history.replaceState(null,'',location.pathname+(s?'?'+s:'')+'#'+CUR); }catch(e){}
+}
+function readUrl(){
+  const q=new URLSearchParams(location.search);
+  const d=q.get('d'); if(d){ const i=DT.findIndex(x=>x.iso===d&&(x.f&3)===3); if(i>=0) S.date=i; }
+  const r=q.get('rka'); if(r && RK && /^\d{1,2}$/.test(r) && +r<12) S.rkaM=r;
+  const a=q.get('area'); if(a && AREAS.includes(a)) S.area=a;
+  const c=q.get('cab'); if(c){ const i=CABS.findIndex((x,j)=>j>0&&String(x.k)===c); if(i>0){ S.cab=i; S.area=CABS[i].a; } }
+  const t=q.get('type'); if(t && UKS.some(u=>u.t===t)) S.type=t;
+  const l=q.get('lvl'); if(LVL[l]) S.lvl=l;
+  const p=q.get('per'); if(PER_LBL[p]) S.per=p;
+  const h=location.hash.slice(1); if(TABS[h]) CUR=h;
+}
+let busy=0;
+async function refresh(){
+  const my=++busy;
+  resolveAll(); fillGeo();
+  await ensure();
+  if(my!==busy) return;
+  syncUrl(); renderCur(); window.RSF_RENDER=renderCur;
+}
+S.date=defaultDate(); readUrl();
+fillDate(); fillRka(); showTab();
+refresh();
+});
+</script>
+</body>
+</html>

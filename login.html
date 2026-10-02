@@ -72,7 +72,9 @@ const EYE='<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="c
 document.getElementById('eye').onclick=()=>{const p=document.getElementById('pin'),e=document.getElementById('eye'); const show=p.type==='password'; p.type=show?'text':'password'; e.innerHTML=show?EYEOFF:EYE; e.title=show?'Sembunyikan PIN':'Tampilkan PIN'; e.setAttribute('aria-label',e.title); p.focus();};
 const f=document.getElementById('f'), pin=document.getElementById('pin'), btn=document.getElementById('btn'), msg=document.getElementById('msg');
 try{ const t=localStorage.getItem('kr-theme'); if(t&&t!=='auto') document.documentElement.setAttribute('data-theme',t); }catch(e){}
-if(KRA.getKey()) location.replace('index.html');
+/* halaman tujuan setelah login: hanya nama file .html lokal (mis. rsf.html), selain itu ke dashboard */
+const NEXT=(()=>{ try{ const n=new URLSearchParams(location.search).get('next')||''; if(/^[\w-]+\.html(?:[?#][^\s]*)?$/.test(n)) return n; }catch(e){} return 'index.html'; })();
+if(KRA.getKey()) location.replace(NEXT);
 try{ if(sessionStorage.getItem('kr-exp')){ sessionStorage.removeItem('kr-exp'); msg.textContent='Sesi berakhir, silakan masukkan PIN lagi.'; } }catch(e){}
 let fails=0, lockUntil=0;
 f.onsubmit=async e=>{
@@ -83,7 +85,7 @@ f.onsubmit=async e=>{
   btn.disabled=true; msg.className='msg'; msg.textContent='Memeriksa PIN…';
   try{
     const ok=await KRA.login(pin.value.trim());
-    if(ok){ msg.textContent='Berhasil, membuka dashboard…'; location.replace('index.html'); return; }
+    if(ok){ msg.textContent=NEXT==='index.html'?'Berhasil, membuka dashboard…':'Berhasil, membuka halaman…'; location.replace(NEXT); return; }
     fails++; if(fails>=5){ lockUntil=Date.now()+30000*Math.pow(2,fails-5); }
     msg.className='msg err'; msg.textContent='PIN salah.'+(fails>=5?' Tunggu sebentar sebelum mencoba lagi.':'');
     pin.value=''; pin.focus();

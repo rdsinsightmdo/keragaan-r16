@@ -170,6 +170,8 @@ header .crumb a{color:#fff}
 header .ctl label{color:rgba(255,255,255,.85)}
 header .theme-btn,header .btn{background:rgba(255,255,255,.14);border-color:rgba(255,255,255,.35);color:#fff}
 header .theme-btn:hover,header .btn:hover{background:rgba(255,255,255,.24);border-color:#fff}
+header .rsf-btn{background:#fff;color:#0857C3;border-color:#fff;font-weight:700}
+header .rsf-btn:hover{background:#e3eefb;border-color:#fff}
 header select{border-color:rgba(255,255,255,.4)}
 header .chip{background:rgba(255,255,255,.18);color:#fff}
 header nav.tabs button{color:rgba(255,255,255,.72)}
@@ -223,6 +225,7 @@ header nav.tabs button.on{color:#fff;border-bottom:3px solid #71C5E8}
    </div>
    <div style="display:flex;gap:8px;align-items:center">
     <span class="chip" id="loading">⏳ Memuat data…</span>
+    <button class="theme-btn rsf-btn" id="rsfBtn" type="button" title="Buka halaman Analisa RSF (Regional Strategy &amp; Finance) dengan filter yang sama">📊 Analisa RSF</button>
     <button class="theme-btn" id="themeBtn" type="button">Tema: Otomatis</button>
     <button class="theme-btn" id="logoutBtn" type="button" title="Keluar dan kunci dashboard">🔒 Keluar</button>
    </div>
@@ -1650,6 +1653,14 @@ async function refresh(){
 S.date=defaultDate();
 fillDate(); fillRka(); fillBlocks();
 $('logoutBtn').onclick=()=>KRA.logout();
+$('rsfBtn').onclick=()=>{   // buka Analisa RSF dengan filter yang sama; di tab yang sama agar sesi PIN tetap aktif
+  const q=new URLSearchParams({d:DT[S.date].iso});
+  if(S.rkaM!=='auto') q.set('rka',S.rkaM);
+  if(S.area) q.set('area',S.area);
+  if(S.cab) q.set('cab',CABS[S.cab].k);
+  if(S.type) q.set('type',S.type);
+  location.href='rsf.html?'+q;
+};
 refresh();
 });
 </script>
