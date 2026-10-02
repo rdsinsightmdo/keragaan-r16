@@ -246,6 +246,7 @@ header nav.tabs button.on{color:#fff;border-bottom:3px solid #71C5E8}
    <button data-p="pinjaman">Pinjaman</button>
    <button data-p="simpanan">Simpanan</button>
    <button data-p="kualitas">SML &amp; NPL</button>
+   <button data-p="recovery">Recovery</button>
    <button data-p="eksplor">Detail Segmen</button>
    <button data-p="profil">Kinerja Uker</button>
   </nav>
@@ -284,7 +285,7 @@ header nav.tabs button.on{color:#fff;border-bottom:3px solid #71C5E8}
  <!-- SCOREBOARD -->
  <section class="page" id="p-scoreboard">
   <div class="controls">
-   <div class="ctl"><label>Kategori</label><div class="seg" id="segSb"><button data-k="all" class="on">Semua</button><button data-k="Simpanan">Simpanan</button><button data-k="Pinjaman">Pinjaman</button><button data-k="SML">SML</button><button data-k="NPL">NPL</button></div></div>
+   <div class="ctl"><label>Kategori</label><div class="seg" id="segSb"><button data-k="all" class="on">Semua</button><button data-k="Simpanan">Simpanan</button><button data-k="Pinjaman">Pinjaman</button><button data-k="SML">SML</button><button data-k="NPL">NPL</button><button data-k="Recovery">Recovery</button></div></div>
   </div>
   <div class="card">
    <h2 id="sbTitle">Scoreboard</h2>
@@ -420,6 +421,33 @@ header nav.tabs button.on{color:#fff;border-bottom:3px solid #71C5E8}
   </div>
  </section>
 
+ <!-- RECOVERY -->
+ <section class="page" id="p-recovery">
+  <div class="grid kpis" id="rcKpis"></div>
+  <div class="grid mt" style="grid-template-columns:repeat(auto-fit,minmax(320px,1fr))">
+   <div class="card">
+    <h2>Komposisi Recovery per Segmen</h2>
+    <p class="hint" id="rcMixHint"></p>
+    <div class="chartbox sm"><canvas id="rcMix"></canvas></div>
+   </div>
+   <div class="card">
+    <h2>Recovery Bulanan &amp; Pencapaian RKA</h2>
+    <p class="hint" id="rcMonHint"></p>
+    <div class="chartbox sm"><canvas id="rcMon"></canvas></div>
+   </div>
+  </div>
+  <div class="card mt">
+   <h2 id="rcProdTitle">Recovery per Segmen</h2>
+   <p class="hint" id="rcProdHint"></p>
+   <div class="tblwrap"><table id="rcProd"></table></div>
+  </div>
+  <div class="card mt">
+   <h2 id="rcUkTitle">Recovery per Uker</h2>
+   <p class="hint">Nominal Rp Juta, akumulasi sejak 1 Januari. Klik judul kolom untuk mengurutkan, klik › untuk masuk ke rinciannya.</p>
+   <div class="tblwrap"><table id="rcUk"></table></div>
+  </div>
+ </section>
+
  <!-- EKSPLORASI -->
  <section class="page" id="p-eksplor">
   <div class="controls">
@@ -476,10 +504,10 @@ window.KR_ENC = (id, iv, ct) => {
      .catch(() => { alert('Data tidak dapat dibuka dengan PIN ini (data mungkin sudah diperbarui). Silakan masuk lagi.'); KRA.logout(); });
 };
 /* ================= DATA STORE ================= */
-const DB = {meta:null, p:new Map(), s:new Map(), files:new Set(), waiters:{}};
+const DB = {meta:null, p:new Map(), s:new Map(), r:new Map(), files:new Set(), waiters:{}};
 function KR_LOAD(o){
   if(o.id==='core') DB.meta=o;
-  ['p','s'].forEach(ds=>{
+  ['p','s','r'].forEach(ds=>{
     const a=o[ds]; if(!a) return; const M=DB[ds];
     for(let i=0;i<a.length;i+=6){
       let r=M.get(a[i]); if(!r){r=[];M.set(a[i],r);}
@@ -506,12 +534,13 @@ const M = DB.meta;
 const BLN = ['Jan','Feb','Mar','Apr','Mei','Jun','Jul','Agu','Sep','Okt','Nov','Des'];
 const BLNL = ['Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember'];
 const DT = M.dates.map(([iso,f],i)=>({i,iso,f,y:+iso.slice(0,4),m:+iso.slice(5,7),d:+iso.slice(8,10),mk:iso.slice(0,7)}));
-const CABS = M.cabs, UKS = M.ukers, PC = M.pcells, SC = M.scells, RK = M.rka;
+const CABS = M.cabs, UKS = M.ukers, PC = M.pcells, SC = M.scells, RK = M.rka, RC = M.rcells||[];
 const AREAS = [...new Set(CABS.slice(1).map(c=>c.a))];
-const has = (ds,i) => i!=null && i>=0 && !!(DT[i].f & (ds==='p'?1:2));
+const has = (ds,i) => i!=null && i>=0 && !!(DT[i].f & (ds==='p'?1:ds==='s'?2:16));
+const ZB = -1;   // Recovery: titik "awal tahun" (akumulasi = 0)
 const isME = (ds,i) => !!(DT[i].f & (ds==='p'?4:8));
-const fD  = i => i==null?'–':`${DT[i].d} ${BLN[DT[i].m-1]} ${String(DT[i].y).slice(2)}`;
-const fDL = i => i==null?'–':`${DT[i].d} ${BLNL[DT[i].m-1]} ${DT[i].y}`;
+const fD  = i => i==null?'–':i===ZB?'Awal Thn':`${DT[i].d} ${BLN[DT[i].m-1]} ${String(DT[i].y).slice(2)}`;
+const fDL = i => i==null?'–':i===ZB?'Awal Tahun':`${DT[i].d} ${BLNL[DT[i].m-1]} ${DT[i].y}`;
 function atOrBefore(ds, iso, sameMonthAs){
   for(let j=DT.length-1;j>=0;j--){
     if(DT[j].iso>iso) continue;
@@ -523,8 +552,8 @@ function atOrBefore(ds, iso, sameMonthAs){
 }
 const pad = n => String(n).padStart(2,'0');
 function prevMonthEnd(i){ const {y,m}=DT[i]; const py=m===1?y-1:y, pm=m===1?12:m-1; return {iso:`${py}-${pad(pm)}-31`, mk:`${py}-${pad(pm)}`}; }
-const ME = {p:new Map(), s:new Map()};
-DT.forEach(d=>{ if(isME('p',d.i)) ME.p.set(d.mk,d.i); if(isME('s',d.i)) ME.s.set(d.mk,d.i); });
+const ME = {p:new Map(), s:new Map(), r:new Map()};
+DT.forEach(d=>{ if(isME('p',d.i)) ME.p.set(d.mk,d.i); if(isME('s',d.i)) ME.s.set(d.mk,d.i); if(d.f&16) ME.r.set(d.mk,d.i); });
 const MONTHS = [...new Set(DT.map(d=>d.mk))];
 
 /* ================= STATE ================= */
@@ -595,8 +624,11 @@ const LBLK = [
   {title:'LDR Mikro',pc:PMIK,sc:SMIK,lvl:0},
   {title:'LDR Non Mikro',pc:PBLK[0].cells.filter(i=>!PMIK.includes(i)),sc:SC.map((_,i)=>i).filter(i=>!SMIK.includes(i)),lvl:0},
 ].map(b=>({...b,rk:{Pinjaman:rkKeys(b.pc,PC,'Pinjaman'),D:rkKeys(b.sc,SC,'D')}}));
-const CATS = ['Pinjaman','Simpanan','SML','NPL','LDR'];
-const BLOCKS = {Pinjaman:PBLK, SML:PBLK, NPL:PBLK, Simpanan:SBLK, LDR:LBLK};
+/* Recovery: Total + per segmen (sheet Recovery, kunci RKA dari Pola bisnis "Recovery") */
+const RBLK = RC.length ? [{title:'Total',name:'Total',cells:RC.map((_,i)=>i),lvl:0,tot:1},
+  ...RC.map((c,i)=>({title:c[2],name:c[2],cells:[i],lvl:0,seg:c[2]}))].map(b=>({...b,rk:{Recovery:rkKeys(b.cells,RC,'Recovery')}})) : [];
+const CATS = ['Pinjaman','Simpanan','SML','NPL','LDR',...(RBLK.length?['Recovery']:[])];
+const BLOCKS = {Pinjaman:PBLK, SML:PBLK, NPL:PBLK, Simpanan:SBLK, LDR:LBLK, Recovery:RBLK};
 const INVERSE = {SML:1,NPL:1,LDR:1};
 const LOWGOOD = {SML:1,NPL:1,LDR:1};   // makin rendah makin baik (penurunan = hijau)
 const blkTitle = (cat,b) => {
@@ -612,17 +644,17 @@ const AGG = new Map();
    Total Region tetap konsolidasi (segmen ini tetap dihitung), tetapi tidak masuk ke angka cabang/uker/area. */
 const KE_KANWIL = new Set(['Medium']);
 const KW_CI = CABS.findIndex(c=>c.k===254), KW_UI = UKS.findIndex(u=>u.k===254);
-const PC_KW = PC.map(c=>KE_KANWIL.has(c[2]));
+const PC_KW = PC.map(c=>KE_KANWIL.has(c[2])), RC_KW = RC.map(c=>KE_KANWIL.has(c[2]));
 function agg(ds,i){
   if(i==null || !has(ds,i)) return null;
   const key=ds+i+'|'+S.type; if(AGG.has(key)) return AGG.get(key);
   const rows=DB[ds].get(i); if(!rows) return null;
-  const nc=(ds==='p'?PC.length*3:SC.length)*2, E=new Map(), t=S.type;
+  const nc=(ds==='p'?PC.length*3:ds==='s'?SC.length:RC.length)*2, E=new Map(), t=S.type;
   const add=(k,c,v,n)=>{let a=E.get(k); if(!a){a=new Float64Array(nc);E.set(k,a);} a[c]+=v; a[c+1]+=n;};
-  const moveKW = ds==='p' && KW_CI>0 && KW_UI>0;
+  const kwOf = KW_CI>0 && KW_UI>0 ? (ds==='p'? c=>PC_KW[(c/3)|0] : ds==='r'? c=>RC_KW[c] : null) : null;
   for(let r=0;r<rows.length;r+=5){
     let ci=rows[r], ui=rows[r+1]; const c=rows[r+2]*2, v=rows[r+3]/100, n=rows[r+4];
-    if(moveKW && PC_KW[(rows[r+2]/3)|0]){ ci=KW_CI; ui=KW_UI; }
+    if(kwOf && kwOf(rows[r+2])){ ci=KW_CI; ui=KW_UI; }
     if(t && UKS[ui].t!==t) continue;
     add('T',c,v,n); const a=CABS[ci].a; if(a) add('A|'+a,c,v,n);
     add('C|'+ci,c,v,n); if(ui>0) add('U|'+ui,c,v,n);
@@ -647,6 +679,14 @@ function sumP(arr,cells,kgs,w){ let s=0; for(const c of cells) for(const k of kg
 function sumS(arr,cells,w){ let s=0; for(const c of cells) s+=arr[c*2+w]; return s; }
 const KG = {Pinjaman:[0,1,2], SML:[1], NPL:[2]};
 function val(cat,b,kind,key,pt){
+  if(cat==='Recovery'){
+    if(kind==='cnt') return null;
+    if(pt.r===ZB) return kind==='pct'? null : 0;
+    const A=agg('r',pt.r); if(!A) return null; const a=A.get(key); if(!a) return null;
+    const v=sumS(a,b.cells,0);
+    if(kind==='pct'){ const t=sumS(a,RBLK[0].cells,0); return t? v/t : null; }
+    return v;
+  }
   if(cat==='LDR'){
     const A=agg('p',pt.p), B=agg('s',pt.s); if(!A||!B) return null;
     const a=A.get(key), c=B.get(key); if(!a||!c) return null;
@@ -676,6 +716,7 @@ function tgt(cat,b,kind,key,m){
   if(kind==='cnt') return null;
   if(cat==='Simpanan') return kind==='rp'? sk(b.rk.D) : null;
   if(cat==='Pinjaman') return kind==='rp'? sk(b.rk.Pinjaman) : null;
+  if(cat==='Recovery') return kind==='rp'? sk(b.rk.Recovery) : null;
   const x=sk(b.rk[cat]); if(kind==='rp') return x;
   const p=sk(b.rk.Pinjaman); return x!=null&&p? x/p : null;
 }
@@ -696,11 +737,18 @@ function resolveDs(ds){
   return R;
 }
 let RES = null;
-function resolveAll(){ RES={p:resolveDs('p'), s:resolveDs('s')}; }
-const PT = w => ({p:RES.p[w], s:RES.s[w]});
+/* Recovery = akumulasi sejak 1 Januari: posisi hanya bila tanggal terpilih ada di data recovery;
+   pembanding di tahun sebelumnya (DtD/MtD Januari, YtD) memakai titik awal tahun (= 0). */
+function resolveR(){
+  const R=resolveDs('r'), y=DT[S.date].y;
+  ['dtd','mtd'].forEach(w=>{ if(R[w]!=null && DT[R[w]].y<y) R[w]=ZB; });
+  R.ytd=ZB; return R;
+}
+function resolveAll(){ RES={p:resolveDs('p'), s:resolveDs('s'), r:resolveR()}; }
+const PT = w => ({p:RES.p[w], s:RES.s[w], r:RES.r[w]});
 const PTS = ['yoy','ytd','mtd','dtd','cur'];
 const GR = ['dtd','mtd','ytd','yoy'];
-function ptDate(cat,w){ return cat==='Simpanan'?RES.s[w]:RES.p[w]; }
+function ptDate(cat,w){ return cat==='Simpanan'?RES.s[w]:cat==='Recovery'?RES.r[w]:RES.p[w]; }
 function rkaMonths(){   // [bulan target terpilih, Desember] atau null bila tahun posisi ≠ tahun RKA
   if(!RK || DT[S.date].y!==RK.year) return [null,null];
   return [S.rkaM==='auto'? DT[S.date].m-1 : +S.rkaM, 11];
@@ -880,11 +928,11 @@ function scaleFmt(max){ const [d,sfx]= max>=1e6?[1e6,' T']:max>=1e3?[1e3,' M']:[
 function monthPoints(n){
   const lim=DT[S.date].mk, pts=[];
   MONTHS.filter(m=>m<=lim).forEach(m=>{
-    let p=ME.p.get(m)??null, s=ME.s.get(m)??null;
-    if(m===lim){ p=has('p',S.date)?S.date:(p!=null&&p<=S.date?p:null); s=has('s',S.date)?S.date:(s!=null&&s<=S.date?s:null); }
-    if(p==null&&s==null) return;
+    let p=ME.p.get(m)??null, s=ME.s.get(m)??null, r=ME.r.get(m)??null;
+    if(m===lim){ p=has('p',S.date)?S.date:(p!=null&&p<=S.date?p:null); s=has('s',S.date)?S.date:(s!=null&&s<=S.date?s:null); r=has('r',S.date)?S.date:null; }
+    if(p==null&&s==null&&r==null) return;
     const lab = m===lim && !(isME('p',S.date)||isME('s',S.date)) ? fD(S.date) : `${BLN[+m.slice(5)-1]} ${m.slice(2,4)}`;
-    pts.push({p,s,label:lab,y:+m.slice(0,4),m:+m.slice(5)-1});
+    pts.push({p,s,r,label:lab,y:+m.slice(0,4),m:+m.slice(5)-1});
   });
   return n? pts.slice(-n) : pts;
 }
@@ -892,7 +940,7 @@ function dayPoints(){
   const mk=DT[S.date].mk, pm=prevMonthEnd(S.date), pts=[];
   const p0=atOrBefore('p',pm.iso,pm.mk), s0=atOrBefore('s',pm.iso,pm.mk);
   if(p0!=null||s0!=null){ const i=p0??s0; pts.push({p:p0,s:s0,label:fD(i),y:DT[i].y,m:DT[i].m-1}); }
-  DT.filter(d=>d.mk===mk && d.i<=S.date).forEach(d=>pts.push({p:has('p',d.i)?d.i:null,s:has('s',d.i)?d.i:null,label:`${d.d} ${BLN[d.m-1]}`,y:d.y,m:d.m-1}));
+  DT.filter(d=>d.mk===mk && d.i<=S.date && (d.f&19)).forEach(d=>pts.push({p:has('p',d.i)?d.i:null,s:has('s',d.i)?d.i:null,r:has('r',d.i)?d.i:null,label:`${d.d} ${BLN[d.m-1]}`,y:d.y,m:d.m-1}));
   return pts;
 }
 const tgtAt = (cat,b,kind,key,p) => RK && p.y===RK.year ? tgt(cat,b,kind,key,p.m) : null;
@@ -995,18 +1043,18 @@ function renderRegionCharts(){
 /* ================= TABEL PRODUK (Pinjaman / Simpanan / Profil) ================= */
 function prodTable(elId, cats, ek, withRank, kindOv){
   const qN = kindOv==='rp' && cats.length===1 && (cats[0]==='SML'||cats[0]==='NPL');
-  const [m0,m1]=rkaMonths(), nom = elId==='profTbl';   // Kinerja Uker: delta dalam nominal
-  const R0=cats.includes('Simpanan')&&cats.length===1?RES.s:RES.p;
+  const [m0,m1]=rkaMonths(), nom = elId==='profTbl' || elId==='rcProd';   // Kinerja Uker & Recovery: delta dalam nominal
+  const R0=cats.length===1&&cats[0]==='Simpanan'?RES.s:cats.length===1&&cats[0]==='Recovery'?RES.r:RES.p;
   let t=`<thead><tr><th>Segmen / Produk</th><th>${fD(R0.ytd)}</th><th>${fD(R0.mtd)}</th><th>${fD(R0.cur)}</th><th>RKA ${mLbl(m0)}</th><th>Penc. ${mLbl(m0)}</th><th>Gap ${mLbl(m0)}</th><th>RKA Des</th><th>Penc. Des</th>`+(nom?'<th>DtD</th><th>MtD</th><th>YtD</th><th>YoY</th>':'<th>MtD %</th><th>YtD %</th><th>YoY %</th>')+`<th>Porsi</th>`+
     (cats.length===1&&cats[0]==='Pinjaman'?'<th>SML %</th><th>NPL %</th><th>Debitur</th>':'')+(cats.length===1&&cats[0]==='Simpanan'?'<th>Rekening</th>':'')+(qN?'<th>Rasio %</th><th>Target Rasio</th><th>Debitur</th>':'')+(withRank?'<th>Peringkat</th>':'')+'</tr></thead><tbody>';
   const ncol=13+(nom?1:0)+(cats.length===1&&cats[0]==='Pinjaman'?3:0)+(cats.length===1&&cats[0]==='Simpanan'?1:0)+(qN?3:0)+(withRank?1:0);
   cats.forEach(cat=>{
-    if(cats.length>1) t+=`<tr class="catttl"><td colspan="${ncol}">${cat}</td></tr>`;
-    const kind = qN? 'rp' : cat==='SML'||cat==='NPL'||cat==='LDR' ? 'pct' : 'rp', inv=LOWGOOD[cat];
+    if(cats.length>1) t+=`<tr class="catttl"><td>${cat}${nom&&(cat==='SML'||cat==='NPL')?' <small class="muted">(nominal Rp Juta)</small>':''}</td><td colspan="${ncol-1}"></td></tr>`;
+    const kind = qN||(nom&&cat!=='LDR')? 'rp' : cat==='SML'||cat==='NPL'||cat==='LDR' ? 'pct' : 'rp', inv=LOWGOOD[cat];
     BLOCKS[cat].forEach((b,bi)=>{
       const o=view(cat,b,kind,ek); if(PTS.every(w=>!o.v[w]) && o.tgt[0]==null) return;
       const k=o.kind, cur=PT('cur');
-      const por = k==='pct'||b.excl ? null : val(cat,b,'pct',ek,cur);
+      const por = k==='pct'||b.excl||cat==='SML'||cat==='NPL' ? null : val(cat,b,'pct',ek,cur);
       const rowCls = b.tot? 'total' : (b.lvl===0? 'area':'');
       const ind = b.lvl===2? '     · ' : b.lvl===1? '  · ' : '';
       let rk=''; if(withRank){ const r=rankIn(cat,b,kind,ek); rk=r?`${r[0]} / ${r[1]}`:''; }
@@ -1026,7 +1074,7 @@ function prodTable(elId, cats, ek, withRank, kindOv){
   tb.querySelectorAll('tbody tr[data-cat]').forEach(tr=>tr.onclick=()=>{ S.cat=tr.dataset.cat; S.bi=+tr.dataset.bi; S.kind=S.cat==='LDR'?'pct':tr.dataset.kind; S.sort=null; S.sel=null; fillBlocks(); goTab('eksplor'); });
 }
 /* tabel per uker generik */
-const UKSORT = {pj:{i:null,asc:false}, sp:{i:null,asc:false}, kq:{i:null,asc:false}};
+const UKSORT = {pj:{i:null,asc:false}, sp:{i:null,asc:false}, kq:{i:null,asc:false}, rc:{i:null,asc:false}};
 function ukTable(elId, sortKey, cols){
   let data=tableRows().map(r=>({...r,c:cols.map(c=>c.v(r.key))})).filter(r=>r.t!=='leaf' || r.c.some(x=>x!=null&&x!==0));
   const st=UKSORT[sortKey];
@@ -1068,8 +1116,8 @@ const pencCols = (cat,b,label) => { const [m0]=rkaMonths(); return [
 const grCol = (cat,b,w,h) => ({h,v:k=>{const a=val(cat,b,'rp',k,PT('cur')),x=val(cat,b,'rp',k,PT(w));return a==null||!x?null:a/x-1;},f:v=>`<span class="${growthCls(v)}">${fSPct(v)}</span>`});
 
 /* ================= SCOREBOARD ================= */
-/* Skor = jumlah kategori TOTAL (Simpanan, Pinjaman, SML, NPL) dengan pencapaian RKA >= 100%. */
-const SB_SCORE = ['Simpanan','Pinjaman','SML','NPL'];
+/* Skor = jumlah kategori TOTAL (Simpanan, Pinjaman, SML, NPL, Recovery) dengan pencapaian RKA >= 100%. */
+const SB_SCORE = ['Simpanan','Pinjaman','SML','NPL',...(RBLK.length?['Recovery']:[])];
 const SB_DEF = () => {
   const segOf = (seg,lbl) => ({t:(PBLK.find(b=>b.seg===seg)||{}).title, l:lbl});
   const prodCols = (cat,totLbl) => [{t:'Total',l:'Total',tot:1}, segOf('Mikro','Mikro'), segOf('Small','Small'), segOf('Consumer','Konsumer')];
@@ -1078,14 +1126,15 @@ const SB_DEF = () => {
     Pinjaman:{lbl:'Pinjaman', cols:prodCols('Pinjaman','Pinjaman Total')},
     SML:{lbl:'SML', cols:prodCols('SML','SML Total')},
     NPL:{lbl:'NPL', cols:prodCols('NPL','NPL Total')},
+    ...(RBLK.length?{Recovery:{lbl:'Recovery', cols:[{t:'Total',l:'Total',tot:1},...['Mikro','Small','Consumer'].map(sg=>({t:(RBLK.find(b=>b.seg===sg)||{}).title, l:sg==='Consumer'?'Konsumer':sg}))]}}:{}),
   };
 };
 let SBK='all';
 $('segSb').querySelectorAll('button').forEach(b=>b.onclick=()=>{SBK=b.dataset.k; $('segSb').querySelectorAll('button').forEach(x=>x.classList.toggle('on',x===b)); renderScoreboard();});
-function sbMonthOf(ds,w){ const i=RES[ds][w]; if(i==null||!RK||DT[i].y!==RK.year) return null; return w==='cur'? rkaMonths()[0] : DT[i].m-1; }
+function sbMonthOf(ds,w){ const i=RES[ds][w]; if(i==null||i<0||!RK||DT[i].y!==RK.year) return null; return w==='cur'? rkaMonths()[0] : DT[i].m-1; }
 function sbCell(cat,title,key,w){
   const bi=findBlk(cat,title); if(bi<0) return null;
-  const b=BLOCKS[cat][bi], ds=cat==='Simpanan'?'s':'p';
+  const b=BLOCKS[cat][bi], ds=cat==='Simpanan'?'s':cat==='Recovery'?'r':'p';
   const act=val(cat,b,'rp',key,PT(w)), t=tgt(cat,b,'rp',key,sbMonthOf(ds,w));
   return {act, t, penc:pencOf(cat,act,t), gap:(act==null||t==null)?null:act-t};
 }
@@ -1136,7 +1185,7 @@ function renderScoreboard(){
   const curD=RES.p.cur??RES.s.cur, prevD=RES.p.mtd??RES.s.mtd, [m0]=rkaMonths();
   const catLbl = mode==='all'? 'KC Region 16 Manado' : SB_DEF()[mode].lbl;
   $('sbTitle').textContent=`Scoreboard ${fDL(curD)} – ${catLbl}`;
-  $('sbHint').textContent=`Pencapaian terhadap RKA ${m0!=null?BLNL[m0]:'–'} (maks. 110%; SML/NPL dihitung terbalik). Score ✓ = jumlah kategori total (Simpanan, Pinjaman, SML, NPL) dengan pencapaian ≥ 100%, ✗ = di bawah 100%. KC diurutkan per area dari score terbanyak.`;
+  $('sbHint').textContent=`Pencapaian terhadap RKA ${m0!=null?BLNL[m0]:'–'} (maks. 110%; SML/NPL dihitung terbalik). Score ✓ = jumlah kategori total (${SB_SCORE.join(', ')}) dengan pencapaian ≥ 100%, ✗ = di bawah 100%. KC diurutkan per area dari score terbanyak.`;
   let h=sbHead(mode,true)+'<tbody>', no=0;
   areas.forEach(a=>{
     const ks=cabsIn(a).map(c=>({c,o:sbRow('C|'+c,'cur')})).filter(x=>x.o.n||Object.values(x.o.cells).some(v=>v&&v.act));
@@ -1146,7 +1195,7 @@ function renderScoreboard(){
   });
   if(!S.area) h+=`<tr class="total"><td colspan="2" class="nm">Total Region</td>${sbCells(sbRow('T','cur'),mode)}</tr>`;
   $('sbNow').innerHTML=h+'</tbody>';
-  $('sbNote').textContent='Total Region = konsolidasi (termasuk Medium di Kanwil); baris KC tanpa Medium. Recovery tidak ditampilkan karena belum ada di data Excel.'+(S.cab||S.uk?' Filter cabang/unit kerja tidak berlaku di Scoreboard (baris terpilih ditandai).':'');
+  $('sbNote').textContent='Total Region = konsolidasi (termasuk Medium di Kanwil); baris KC tanpa Medium.'+(RBLK.length&&!has('r',S.date)?` Recovery kosong karena data recovery tidak tersedia pada ${fDL(S.date)} (data recovery per akhir bulan), sehingga score dihitung dari kategori yang tersedia.`:'')+(S.cab||S.uk?' Filter cabang/unit kerja tidak berlaku di Scoreboard (baris terpilih ditandai).':'');
   // akhir bulan lalu & delta (per area + total)
   const keys=[...areas.map(a=>({k:'A|'+a,l:a.toUpperCase(),c:'area'})), ...(S.area?[]:[{k:'T',l:'Total Region',c:'total'}])];
   const mPrev = prevD!=null? DT[prevD].m-1 : null;
@@ -1463,6 +1512,85 @@ function renderKualitas(){
   ukTable('kqUk','kq',cols);
 }
 
+/* ================= HALAMAN RECOVERY ================= */
+/* Data recovery = akumulasi sejak 1 Januari (posisi akhir bulan). Realisasi bulanan = selisih dengan akhir bulan sebelumnya
+   (Januari = nilai Januari itu sendiri). Bila bulan sebelumnya tidak ada di data, realisasi bulanan dikosongkan. */
+function rcMonthly(pts, f){
+  return pts.map((p,i)=>{ const v=f(p); if(v==null) return null;
+    if(p.m===0) return v;
+    const q=pts[i-1]; if(!q || q.y!==p.y || q.m!==p.m-1) return null;
+    const u=f(q); return u==null? null : v-u; });
+}
+/* tabel Recovery per Segmen: akhir tahun lalu | posisi YoY (0 bila tidak ada) | akhir bulan lalu | posisi | RKA | DtD | MtD | YoY | YoY % | Porsi */
+function rcProdTable(ek){
+  const [m0]=rkaMonths(), y=DT[S.date].y, m=DT[S.date].m;
+  const iDec=atOrBefore('r',`${y-1}-12-31`,`${y-1}-12`), iYoy=RES.r.yoy, iM=RES.r.mtd;
+  const lYoy = iYoy!=null? fD(iYoy) : `${BLN[m-1]} ${String(y-1).slice(2)}`;
+  const lM = iM===ZB? 'Awal Thn' : fD(iM);
+  let t=`<thead><tr><th>Segmen</th><th title="Akumulasi recovery setahun penuh ${y-1}">${iDec!=null?fD(iDec):'31 Des '+String(y-1).slice(2)}</th><th title="Posisi YoY (bulan yang sama tahun lalu); 0 bila data tidak tersedia">${lYoy}</th><th>${lM}</th><th>${fD(RES.r.cur)}</th><th>RKA ${mLbl(m0)}</th><th>Penc. ${mLbl(m0)}</th><th>Gap ${mLbl(m0)}</th><th>RKA Des</th><th>Penc. Des</th><th>DtD</th><th>MtD</th><th>YoY</th><th>YoY %</th><th>Porsi</th></tr></thead><tbody>`;
+  RBLK.forEach((b,bi)=>{
+    const o=view('Recovery',b,'rp',ek), cur=o.v.cur;
+    const dec = iDec!=null? val('Recovery',b,'rp',ek,{r:iDec}) : null;
+    const yv = o.v.yoy!=null? o.v.yoy : (cur!=null? 0 : null);
+    const dy = cur!=null&&yv!=null? cur-yv : null, py = cur!=null&&yv? cur/yv-1 : null;
+    const por = val('Recovery',b,'pct',ek,PT('cur'));
+    t+=`<tr class="${b.tot?'total':'area'}" data-cat="Recovery" data-bi="${bi}"><td>${esc(blkTitle('Recovery',b))}</td>
+      <td class="num">${fRp(dec)}</td><td class="num">${fRp(yv)}</td><td class="num">${fRp(o.v.mtd)}</td><td class="num"><b>${fRp(cur)}</b></td>
+      <td class="num">${fRp(o.tgt[0])}</td><td>${pill(o.penc[0])}</td><td class="num ${growthCls(o.gap[0])}">${fSigned(o.gap[0])}</td>
+      <td class="num">${fRp(o.tgt[1])}</td><td>${pill(o.penc[1])}</td>
+      <td class="num">${gAbs(o,'dtd')}</td><td class="num">${gAbs(o,'mtd')}</td>
+      <td class="num"><span class="${growthCls(dy)}">${fSigned(dy)}</span></td><td class="num"><span class="${growthCls(py)}">${fSPct(py)}</span></td>
+      <td class="num">${por==null?'':fPct(por)}</td></tr>`;
+  });
+  const tb=$('rcProd'); tb.innerHTML=t+'</tbody>';
+  tb.querySelectorAll('tbody tr[data-cat]').forEach(tr=>tr.onclick=()=>{ S.cat='Recovery'; S.bi=+tr.dataset.bi; S.kind='rp'; S.sort=null; S.sel=null; fillBlocks(); goTab('eksplor'); });
+}
+function renderRecovery(){
+  const ek=entityKey(), tot=RBLK[0], cur=PT('cur');
+  if(!tot){ $('rcKpis').innerHTML='<div class="card empty" style="grid-column:1/-1">Sheet Recovery belum ada di data. Tambahkan sheet Recovery di Excel lalu jalankan Update_Data.bat.</div>'; return; }
+  const segs=RBLK.filter(b=>b.seg), avail=DT.filter(d=>d.f&16).slice(-6).reverse().map(d=>fDL(d.i)).join(', ');
+  if(!has('r',S.date)) $('rcKpis').innerHTML=`<div class="card empty" style="grid-column:1/-1">Data Recovery tidak tersedia pada ${fDL(S.date)}. Data recovery tersedia per akhir bulan, terakhir: ${avail}.</div>`;
+  else {
+    let h=stdCard({cat:'Recovery',title:'Total',lbl:'Total Recovery',low:'Akumulasi sejak 1 Januari · MtD = realisasi bulan ini'},ek,'min');
+    segs.forEach(b=>{ const o=view('Recovery',b,'rp',ek); if(PTS.every(w=>!o.v[w]) && o.tgt[0]==null) return;
+      h+=stdCard({cat:'Recovery',title:b.title,lbl:'Recovery '+b.name,porsi:1},ek); });
+    $('rcKpis').innerHTML=h; bindKpi($('rcKpis'));
+  }
+  const pts=monthPoints(13);
+  $('rcMixHint').textContent=`${entityName()} · akumulasi recovery per akhir bulan (Rp Juta); garis putus = RKA`;
+  const mx=Math.max(1,...pts.map(p=>Math.max(val('Recovery',tot,'rp',ek,p)||0, tgtAt('Recovery',tot,'rp',ek,p)||0)));
+  stackedMonthly('rcMix',pts,[...segs.map(b=>({label:b.name,f:p=>val('Recovery',b,'rp',ek,p)})),{label:'RKA Recovery',line:1,color:css('--text'),f:p=>tgtAt('Recovery',tot,'rp',ek,p)}],scaleFmt(mx));
+  // realisasi bulanan (batang per segmen) + target bulanan + pencapaian RKA kumulatif (sumbu kanan)
+  $('rcMonHint').textContent=`${entityName()} · realisasi recovery per bulan (Rp Juta), target bulanan RKA (putus-putus) dan pencapaian RKA akumulasi (sumbu kanan). Bulan tanpa data bulan sebelumnya dikosongkan.`;
+  const pal=PAL(), lbl=pts.map(p=>p.label);
+  const segM=segs.map(b=>rcMonthly(pts,p=>val('Recovery',b,'rp',ek,p)));
+  const tM=rcMonthly(pts,p=>tgtAt('Recovery',tot,'rp',ek,p));
+  const pen=pts.map(p=>pencOf('Recovery',val('Recovery',tot,'rp',ek,p),tgtAt('Recovery',tot,'rp',ek,p)));
+  const mx2=Math.max(1,...tM.filter(x=>x!=null),...pts.map((_,i)=>segM.reduce((a,s)=>a+Math.max(0,s[i]||0),0)));
+  mk('rcMon',{type:'bar',data:{labels:lbl,datasets:[
+    ...segs.map((b,i)=>({type:'bar',label:b.name,data:segM[i],backgroundColor:pal[i%pal.length],borderRadius:2,stack:'a',yAxisID:'y',order:2})),
+    {type:'line',label:'Target bulanan RKA',data:tM,borderColor:css('--text'),backgroundColor:css('--text'),borderDash:[5,4],pointRadius:2,yAxisID:'y',order:1,spanGaps:false},
+    {type:'line',label:'Pencapaian RKA (akumulasi)',data:pen,borderColor:'#F37021',backgroundColor:'#F37021',pointRadius:3,tension:.25,yAxisID:'y2',order:0,spanGaps:true}]},
+    options:{maintainAspectRatio:false,interaction:{mode:'index',intersect:false},
+      plugins:{legend:{position:'bottom',labels:{boxWidth:10}},tooltip:{callbacks:{label:c=>c.raw==null?null:`${c.dataset.label}: ${c.dataset.yAxisID==='y2'?fPct(c.raw):fRp(c.raw)}`}}},
+      scales:{x:{stacked:true,grid:{display:false}},y:{stacked:true,ticks:{callback:scaleFmt(mx2)}},
+        y2:{position:'right',grid:{display:false},suggestedMin:.5,suggestedMax:1.1,ticks:{callback:v=>nf0.format(v*100)+'%'}}}}});
+  $('rcProdTitle').textContent='Recovery per Segmen · '+entityName();
+  $('rcProdHint').textContent=`Posisi ${fDL(RES.r.cur)} (akumulasi sejak 1 Januari, Rp Juta) terhadap RKA; segmen sesuai sheet Pola (Recovery). Akhir tahun lalu = akumulasi setahun penuh. DtD/MtD = selisih dengan data recovery sebelumnya / akhir bulan lalu (realisasi bulan berjalan). YoY = dibanding akumulasi bulan yang sama tahun lalu; bila data tahun lalu tidak tersedia, posisi YoY ditampilkan 0. Medium dicatat di Kanwil. Klik baris untuk membuka di Detail Segmen.`;
+  rcProdTable(ek);
+  $('rcUkTitle').textContent='Recovery per Uker · '+entityName()+' · '+fD(RES.r.cur);
+  const mtdA=(b)=>({h:'MtD',t:'Realisasi bulan berjalan',v:k=>{const a=val('Recovery',b,'rp',k,cur),x=val('Recovery',b,'rp',k,PT('mtd'));return a==null||x==null?null:a-x;},f:v=>`<span class="${growthCls(v)}">${fSigned(v)}</span>`});
+  const cols=[
+    ...segs.map(b=>({h:b.name,v:k=>val('Recovery',b,'rp',k,cur),f:fRp})),
+    {h:'Total',v:k=>val('Recovery',tot,'rp',k,cur),f:v=>`<b>${fRp(v)}</b>`},
+    ...pencCols('Recovery',tot),
+    mtdA(tot),
+    {h:'YoY',t:'Dibanding akumulasi periode yang sama tahun lalu',v:k=>{const a=val('Recovery',tot,'rp',k,cur),x=val('Recovery',tot,'rp',k,PT('yoy'));return a==null||x==null?null:a-x;},f:v=>`<span class="${growthCls(v)}">${fSigned(v)}</span>`},
+    grCol('Recovery',tot,'yoy','YoY %'),
+  ];
+  ukTable('rcUk','rc',cols);
+}
+
 /* ================= EKSPLORASI ================= */
 const segCat=$('segCat');
 segCat.innerHTML=CATS.map(c=>`<button data-c="${c}">${c}</button>`).join('');
@@ -1477,7 +1605,7 @@ function fillBlocks(){
 }
 function fillMetrics(){
   $('segView').querySelector('[data-v=cnt]').textContent = S.cat==='Simpanan'?'Rekening':'Debitur';
-  $('segView').querySelector('[data-v=pct]').textContent = S.cat==='Pinjaman'||S.cat==='Simpanan' ? 'Porsi %' : 'Rasio %';
+  $('segView').querySelector('[data-v=pct]').textContent = S.cat==='Pinjaman'||S.cat==='Simpanan'||S.cat==='Recovery' ? 'Porsi %' : 'Rasio %';
   const [m0]=rkaMonths(), hasT = S.kind==='rp' || (S.kind==='pct' && (S.cat==='SML'||S.cat==='NPL'||S.cat==='LDR'));
   const m = [
     ...(hasT?[['p0',`Pencapaian RKA ${mLbl(m0)}`],['p1','Pencapaian RKA Des'],['g0',`Gap RKA ${mLbl(m0)}`]]:[]),
@@ -1503,7 +1631,7 @@ function metricVal(o,m){
 function renderExplore(){
   segCat.querySelectorAll('button').forEach(b=>b.classList.toggle('on',b.dataset.c===S.cat));
   document.querySelectorAll('#segView button').forEach(b=>{
-    const v=b.dataset.v; b.disabled = S.cat==='LDR' ? v!=='pct' : false;
+    const v=b.dataset.v; b.disabled = S.cat==='LDR' ? v!=='pct' : S.cat==='Recovery' ? v==='cnt' : false;
     b.classList.toggle('on',v===S.kind);
   });
   fillMetrics();
@@ -1571,6 +1699,7 @@ function renderTable(){
   if(b.excl) note+='Baris ini tidak dihitung dalam total segmen / Total Pinjaman. ';
   if(!hasT) note+='Tidak ada target RKA untuk pilihan ini (lihat sheet Pola/RKA, atau target tidak dapat dipisah di level ini). ';
   if(k==='pct') note+='Perubahan rasio = selisih langsung dua angka rasio (mis. 183,03% → 189,46% = +6,43%). ';
+  if(S.cat==='Recovery') note+='Recovery = akumulasi sejak 1 Januari, posisi akhir bulan; MtD = realisasi bulan berjalan, YtD = akumulasi tahun berjalan (dari awal tahun = 0). Kosong bila tanggal terpilih tidak ada di data recovery. ';
   $('tblNote').textContent=note;
 }
 function renderBar(){
@@ -1639,6 +1768,7 @@ function redrawAll(){
   if(p==='pinjaman'){ renderPinjaman(); }
   if(p==='simpanan'){ renderSimpanan(); }
   if(p==='kualitas'){ renderKualitas(); }
+  if(p==='recovery'){ renderRecovery(); }
   if(p==='eksplor'){ renderExplore(); }
   if(p==='profil'){ renderProfil(); }
 }
