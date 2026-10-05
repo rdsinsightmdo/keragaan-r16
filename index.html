@@ -107,6 +107,8 @@ th.sorted::after{content:" ▾"} th.sorted.asc::after{content:" ▴"}
 /* Scoreboard: kolom nama & header tidak menempel (ikut tergeser saat scroll samping) */
 #p-scoreboard .sb th,#p-scoreboard .sb td{position:static}
 /* hanya header "Total" yang diberi warna penanda */
+#p-scoreboard .sbscroll{overflow:auto}
+#p-scoreboard .sbscroll .sb thead{position:sticky;top:0;z-index:3}
 .sb thead tr th.tt,.sb thead tr.g th.tt{background:#71C5E8;color:#0a1526;font-weight:800}
 @media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .sb thead tr th.tt,:root:not([data-theme="light"]) .sb thead tr.g th.tt{background:#307FE2;color:#fff}}
 :root[data-theme="dark"] .sb thead tr th.tt,:root[data-theme="dark"] .sb thead tr.g th.tt{background:#307FE2;color:#fff}
@@ -1183,24 +1185,38 @@ function sbDeltaCells(a,b,mode){
 function renderScoreboard(){
   const mode=SBK, areas=AREAS.filter(a=>a.startsWith('Area') && (!S.area||S.area===a));
   const curD=RES.p.cur??RES.s.cur, prevD=RES.p.mtd??RES.s.mtd, [m0]=rkaMonths();
-  const catLbl = mode==='all'? 'KC Region 16 Manado' : SB_DEF()[mode].lbl;
+  /* daftar baris mengikuti Jenis Uker: Semua = cabang supervisi (konsolidasi), KC = cabang (kantor KC saja),
+     jenis lain (KCP, Unit, dst.) = daftar uker jenis tsb per area */
+  const T=S.type, byUk = !!T && T!=='KC';
+  const listLbl = !T? 'KC' : T;
+  const catLbl = (mode==='all'? listLbl+' Region 16 Manado' : SB_DEF()[mode].lbl+(T?' · '+T:''));
   $('sbTitle').textContent=`Scoreboard ${fDL(curD)} – ${catLbl}`;
-  $('sbHint').textContent=`Pencapaian terhadap RKA ${m0!=null?BLNL[m0]:'–'} (maks. 110%; SML/NPL dihitung terbalik). Score ✓ = jumlah kategori total (${SB_SCORE.join(', ')}) dengan pencapaian ≥ 100%, ✗ = di bawah 100%. KC diurutkan per area dari score terbanyak.`;
-  let h=sbHead(mode,true)+'<tbody>', no=0;
+  $('sbHint').textContent=`Pencapaian terhadap RKA ${m0!=null?BLNL[m0]:'–'} (maks. 110%; SML/NPL dihitung terbalik). Score ✓ = jumlah kategori total (${SB_SCORE.join(', ')}) dengan pencapaian ≥ 100%, ✗ = di bawah 100%. ${byUk?'Uker '+T:T==='KC'?'Kantor cabang (KC saja, tanpa KCP/Unit)':'KC (konsolidasi cabang supervisi)'} diurutkan per area dari score terbanyak.`;
+  let h=sbHead(mode,true).replace('<th rowspan="2" class="nm">Uker</th>',`<th rowspan="2" class="nm">${byUk?'Uker '+esc(T):'Uker'}</th>`)+'<tbody>', no=0;
+  const ukCab = u => { const cs=UKS[u].c; return cs[cs.length-1]; };
   areas.forEach(a=>{
-    const ks=cabsIn(a).map(c=>({c,o:sbRow('C|'+c,'cur')})).filter(x=>x.o.n||Object.values(x.o.cells).some(v=>v&&v.act));
+    const items = byUk
+      ? UKS.map((u,i)=>i).filter(i=>i>0 && UKS[i].t===T && CABS[ukCab(i)].a===a).map(u=>({k:'U|'+u,sel:S.uk===u,lbl:`${esc(UKS[u].n)} <small class="muted">· ${esc(CABS[ukCab(u)].n)}</small>`}))
+      : cabsIn(a).map(c=>({k:'C|'+c,sel:S.cab===c,lbl:esc(CABS[c].n)}));
+    const ks=items.map(x=>({...x,o:sbRow(x.k,'cur')})).filter(x=>x.o.n||Object.values(x.o.cells).some(v=>v&&v.act));
     ks.sort((x,y)=> y.o.score-x.o.score || y.o.avg-x.o.avg);
-    ks.forEach(x=>{ no++; h+=`<tr class="${S.cab===x.c?'sel':''}"><td class="no">${no}</td><td class="nm">${esc(CABS[x.c].n)}</td>${sbCells(x.o,mode)}</tr>`; });
+    ks.forEach(x=>{ no++; h+=`<tr class="${x.sel?'sel':''}"><td class="no">${no}</td><td class="nm">${x.lbl}</td>${sbCells(x.o,mode)}</tr>`; });
     h+=`<tr class="area"><td colspan="2" class="nm">${esc(a.toUpperCase())}</td>${sbCells(sbRow('A|'+a,'cur'),mode)}</tr>`;
   });
   if(!S.area) h+=`<tr class="total"><td colspan="2" class="nm">Total Region</td>${sbCells(sbRow('T','cur'),mode)}</tr>`;
   $('sbNow').innerHTML=h+'</tbody>';
-  $('sbNote').textContent='Total Region = konsolidasi (termasuk Medium di Kanwil); baris KC tanpa Medium.'+(RBLK.length&&!has('r',S.date)?` Recovery kosong karena data recovery tidak tersedia pada ${fDL(S.date)} (data recovery per akhir bulan), sehingga score dihitung dari kategori yang tersedia.`:'')+(S.cab||S.uk?' Filter cabang/unit kerja tidak berlaku di Scoreboard (baris terpilih ditandai).':'');
+  // daftar panjang (mis. Unit): tampilkan ±25 baris, sisanya digulir; header tabel tetap terlihat saat digulir ke bawah
+  const wrap=$('sbNow').parentElement, long=no>25;
+  wrap.classList.toggle('sbscroll',long);
+  wrap.style.maxHeight = long? (()=>{ const tr=$('sbNow').tBodies[0].rows, th=$('sbNow').tHead.offsetHeight;
+    const rh=tr.length? tr[0].offsetHeight : 31; return (th+rh*25+4)+'px'; })() : 'none';
+  if(!long) wrap.scrollTop=0;
+  $('sbNote').textContent=(T? `Jenis uker: ${T} — baris area & Total Region hanya menjumlahkan uker ${T}${T==='KC'?' (kantor cabang saja)':''}, RKA juga hanya RKA uker ${T}.` : 'Total Region = konsolidasi (termasuk Medium di Kanwil); baris KC tanpa Medium.')+(RBLK.length&&!has('r',S.date)?` Recovery kosong karena data recovery tidak tersedia pada ${fDL(S.date)} (data recovery per akhir bulan), sehingga score dihitung dari kategori yang tersedia.`:'')+(S.cab||S.uk?' Filter cabang/unit kerja tidak berlaku di Scoreboard (baris terpilih ditandai).':'');
   // akhir bulan lalu & delta (per area + total)
   const keys=[...areas.map(a=>({k:'A|'+a,l:a.toUpperCase(),c:'area'})), ...(S.area?[]:[{k:'T',l:'Total Region',c:'total'}])];
   const mPrev = prevD!=null? DT[prevD].m-1 : null;
   $('sbPrevTitle').textContent=`Scoreboard ${fDL(prevD)} (akhir bulan lalu)`;
-  $('sbPrevHint').textContent=`Pencapaian posisi ${fDL(prevD)} terhadap RKA ${mPrev!=null?BLNL[mPrev]:'–'}.`;
+  $('sbPrevHint').textContent=`Pencapaian posisi ${fDL(prevD)} terhadap RKA ${mPrev!=null?BLNL[mPrev]:'–'}.`+(S.type?` Hanya uker ${S.type}.`:'');
   let hp=sbHead(mode,false).replace('<th rowspan="2" class="nm">Uker</th>','<th rowspan="2" class="nm">Area</th>')+'<tbody>';
   let hd=sbHead(mode,false,true).replace('<th rowspan="2" class="nm">Uker</th>','<th rowspan="2" class="nm">Area</th>')+'<tbody>';
   keys.forEach(x=>{ const now=sbRow(x.k,'cur'), prev=sbRow(x.k,'mtd');
@@ -1208,7 +1224,7 @@ function renderScoreboard(){
     hd+=`<tr class="${x.c}"><td class="nm">${esc(x.l)}</td>${sbDeltaCells(now,prev,mode)}</tr>`; });
   $('sbPrev').innerHTML=hp+'</tbody>';
   $('sbDeltaTitle').textContent=`Perubahan Pencapaian: ${fD(curD)} vs ${fD(prevD)}`;
-  $('sbDeltaHint').textContent='Selisih pencapaian posisi saat ini dikurangi akhir bulan lalu (dalam %). Hijau = pencapaian membaik.'+(mode!=='all'?' Δ Real = perubahan nominal (Rp Juta).':'');
+  $('sbDeltaHint').textContent='Selisih pencapaian posisi saat ini dikurangi akhir bulan lalu (dalam %). Hijau = pencapaian membaik.'+(S.type?` Hanya uker ${S.type}.`:'')+(mode!=='all'?' Δ Real = perubahan nominal (Rp Juta).':'');
   $('sbDelta').innerHTML=hd+'</tbody>';
 }
 
