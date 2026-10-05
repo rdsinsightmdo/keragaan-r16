@@ -1068,10 +1068,11 @@ function renderRegionCharts(){
 function prodTable(elId, cats, ek, withRank, kindOv){
   const qN = kindOv==='rp' && cats.length===1 && (cats[0]==='SML'||cats[0]==='NPL');
   const [m0,m1]=rkaMonths(cats.length===1?cats[0]:null), nom = elId==='profTbl' || elId==='rcProd';   // Kinerja Uker & Recovery: delta dalam nominal
+  const nomY = !nom;   // Pinjaman, Simpanan, SML & NPL: MtD/YtD/YoY nominal + YoY %
   const R0=cats.length===1&&cats[0]==='Simpanan'?RES.s:cats.length===1&&cats[0]==='Recovery'?RES.r:RES.p;
-  let t=`<thead><tr><th>Segmen / Produk</th><th>${fD(R0.ytd)}</th><th>${fD(R0.mtd)}</th><th>${fD(R0.cur)}</th><th>RKA ${mLbl(m0)}</th><th>Penc. ${mLbl(m0)}</th><th>Gap ${mLbl(m0)}</th><th>RKA Des</th><th>Penc. Des</th>`+(nom?'<th>DtD</th><th>MtD</th><th>YtD</th><th>YoY</th>':'<th>MtD %</th><th>YtD %</th><th>YoY %</th>')+`<th>Porsi</th>`+
+  let t=`<thead><tr><th>Segmen / Produk</th><th>${fD(R0.ytd)}</th><th>${fD(R0.mtd)}</th><th>${fD(R0.cur)}</th><th>RKA ${mLbl(m0)}</th><th>Penc. ${mLbl(m0)}</th><th>Gap ${mLbl(m0)}</th><th>RKA Des</th><th>Penc. Des</th>`+(nom?'<th>DtD</th><th>MtD</th><th>YtD</th><th>YoY</th>':'<th>MtD</th><th>YtD</th><th>YoY</th><th>YoY %</th>')+`<th>Porsi</th>`+
     (cats.length===1&&cats[0]==='Pinjaman'?'<th>SML %</th><th>NPL %</th><th>Debitur</th>':'')+(cats.length===1&&cats[0]==='Simpanan'?'<th>Rekening</th>':'')+(qN?'<th>Rasio %</th><th>Target Rasio</th><th>Debitur</th>':'')+(withRank?'<th>Peringkat</th>':'')+'</tr></thead><tbody>';
-  const ncol=13+(nom?1:0)+(cats.length===1&&cats[0]==='Pinjaman'?3:0)+(cats.length===1&&cats[0]==='Simpanan'?1:0)+(qN?3:0)+(withRank?1:0);
+  const ncol=13+(nom||nomY?1:0)+(cats.length===1&&cats[0]==='Pinjaman'?3:0)+(cats.length===1&&cats[0]==='Simpanan'?1:0)+(qN?3:0)+(withRank?1:0);
   cats.forEach(cat=>{
     if(cats.length>1) t+=`<tr class="catttl"><td>${cat}${nom&&(cat==='SML'||cat==='NPL')?' <small class="muted">(nominal Rp Juta)</small>':''}</td><td colspan="${ncol-1}"></td></tr>`;
     const kind = qN||(nom&&cat!=='LDR')? 'rp' : cat==='SML'||cat==='NPL'||cat==='LDR' ? 'pct' : 'rp', inv=LOWGOOD[cat];
@@ -1086,7 +1087,7 @@ function prodTable(elId, cats, ek, withRank, kindOv){
         <td class="num">${fmtV(k,o.v.ytd)}</td><td class="num">${fmtV(k,o.v.mtd)}</td><td class="num"><b>${fmtV(k,o.v.cur)}</b></td>
         <td class="num">${fmtV(k,o.tgt[0])}</td><td>${pill(o.penc[0])}</td><td class="num ${growthCls(o.gap[0],inv)}">${fmtG(k,o.gap[0])}</td>
         <td class="num">${fmtV(k,o.tgt[1])}</td><td>${pill(o.penc[1])}</td>
-        ${nom? ['dtd','mtd','ytd','yoy'].map(w=>`<td class="num">${gAbs(o,w,inv)}</td>`).join('') : `<td class="num">${gSpan(o,'mtd',inv)}</td><td class="num">${gSpan(o,'ytd',inv)}</td><td class="num">${gSpan(o,'yoy',inv)}</td>`}
+        ${nom? ['dtd','mtd','ytd','yoy'].map(w=>`<td class="num">${gAbs(o,w,inv)}</td>`).join('') : ['mtd','ytd','yoy'].map(w=>`<td class="num">${gAbs(o,w,inv)}</td>`).join('')+`<td class="num"><span class="${growthCls(o.g.yoy[1],inv)}">${o.kind==='pct'?'–':fSPct(o.g.yoy[1])}</span></td>`}
         <td class="num">${por==null?'':fPct(por)}</td>`+
         (cats.length===1&&cats[0]==='Pinjaman'?`<td class="num">${fPct(val('SML',b,'pct',ek,cur))}</td><td class="num">${fPct(val('NPL',b,'pct',ek,cur))}</td><td class="num">${fRp(val('Pinjaman',b,'cnt',ek,cur))}</td>`:'')+
         (cats.length===1&&cats[0]==='Simpanan'?`<td class="num">${fRp(val('Simpanan',b,'cnt',ek,cur))}</td>`:'')+
@@ -1138,6 +1139,9 @@ const pencCols = (cat,b,label) => { const [m0]=rkaMonths(cat); return [
   {h:`Penc. ${mLbl(m0)}`,v:k=>pencOf(cat,val(cat,b,'rp',k,PT('cur')),tgt(cat,b,'rp',k,m0)),f:pill},
   {h:`Gap ${mLbl(m0)}`,v:k=>{const a=val(cat,b,'rp',k,PT('cur')),t=tgt(cat,b,'rp',k,m0);return a==null||t==null?null:a-t;},f:v=>`<span class="${growthCls(v)}">${fSigned(v)}</span>`},
 ];};
+const dNom = (cat,b,w,h) => { const inv=LOWGOOD[cat]; return {h,t:'Selisih nominal (Rp Juta)',v:k=>{const a=val(cat,b,'rp',k,PT('cur')),x=val(cat,b,'rp',k,PT(w));return a==null||x==null?null:a-x;},f:v=>`<span class="${growthCls(v,inv)}">${fSigned(v)}</span>`}; };
+const dPct = (cat,b,w,h) => { const inv=LOWGOOD[cat]; return {h,v:k=>{const a=val(cat,b,'rp',k,PT('cur')),x=val(cat,b,'rp',k,PT(w));return a==null||!x?null:a/x-1;},f:v=>`<span class="${growthCls(v,inv)}">${fSPct(v)}</span>`}; };
+const dCols = (cat,b) => [dNom(cat,b,'mtd','MtD'), dNom(cat,b,'ytd','YtD'), dNom(cat,b,'yoy','YoY'), dPct(cat,b,'yoy','YoY %')];
 const grCol = (cat,b,w,h) => ({h,v:k=>{const a=val(cat,b,'rp',k,PT('cur')),x=val(cat,b,'rp',k,PT(w));return a==null||!x?null:a/x-1;},f:v=>`<span class="${growthCls(v)}">${fSPct(v)}</span>`});
 
 /* ================= SCOREBOARD ================= */
@@ -1456,7 +1460,7 @@ function renderPinjaman(){
     ...inS.map(b=>({h:b.title,v:k=>val('Pinjaman',b,'rp',k,cur),f:fRp})),
     {h:'Total',v:k=>val('Pinjaman',tot,'rp',k,cur),f:v=>`<b>${fRp(v)}</b>`},
     ...pencCols('Pinjaman',tot),
-    grCol('Pinjaman',tot,'mtd','MtD %'), grCol('Pinjaman',tot,'yoy','YoY %'),
+    ...dCols('Pinjaman',tot),
     {h:'SML %',v:k=>val('SML',tot,'pct',k,cur),f:fPct},
     {h:'NPL %',v:k=>val('NPL',tot,'pct',k,cur),f:fPct},
     ...PBLK.filter(b=>b.exclTop).map(b=>({h:b.name+'*',t:'Di luar total',v:k=>val('Pinjaman',b,'rp',k,cur),f:fRp})),
@@ -1498,7 +1502,7 @@ function renderSimpanan(){
     ...prods.map(p=>({h:p,v:k=>val('Simpanan',pb(p),'rp',k,cur),f:fRp})),
     {h:'Total',v:k=>val('Simpanan',tot,'rp',k,cur),f:v=>`<b>${fRp(v)}</b>`},
     ...pencCols('Simpanan',tot),
-    grCol('Simpanan',tot,'mtd','MtD %'), grCol('Simpanan',tot,'yoy','YoY %'),
+    ...dCols('Simpanan',tot),
     {h:'CASA %',v:k=>{const a=val('Simpanan',{cells:casaCells},'rp',k,cur),b=val('Simpanan',tot,'rp',k,cur);return a==null||!b?null:a/b;},f:fPct},
     {h:'Rekening',v:k=>val('Simpanan',tot,'cnt',k,cur),f:fRp},
   ];
@@ -1541,8 +1545,7 @@ function renderKualitas(){
     {h:`RKA ${mLbl(m0)}`,v:k=>tgt(q,tot,'rp',k,m0),f:fRp},
     {h:`Penc. ${mLbl(m0)}`,v:k=>pencOf(q,val(q,tot,'rp',k,cur),tgt(q,tot,'rp',k,m0)),f:pill},
     {h:`Gap ${mLbl(m0)}`,v:k=>{const a=val(q,tot,'rp',k,cur),t=tgt(q,tot,'rp',k,m0);return a==null||t==null?null:a-t;},f:v=>`<span class="${growthCls(v,1)}">${fSigned(v)}</span>`},
-    {h:'MtD',v:k=>{const a=val(q,tot,'rp',k,cur),x=val(q,tot,'rp',k,PT('mtd'));return a==null||x==null?null:a-x;},f:v=>`<span class="${growthCls(v,1)}">${fSigned(v)}</span>`},
-    {h:'YoY',v:k=>{const a=val(q,tot,'rp',k,cur),x=val(q,tot,'rp',k,PT('yoy'));return a==null||x==null?null:a-x;},f:v=>`<span class="${growthCls(v,1)}">${fSigned(v)}</span>`},
+    ...dCols(q,tot),
     {h:'Rasio %',v:k=>val(q,tot,'pct',k,cur),f:fPct},
     {h:'Target Rasio',v:k=>tgt(q,tot,'pct',k,m0),f:fPct},
     ...PBLK.filter(b=>b.exclTop).map(b=>({h:b.name+'*',t:'Di luar total',v:k=>val(q,b,'rp',k,cur),f:fRp})),
