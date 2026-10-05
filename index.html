@@ -840,6 +840,20 @@ function tableRows(){
   }
   return R;
 }
+/* baris tabel per uker mengikuti Jenis Uker: Semua/KC = per cabang (seperti tableRows),
+   jenis lain (KCP, Unit, KK, ...) = daftar uker jenis tsb per area (+ subtotal area & total) */
+const ukCabOf = u => { const cs=UKS[u].c; return cs[cs.length-1]; };
+function typedRows(){
+  const T=S.type; if(!T || T==='KC' || S.cab) return tableRows();
+  const R=[], areas = S.area? [S.area] : AREAS;
+  areas.forEach(a=>{
+    UKS.map((_,i)=>i).filter(i=>i>0 && UKS[i].t===T && CABS[ukCabOf(i)].a===a)
+      .forEach(u=>R.push({key:'U|'+u,label:UKS[u].n,sub:CABS[ukCabOf(u)].n,t:'leaf',a,drill:()=>setUk(u)}));
+    if(a.startsWith('Area')) R.push({key:'A|'+a,label:S.area? 'Total '+a+typeSfx() : a.toUpperCase(),t:S.area?'total':'area',drill:S.area?null:()=>setArea(a)});
+  });
+  if(!S.area) R.push({key:'T',label:'Total Region'+typeSfx(),t:'total'});
+  return R;
+}
 function liveRows(cat,b,kind){
   return tableRows().map(r=>({...r,o:view(cat,b,kind,r.key)}))
     .filter(x=>x.t!=='leaf' || PTS.some(w=>x.o.v[w]!=null && x.o.v[w]!==0) || x.o.tgt[0]!=null);
@@ -1086,7 +1100,7 @@ function prodTable(elId, cats, ek, withRank, kindOv){
 /* tabel per uker generik */
 const UKSORT = {pj:{i:null,asc:false}, sp:{i:null,asc:false}, kq:{i:null,asc:false}, rc:{i:null,asc:false}};
 function ukTable(elId, sortKey, cols){
-  let data=tableRows().map(r=>({...r,c:cols.map(c=>c.v(r.key))})).filter(r=>r.t!=='leaf' || r.c.some(x=>x!=null&&x!==0));
+  let data=typedRows().map(r=>({...r,c:cols.map(c=>c.v(r.key))})).filter(r=>r.t!=='leaf' || r.c.some(x=>x!=null&&x!==0));
   const st=UKSORT[sortKey];
   if(st.i!=null){
     const body=data.filter(x=>x.t==='leaf'), tail=data.filter(x=>x.t!=='leaf');
@@ -1095,9 +1109,10 @@ function ukTable(elId, sortKey, cols){
     data=[...body,...tail];
   }
   const sel=entityKey();
-  let h='<thead><tr><th data-i="-1">Uker</th>'+cols.map((c,i)=>`<th data-i="${i}" class="${st.i===i?'sorted'+(st.asc?' asc':''):''}" title="${c.t||''}">${c.h}</th>`).join('')+'</tr></thead><tbody>';
+  const T=S.type, byUk=!!T && T!=='KC' && !S.cab;
+  let h=`<thead><tr><th data-i="-1">${byUk?'Uker '+esc(T):'Uker'}</th>`+cols.map((c,i)=>`<th data-i="${i}" class="${st.i===i?'sorted'+(st.asc?' asc':''):''}" title="${c.t||''}">${c.h}</th>`).join('')+'</tr></thead><tbody>';
   data.forEach((r,ri)=>{
-    h+=`<tr class="${r.t==='area'?'area':r.t==='total'?'total':''}${r.key===sel&&r.t==='leaf'?' sel':''}" data-i="${ri}"><td>${esc(r.label)}${r.drill?'<span class="drill">›</span>':''}</td>`+
+    h+=`<tr class="${r.t==='area'?'area':r.t==='total'?'total':''}${r.key===sel&&r.t==='leaf'?' sel':''}" data-i="${ri}"><td>${esc(r.label)}${r.sub?` <small class="muted">· ${esc(r.sub)}</small>`:''}${r.drill?'<span class="drill">›</span>':''}</td>`+
       cols.map((c,i)=>`<td class="num">${c.f(r.c[i])}</td>`).join('')+'</tr>';
   });
   const el=$(elId); el.innerHTML=h+'</tbody>';
@@ -1436,7 +1451,7 @@ function renderPinjaman(){
   $('pjProdTitle').textContent='Pinjaman per Segmen & Produk · '+entityName();
   $('pjProdHint').textContent=`Hirarki sesuai sheet Pola. Posisi ${fDL(RES.p.cur)}; baris bertanda "(di luar total)" (Commercial, Consumer–Lainnya) ditampilkan tetapi tidak dihitung dalam total. Klik baris untuk membuka di Detail Segmen.`;
   prodTable('pjProd',['Pinjaman'],ek,false);
-  $('pjUkTitle').textContent='Pinjaman per Uker · '+entityName()+' · '+fD(RES.p.cur);
+  $('pjUkTitle').textContent='Pinjaman per Uker · '+entityName()+typeSfx()+' · '+fD(RES.p.cur);
   const cols=[
     ...inS.map(b=>({h:b.title,v:k=>val('Pinjaman',b,'rp',k,cur),f:fRp})),
     {h:'Total',v:k=>val('Pinjaman',tot,'rp',k,cur),f:v=>`<b>${fRp(v)}</b>`},
@@ -1477,7 +1492,7 @@ function renderSimpanan(){
   $('spProdTitle').textContent='Simpanan per Segmen & Produk · '+entityName();
   $('spProdHint').textContent=`Hirarki sesuai sheet Pola. Posisi ${fDL(RES.s.cur)}. RKA Giro/Tabungan/Deposito tersedia di level Non Wholesale (tidak dipisah Mikro/Ritel). Klik baris untuk membuka di Detail Segmen.`;
   prodTable('spProd',['Simpanan'],ek,false);
-  $('spUkTitle').textContent='Simpanan per Uker · '+entityName()+' · '+fD(RES.s.cur);
+  $('spUkTitle').textContent='Simpanan per Uker · '+entityName()+typeSfx()+' · '+fD(RES.s.cur);
   const casaCells=SC.map((_,i)=>i).filter(i=>SC[i][1]!=='Deposito');
   const cols=[
     ...prods.map(p=>({h:p,v:k=>val('Simpanan',pb(p),'rp',k,cur),f:fRp})),
@@ -1518,7 +1533,7 @@ function renderKualitas(){
   $('kqProdTitle').textContent=`${q} per Segmen & Produk · ${entityName()}`;
   $('kqProdHint').textContent=`Nominal ${q} posisi ${fDL(RES.p.cur)} (Rp Juta) terhadap RKA; hirarki sesuai sheet Pola. Makin rendah makin baik — pencapaian = target ÷ aktual (maks. 110%). Klik baris untuk membuka di Detail Segmen.`;
   prodTable('kqProd',[q],ek,false,'rp');
-  $('kqUkTitle').textContent=`${q} per Uker · ${entityName()} · ${fD(RES.p.cur)}`;
+  $('kqUkTitle').textContent=`${q} per Uker · ${entityName()}${typeSfx()} · ${fD(RES.p.cur)}`;
   const [m0]=rkaMonths();
   const cols=[
     ...inS.map(b=>({h:b.name,v:k=>val(q,b,'rp',k,cur),f:fRp})),
@@ -1603,7 +1618,7 @@ function renderRecovery(){
   $('rcProdTitle').textContent='Recovery per Segmen · '+entityName();
   $('rcProdHint').textContent=(rcLag()?rcLagNote()+' ':'')+`Posisi ${fDL(RES.r.cur)} (akumulasi sejak 1 Januari, Rp Juta) terhadap RKA; segmen sesuai sheet Pola (Recovery). Akhir tahun lalu = akumulasi setahun penuh. DtD/MtD = selisih dengan data recovery sebelumnya / akhir bulan lalu (realisasi bulan berjalan). YoY = dibanding akumulasi bulan yang sama tahun lalu; bila data tahun lalu tidak tersedia, posisi YoY ditampilkan 0. Medium dicatat di Kanwil. Klik baris untuk membuka di Detail Segmen.`;
   rcProdTable(ek);
-  $('rcUkTitle').textContent='Recovery per Uker · '+entityName()+' · '+fD(RES.r.cur);
+  $('rcUkTitle').textContent='Recovery per Uker · '+entityName()+typeSfx()+' · '+fD(RES.r.cur);
   const mtdA=(b)=>({h:'MtD',t:'Realisasi bulan berjalan',v:k=>{const a=val('Recovery',b,'rp',k,cur),x=val('Recovery',b,'rp',k,PT('mtd'));return a==null||x==null?null:a-x;},f:v=>`<span class="${growthCls(v)}">${fSigned(v)}</span>`});
   const cols=[
     ...segs.map(b=>({h:b.name,v:k=>val('Recovery',b,'rp',k,cur),f:fRp})),
