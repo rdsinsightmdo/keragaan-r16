@@ -221,7 +221,7 @@ td.h-bad{background:var(--bad-bg);color:var(--bad);font-weight:600}
   <div class="card intro"><span class="no">1</span><div>
    <h2>Achievement / Gap Analysis</h2>
    <p>Seberapa jauh realisasi terhadap RKA, siapa penyumbang gap terbesar, dan apakah laju saat ini cukup untuk mengejar RKA Desember.</p>
-   <p class="how"><b>Metode:</b> Pencapaian = Realisasi ÷ RKA (SML/NPL: RKA ÷ Realisasi), maks. 110%. Gap = Realisasi − RKA. Kebutuhan/bln = (RKA Desember − Realisasi) ÷ sisa bulan, dibandingkan dengan realisasi rata-rata per bulan sejak awal tahun. Status RKA Des: <i>On track</i> (laju saat ini cukup), <i>Perlu akselerasi</i> (butuh ≤ 1,5× laju saat ini), <i>Berat</i> (&gt; 1,5×), <i>Perlu balik arah</i> (tren berlawanan arah target).</p>
+   <p class="how"><b>Metode:</b> Pencapaian = Realisasi ÷ RKA (SML/NPL: RKA ÷ Realisasi), maks. 110%. Gap = Realisasi − RKA. Kebutuhan/bln = (RKA Desember − Realisasi) ÷ sisa bulan, dibandingkan dengan realisasi rata-rata per bulan sejak awal tahun. Status RKA Des: <i>On track</i> (laju saat ini cukup), <i>Perlu akselerasi</i> (butuh ≤ 1,5× laju saat ini), <i>Berat</i> (&gt; 1,5×), <i>Tidak menuju target</i> (unit stagnan atau bergerak berlawanan dengan arah target; SML/NPL: tidak turun).</p>
   </div></div>
   <div class="controls">
    <div class="ctl"><label>Kategori</label><div class="seg" id="gapCat"><button data-v="Simpanan">Simpanan</button><button data-v="Pinjaman">Pinjaman</button><button data-v="SML">SML</button><button data-v="NPL">NPL</button></div></div>
@@ -934,7 +934,7 @@ function feasOf(inv,cur,tD,need,run){
   if(!nn(tD)||!nn(cur)) return null;
   if(inv? cur<=tD : cur>=tD) return {t:'Sudah capai RKA Des',c:'good',k:4};
   if(!nn(need)) return null;
-  if(!nn(run) || (inv? run>=0 : run<=0)) return {t:'Perlu balik arah',c:'bad',k:0};
+  if(!nn(run) || (inv? run>=0 : run<=0)) return {t:'Tidak menuju target',c:'bad',k:0};
   const x=Math.abs(need)/Math.abs(run);
   return x<=1? {t:'On track',c:'good',k:3,x} : x<=1.5? {t:'Perlu akselerasi',c:'warn',k:2,x} : {t:'Berat',c:'bad',k:1,x};
 }
@@ -974,7 +974,7 @@ function renderGap(){
   if(sc.fe) B.push(sc.fe.k===4? `<b>${esc(scopeName())}</b> sudah mencapai RKA Desember (${fPct(sc.o.penc[1])}).`
     : `<b>${esc(scopeName())}</b> membutuhkan rata-rata <b class="num">${fSigned(sc.need)}</b> Rp Jt/bln selama ${nf1.format(mL)} bulan tersisa untuk mencapai RKA Desember, sedangkan realisasi rata-rata sejak awal tahun <b class="num">${fSigned(sc.run)}</b> Rp Jt/bln → ${tag(sc.fe.t,sc.fe.c)}${sc.fe.x&&sc.fe.k<3?` (perlu ${nf1f.format(sc.fe.x)}× laju saat ini)`:''}.`);
   const hard=rows.filter(r=>r.fe&&r.fe.k<=1).sort((a,c)=>(c.sf||0)-(a.sf||0));
-  if(hard.length) B.push(`<b>${hard.length} ${lv}</b> berstatus <i>Berat</i> atau <i>Perlu balik arah</i> untuk RKA Desember: ${nms(hard.slice(0,5))}${hard.length>5?', dll':''}.`);
+  if(hard.length) B.push(`<b>${hard.length} ${lv}</b> berstatus <i>Berat</i> atau <i>Tidak menuju target</i> untuk RKA Desember: ${nms(hard.slice(0,5))}${hard.length>5?', dll':''}.`);
   insight('gapIns',B);
   const gs=wt.slice().sort((a,c)=>inv? c.o.gap[0]-a.o.gap[0] : a.o.gap[0]-c.o.gap[0]), gl=gs.slice(0,TOPN);
   ttl('gapBar',`Gap ${mLbl(m0)} per ${lv}`,`${esc(title)} · Rp Jt · terburuk di atas${gs.length>gl.length?` · ${gl.length} dari ${gs.length} ${lv}`:''}`);
