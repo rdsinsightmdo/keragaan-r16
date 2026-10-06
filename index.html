@@ -168,6 +168,9 @@ select,input[type=search]{font:inherit;padding:7px 10px;border-radius:8px;border
 td.muted{color:var(--faint)}
 header{position:relative;background:var(--brand-grad);border-bottom:0;color:#fff}   /* bagian judul, filter & tab tidak menempel saat halaman di-scroll */
 header h1{color:#fff}
+.brand{display:flex;align-items:center;gap:12px;min-width:0}
+.brand-logo{height:52px;width:52px;flex:none;object-fit:contain;border-radius:12px;box-shadow:0 0 0 1px rgba(255,255,255,.35),0 2px 8px rgba(0,0,0,.25)}
+.crumb:empty{display:none}
 header .sub,header .crumb{color:rgba(255,255,255,.82)}
 header .crumb a{color:#fff}
 header .ctl label{color:rgba(255,255,255,.85)}
@@ -190,6 +193,7 @@ header nav.tabs button.on{color:#fff;border-bottom:3px solid #71C5E8}
   .htop{align-items:flex-start}
   .htop>div:last-child{flex-wrap:wrap;justify-content:flex-end}
   h1{font-size:18px}
+  .brand-logo{height:40px;width:40px;border-radius:10px}
   .filters{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin-top:12px}
   .filters .ctl,.filters .ctl.wide{min-width:0}
   .filters .ctl.wide,.filters .ctl.date-ctl{grid-column:1/-1}
@@ -221,10 +225,13 @@ header nav.tabs button.on{color:#fff;border-bottom:3px solid #71C5E8}
 <header>
  <div class="hwrap">
   <div class="htop">
-   <div>
-    <h1>Keragaan Region 16 Manado</h1>
-    <div class="sub" id="sub">Memuat data…</div>
-    <div class="crumb" id="crumb"></div>
+   <div class="brand">
+    <img class="brand-logo" src="img/icon.png" alt="Logo">
+    <div>
+     <h1>Keragaan Region 16 Manado</h1>
+     <div class="sub" id="sub">Memuat data…</div>
+     <div class="crumb" id="crumb"></div>
+    </div>
    </div>
    <div style="display:flex;gap:8px;align-items:center">
     <span class="chip" id="loading">⏳ Memuat data…</span>
@@ -910,7 +917,7 @@ $('fUk').onchange=e=>setUk(+e.target.value);
 $('fType').onchange=e=>{S.type=e.target.value; if(S.uk && S.type && UKS[S.uk].t!==S.type) S.uk=0; S.sel=null; refresh();};
 $('fReset').onclick=()=>{S.date=defaultDate(); S.rkaM='auto'; S.area='';S.cab=0;S.uk=0;S.type='';S.sel=null;S.sort=null; fillDate(); fillRka(); refresh();};
 function crumb(){
-  const parts=[`<a data-go="T">Region</a>`];
+  const parts=[];
   if(S.area) parts.push(`<a data-go="A">${esc(S.area)}</a>`);
   if(S.cab) parts.push(`<a data-go="C">Kanca ${esc(CABS[S.cab].n)}</a>`);
   if(S.uk) parts.push(`<b>${esc(UKS[S.uk].n)}</b>`);
