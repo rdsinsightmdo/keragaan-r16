@@ -37,8 +37,10 @@ body{background:var(--brand-grad);color:var(--text);font:14px/1.45 system-ui,-ap
 h1{font-size:18px;margin:0;letter-spacing:-.01em}
 .sub{color:var(--muted);font-size:13px;margin:4px 0 20px}
 label{display:block;font-size:11px;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px}
-.pin{width:100%;font:inherit;font-size:19px;letter-spacing:.12em;text-align:center;padding:12px 48px;border-radius:10px;border:1px solid var(--border);background:var(--surface-2);color:var(--text);outline:none}
-.pin:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft)}
+.inp{width:100%;font:inherit;font-size:15px;padding:11px 12px;border-radius:10px;border:1px solid var(--border);background:var(--surface-2);color:var(--text);outline:none}
+.inp:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft)}
+.inp.pw{padding-right:46px}
+.field{margin-bottom:14px}
 .pinwrap{position:relative}
 .pinwrap .eye{position:absolute;right:6px;top:50%;transform:translateY(-50%);width:auto;margin:0;padding:6px;background:transparent;color:var(--muted);border-radius:8px;line-height:0}
 .pinwrap .eye:hover{background:var(--accent-soft);color:var(--accent)}
@@ -55,11 +57,15 @@ button:disabled{opacity:.6;cursor:wait}
     <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>
   </div>
   <h1>Keragaan Region 16 Manado</h1>
-  <div class="sub">Dashboard internal. Masukkan PIN untuk melanjutkan.</div>
-  <label for="pin">PIN (huruf / angka)</label>
+  <div class="sub">Dashboard internal. Masuk dengan akun Anda.</div>
+  <div class="field">
+    <label for="user">Username</label>
+    <input class="inp" id="user" type="text" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" autofocus maxlength="32" required>
+  </div>
+  <label for="pin">Password</label>
   <div class="pinwrap">
-    <input class="pin" id="pin" type="password" inputmode="text" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" autofocus maxlength="64" required>
-    <button class="eye" id="eye" type="button" aria-label="Tampilkan PIN" title="Tampilkan PIN"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg></button>
+    <input class="inp pw" id="pin" type="password" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" maxlength="128" required>
+    <button class="eye" id="eye" type="button" aria-label="Tampilkan password" title="Tampilkan password"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg></button>
   </div>
   <button id="btn" type="submit">Masuk</button>
   <div class="msg" id="msg"></div>
@@ -69,25 +75,26 @@ button:disabled{opacity:.6;cursor:wait}
 <script src="lib/auth.js"></script>
 <script>
 const EYE='<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg>', EYEOFF='<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.9 17.9A10.8 10.8 0 0 1 12 19c-6.5 0-10-7-10-7a18.5 18.5 0 0 1 5.1-5.9M9.9 5.2A9.1 9.1 0 0 1 12 5c6.5 0 10 7 10 7a18.6 18.6 0 0 1-2.2 3.2M14.1 14.1a3 3 0 1 1-4.2-4.2"/><path d="M2 2l20 20"/></svg>';
-document.getElementById('eye').onclick=()=>{const p=document.getElementById('pin'),e=document.getElementById('eye'); const show=p.type==='password'; p.type=show?'text':'password'; e.innerHTML=show?EYEOFF:EYE; e.title=show?'Sembunyikan PIN':'Tampilkan PIN'; e.setAttribute('aria-label',e.title); p.focus();};
-const f=document.getElementById('f'), pin=document.getElementById('pin'), btn=document.getElementById('btn'), msg=document.getElementById('msg');
+document.getElementById('eye').onclick=()=>{const p=document.getElementById('pin'),e=document.getElementById('eye'); const show=p.type==='password'; p.type=show?'text':'password'; e.innerHTML=show?EYEOFF:EYE; e.title=show?'Sembunyikan password':'Tampilkan password'; e.setAttribute('aria-label',e.title); p.focus();};
+const f=document.getElementById('f'), user=document.getElementById('user'), pin=document.getElementById('pin'), btn=document.getElementById('btn'), msg=document.getElementById('msg');
 try{ const t=localStorage.getItem('kr-theme'); if(t&&t!=='auto') document.documentElement.setAttribute('data-theme',t); }catch(e){}
 /* halaman tujuan setelah login: hanya nama file .html lokal (mis. rsf.html), selain itu ke dashboard */
 const NEXT=(()=>{ try{ const n=new URLSearchParams(location.search).get('next')||''; if(/^[\w-]+\.html(?:[?#][^\s]*)?$/.test(n)) return n; }catch(e){} return 'index.html'; })();
 if(KRA.getKey()) location.replace(NEXT);
-try{ if(sessionStorage.getItem('kr-exp')){ sessionStorage.removeItem('kr-exp'); msg.textContent='Sesi berakhir, silakan masukkan PIN lagi.'; } }catch(e){}
+try{ if(sessionStorage.getItem('kr-exp')){ sessionStorage.removeItem('kr-exp'); msg.textContent='Sesi berakhir, silakan masuk lagi.'; } }catch(e){}
 let fails=0, lockUntil=0;
 f.onsubmit=async e=>{
   e.preventDefault();
   const now=Date.now();
   if(now<lockUntil){ msg.className='msg err'; msg.textContent=`Terlalu banyak percobaan. Coba lagi dalam ${Math.ceil((lockUntil-now)/1000)} detik.`; return; }
-  if(!pin.value.trim()) return;
-  btn.disabled=true; msg.className='msg'; msg.textContent='Memeriksa PIN…';
+  if(!user.value.trim()){ user.focus(); return; }
+  if(!pin.value) { pin.focus(); return; }
+  btn.disabled=true; msg.className='msg'; msg.textContent='Memeriksa akun…';
   try{
-    const ok=await KRA.login(pin.value.trim());
+    const ok=await KRA.login(user.value, pin.value);
     if(ok){ msg.textContent=NEXT==='index.html'?'Berhasil, membuka dashboard…':'Berhasil, membuka halaman…'; location.replace(NEXT); return; }
     fails++; if(fails>=5){ lockUntil=Date.now()+30000*Math.pow(2,fails-5); }
-    msg.className='msg err'; msg.textContent='PIN salah.'+(fails>=5?' Tunggu sebentar sebelum mencoba lagi.':'');
+    msg.className='msg err'; msg.textContent='Username atau password salah.'+(fails>=5?' Tunggu sebentar sebelum mencoba lagi.':'');
     pin.value=''; pin.focus();
   }catch(err){ msg.className='msg err'; msg.textContent=err.message||String(err); }
   btn.disabled=false;
