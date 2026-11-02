@@ -675,6 +675,10 @@ const nf1 = new Intl.NumberFormat('id-ID',{maximumFractionDigits:1});
 const nf2 = new Intl.NumberFormat('id-ID',{minimumFractionDigits:2,maximumFractionDigits:2});
 const nf1f = new Intl.NumberFormat('id-ID',{minimumFractionDigits:1,maximumFractionDigits:1});
 const fRp = v => v==null? '–' : nf0.format(v);
+/* total batang bertumpuk di tooltip (garis RKA / pencapaian tidak dijumlahkan) */
+const stackTotal = items => { const b=items.filter(i=>i.dataset.stack!=null && (i.dataset.type||i.chart.config.type)==='bar' && i.raw!=null);
+  return b.length>1 ? 'Total: '+fRp(b.reduce((s,i)=>s+(+i.raw||0),0)) : ''; };
+
 const fPct = v => v==null||!isFinite(v)? '–' : nf2.format(v*100)+'%';
 const fPP = v => v==null? '–' : (v>0?'+':'')+nf2.format(v*100)+'%';   // selisih rasio (poin persentase), ditampilkan dengan %
 const fSigned = v => v==null? '–' : (v>0?'+':'')+nf0.format(v);
@@ -1172,7 +1176,7 @@ function renderMix(){
   mk('mixTrend',{type:'bar',data:{labels:pts.map(p=>p.label),datasets:[
       ...PB.map((x,i)=>({type:'bar',label:x.p,data:ser[i],backgroundColor:prodCol(x.p,i),stack:'s',order:2})),
       {type:'line',label:'CASA %',data:casaS,borderColor:css('--text'),backgroundColor:css('--text'),yAxisID:'y2',tension:.25,pointRadius:2.5,order:1}]},
-    options:{maintainAspectRatio:false,interaction:{mode:'index',intersect:false},plugins:{legend:legendBottom(),tooltip:{callbacks:{label:c=>c.raw==null?null:c.dataset.yAxisID==='y2'?`CASA: ${fPct(c.raw)}`:`${c.dataset.label}: ${fRp(c.raw)}`}}},
+    options:{maintainAspectRatio:false,interaction:{mode:'index',intersect:false},plugins:{legend:legendBottom(),tooltip:{callbacks:{label:c=>c.raw==null?null:c.dataset.yAxisID==='y2'?`CASA: ${fPct(c.raw)}`:`${c.dataset.label}: ${fRp(c.raw)}`,footer:stackTotal}}},
       scales:{x:{stacked:true,grid:{display:false}},y:{stacked:true,ticks:{callback:scaleFmt(Math.max(1,...pts.map((_,j)=>sum(ser.map(s=>s[j])))))}},y2:{position:'right',beginAtZero:false,grace:'10%',grid:{display:false},ticks:{callback:v=>nf1.format(v*100)+'%'}}}}});
   const mb=topBottom(rows.filter(r=>nn(r.casa)).sort((a,c)=>a.casa-c.casa),TOPN);
   ttl('mixBar',`Komposisi per ${lv}`,`Porsi tiap produk, diurutkan dari CASA terendah${byC.length>mb.length?` · ${TOPN/2} terendah & ${TOPN/2} tertinggi dari ${byC.length}`:''}`);

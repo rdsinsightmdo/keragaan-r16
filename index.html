@@ -1127,11 +1127,14 @@ function ukTable(elId, sortKey, cols){
   el.querySelectorAll('th').forEach(th=>th.onclick=()=>{const i=+th.dataset.i; if(st.i===i) st.asc=!st.asc; else {st.i=i; st.asc=i<0;} ukTable(elId,sortKey,cols);});
   el.querySelectorAll('tbody tr').forEach(tr=>tr.onclick=()=>{ const r=data[+tr.dataset.i]; if(r.drill) r.drill(); });
 }
+/* total batang bertumpuk di tooltip (garis RKA / pencapaian tidak dijumlahkan) */
+const stackTotal = items => { const b=items.filter(i=>i.dataset.stack!=null && (i.dataset.type||i.chart.config.type)==='bar' && i.raw!=null);
+  return b.length>1 ? 'Total: '+fRp(b.reduce((s,i)=>s+(+i.raw||0),0)) : ''; };
 function stackedMonthly(id, pts, series, fmt){
   const pal=PAL();
   mk(id,{type:'bar',data:{labels:pts.map(p=>p.label),datasets:series.map((s,i)=>({type:s.line?'line':'bar',label:s.label,data:pts.map(s.f),backgroundColor:s.color||pal[i%pal.length],borderColor:s.color||pal[i%pal.length],borderDash:s.line?[5,4]:undefined,pointRadius:s.line?2:0,borderRadius:2,stack:s.line?undefined:'a',order:s.line?0:1}))},
     options:{maintainAspectRatio:false,interaction:{mode:'index',intersect:false},
-      plugins:{legend:{position:'bottom',labels:{boxWidth:10}},tooltip:{callbacks:{label:c=>c.raw==null?null:`${c.dataset.label}: ${fRp(c.raw)}`}}},
+      plugins:{legend:{position:'bottom',labels:{boxWidth:10}},tooltip:{callbacks:{label:c=>c.raw==null?null:`${c.dataset.label}: ${fRp(c.raw)}`,footer:stackTotal}}},
       scales:{x:{stacked:true,grid:{display:false}},y:{stacked:true,ticks:{callback:fmt}}}}});
 }
 function ratioLines(id, pts, series){
@@ -1387,7 +1390,7 @@ function renderAuTrend(){
       {label:'Target RKA',data:r.tg,borderColor:c2,backgroundColor:c2,borderDash:[5,4],pointStyle:'rectRot',pointRadius:3,spanGaps:true,yAxisID:'y'},
       {label:'Pencapaian (kanan)',data:r.pc,borderColor:w,backgroundColor:w,borderDash:[2,3],pointRadius:2,tension:.2,spanGaps:true,yAxisID:'y2'}]},
     options:{maintainAspectRatio:false,interaction:{mode:'index',intersect:false},
-      plugins:{legend:{position:'bottom',labels:{boxWidth:10}},tooltip:{callbacks:{label:c=>c.raw==null?null:`${c.dataset.label}: ${c.dataset.yAxisID==='y2'?fPct(c.raw):fRp(c.raw)}`}}},
+      plugins:{legend:{position:'bottom',labels:{boxWidth:10}},tooltip:{callbacks:{label:c=>c.raw==null?null:`${c.dataset.label}: ${c.dataset.yAxisID==='y2'?fPct(c.raw):fRp(c.raw)}`,footer:stackTotal}}},
       scales:{y:{ticks:{callback:scaleFmt(mx)}},y2:{position:'right',grid:{display:false},ticks:{callback:v=>nf0.format(v*100)+'%'}},x:{grid:{display:false}}}}});
   $('auTrendInfo').innerHTML=`${auPill(r.st)} · Penc. ${pill(r.p)} · Δ MtD <b class="num ${growthCls(r.d1)}">${fPP(r.d1)}</b> · Δ 3 bln <b class="num ${growthCls(r.d3)}">${fPP(r.d3)}</b>`+
     (r.streak?` · <b>${r.streak}</b> bln berturut di bawah RKA`:'')+
@@ -1622,7 +1625,7 @@ function renderRecovery(){
     {type:'line',label:'Target bulanan RKA',data:tM,borderColor:css('--text'),backgroundColor:css('--text'),borderDash:[5,4],pointRadius:2,yAxisID:'y',order:1,spanGaps:false},
     {type:'line',label:'Pencapaian RKA (akumulasi)',data:pen,borderColor:'#F37021',backgroundColor:'#F37021',pointRadius:3,tension:.25,yAxisID:'y2',order:0,spanGaps:true}]},
     options:{maintainAspectRatio:false,interaction:{mode:'index',intersect:false},
-      plugins:{legend:{position:'bottom',labels:{boxWidth:10}},tooltip:{callbacks:{label:c=>c.raw==null?null:`${c.dataset.label}: ${c.dataset.yAxisID==='y2'?fPct(c.raw):fRp(c.raw)}`}}},
+      plugins:{legend:{position:'bottom',labels:{boxWidth:10}},tooltip:{callbacks:{label:c=>c.raw==null?null:`${c.dataset.label}: ${c.dataset.yAxisID==='y2'?fPct(c.raw):fRp(c.raw)}`,footer:stackTotal}}},
       scales:{x:{stacked:true,grid:{display:false}},y:{stacked:true,ticks:{callback:scaleFmt(mx2)}},
         y2:{position:'right',grid:{display:false},suggestedMin:.5,suggestedMax:1.1,ticks:{callback:v=>nf0.format(v*100)+'%'}}}}});
   $('rcProdTitle').textContent='Recovery per Segmen · '+entityName();
